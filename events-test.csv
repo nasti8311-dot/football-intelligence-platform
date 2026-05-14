@@ -1,0 +1,7 @@
+matchId,team,eventType,minute,x,y,endX,endY,xg,outcome
+1,Arsenal,shot,14,82,45,,,0.31,goal
+1,Liverpool,pass,21,44,52,61,48,,complete
+1,Arsenal,pressure,33,58,39,,,,success
+1,Arsenal,pass,41,40,50,72,44,,complete
+1,Liverpool,shot,55,78,48,,,0.18,saved
+1,Liverpool,pass,62,35,60,70,52,,complete

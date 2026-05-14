@@ -1,0 +1,4 @@
+id,name,shortName,leagueCode,leagueName,country,attack,defense,elo,form,xgFor,xgAgainst,possession,pressing,tempo
+ars,Arsenal,ARS,epl,Premier League,England,1.22,0.84,1888,0.71,1.92,0.88,61,78,72
+bvb,Borussia Dortmund,BVB,bundesliga,Bundesliga,Germany,1.12,0.96,1774,0.46,1.74,1.18,56,70,75
+rma,Real Madrid,RMA,laliga,La Liga,Spain,1.26,0.82,1912,0.74,2.05,0.91,59,74,77
