@@ -1,0 +1,10 @@
+matchId,team,player,eventType,minute,x,y,endX,endY,xg,outcome
+1,Arsenal,Saka,shot,14,82,45,,,0.31,goal
+1,Arsenal,Rice,pass,18,42,50,70,46,,complete
+1,Arsenal,Odegaard,pass,22,55,48,78,42,,complete
+1,Arsenal,Rice,pressure,33,58,39,,,,success
+1,Liverpool,Salah,shot,55,78,48,,,0.18,saved
+1,Liverpool,Trent,pass,61,35,60,74,52,,complete
+1,Liverpool,Mac Allister,pressure,66,52,44,,,,success
+1,Arsenal,Saka,shot,72,86,41,,,0.42,saved
+1,Liverpool,Salah,pass,76,48,50,80,45,,complete
