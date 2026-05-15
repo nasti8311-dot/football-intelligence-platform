@@ -1,3 +1,4 @@
+import BackgroundFX from "@/components/BackgroundFX";
 import "./globals.css";
 import Link from "next/link";
 
@@ -61,6 +62,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-slate-950 text-white">
+        <BackgroundFX />
         <div className="flex min-h-screen">
           <aside className="hidden w-80 shrink-0 border-r border-white/10 bg-black/20 xl:block">
             <div className="border-b border-white/10 p-6">
@@ -96,7 +98,7 @@ export default function RootLayout({
             </nav>
           </aside>
 
-          <main className="flex-1">
+          <main className="relative z-10 flex-1">
             <div className="border-b border-white/10 bg-black/20 px-6 py-4 xl:hidden">
               <div className="flex flex-wrap gap-2">
                 {nav.flatMap((group) =>

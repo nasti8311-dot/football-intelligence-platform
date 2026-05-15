@@ -98,3 +98,38 @@ body {
     transform: translateX(-50%);
   }
 }
+
+html {
+  scroll-behavior: smooth;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(15,23,42,0.9);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(34,211,238,0.4);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(34,211,238,0.7);
+}
+
+.glass-card {
+  transition:
+    transform .25s ease,
+    border-color .25s ease,
+    box-shadow .25s ease;
+}
+
+.glass-card:hover {
+  border-color: rgba(34,211,238,0.35);
+  box-shadow:
+    0 20px 60px rgba(0,0,0,.35),
+    0 0 30px rgba(34,211,238,.08);
+}
