@@ -1,3 +1,4 @@
+import FeatureGrid from "@/components/FeatureGrid";
 import PremiumHero from "@/components/PremiumHero";
 import KpiCard from "@/components/KpiCard";
 import TrustBar from "@/components/TrustBar";
@@ -42,6 +43,8 @@ export default async function DashboardPage() {
           <KpiCard label="Events" value={events} hint="On-ball actions" />
           <KpiCard label="Leagues" value={leagues} hint="Competitions" />
         </section>
+
+        <FeatureGrid />
 
         <section className="grid gap-5 xl:grid-cols-3">
 

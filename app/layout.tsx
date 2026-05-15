@@ -68,7 +68,7 @@ export default function RootLayout({
                 Football AI
               </p>
 
-              <h1 className="mt-3 text-2xl font-black">
+              <h1 className="page-title mt-3 text-2xl font-black">
                 Intelligence Platform
               </h1>
             </div>
@@ -85,7 +85,7 @@ export default function RootLayout({
                       <Link
                         key={href}
                         href={href}
-                        className="rounded-2xl px-4 py-3 text-slate-300 transition hover:bg-white/10 hover:text-white"
+                        className="rounded-2xl px-4 py-3 text-slate-300 transition hover:bg-cyan-400/10 hover:text-cyan-300"
                       >
                         {label}
                       </Link>
