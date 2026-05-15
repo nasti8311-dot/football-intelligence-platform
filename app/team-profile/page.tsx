@@ -1,3 +1,4 @@
+import TeamBadge from "@/components/TeamBadge";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";

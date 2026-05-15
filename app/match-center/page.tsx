@@ -1,3 +1,4 @@
+import TeamBadge from "@/components/TeamBadge";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -85,7 +86,21 @@ export default async function MatchCenterPage({
               </p>
 
               <h2 className="mt-4 text-4xl font-black">
-                {homeName} vs {awayName}
+                
+<div className="flex items-center justify-center gap-6">
+  <div className="flex items-center gap-3">
+    <TeamBadge team={homeName} size={64} />
+    <span>{homeName}</span>
+  </div>
+
+  <span className="text-cyan-300">vs</span>
+
+  <div className="flex items-center gap-3">
+    <TeamBadge team={awayName} size={64} />
+    <span>{awayName}</span>
+  </div>
+</div>
+
               </h2>
 
               <p className="mt-6 text-7xl font-black text-cyan-300">

@@ -1,3 +1,4 @@
+import TeamBadge from "@/components/TeamBadge";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -160,7 +161,12 @@ function TeamSelector({
 function ClubCard({ profile }: { profile: any }) {
   return (
     <div className="glass-card rounded-3xl p-7">
-      <h2 className="text-4xl font-black">{profile.team}</h2>
+      
+<div className="flex items-center gap-4">
+  <TeamBadge team={profile.team} size={64} />
+  <h2 className="text-4xl font-black">{profile.team}</h2>
+</div>
+
       <div className="mt-6 grid grid-cols-2 gap-4">
         <Stat label="Matches" value={profile.matches} />
         <Stat label="Wins" value={profile.wins} />
