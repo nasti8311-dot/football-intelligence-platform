@@ -15,6 +15,7 @@ const nav = [
       ["/executive-summary", "Summary"],
       ["/action-center", "Actions"],
       ["/coach-view", "Coach View"],
+      ["/opponent-prep", "Opponent Prep"],
       ["/guide", "Guide"],
     ],
   },
