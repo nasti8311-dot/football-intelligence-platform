@@ -1,3 +1,4 @@
+import CommandSearch from "@/components/CommandSearch";
 import FeatureGrid from "@/components/FeatureGrid";
 import PremiumHero from "@/components/PremiumHero";
 import KpiCard from "@/components/KpiCard";
@@ -36,6 +37,8 @@ export default async function DashboardPage() {
       <div className="mx-auto max-w-7xl space-y-8">
 
         <PremiumHero />
+
+        <CommandSearch />
 
         <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
           <KpiCard label="Matches" value={matches} hint="Processed games" />
