@@ -1,3 +1,4 @@
+import KpiCard from "@/components/KpiCard";
 import TrustBar from "@/components/TrustBar";
 import { prisma } from "@/lib/prisma";
 
@@ -47,10 +48,10 @@ export default async function DashboardPage() {
         </section>
 
         <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-          <Card title="Matches" value={matches.toString()} />
-          <Card title="Teams" value={teams.toString()} />
-          <Card title="Events" value={events.toString()} />
-          <Card title="Leagues" value={leagues.toString()} />
+          <KpiCard label="Matches" value={matches} hint="Processed games" />
+          <KpiCard label="Teams" value={teams} hint="Tracked clubs" />
+          <KpiCard label="Events" value={events} hint="On-ball actions" />
+          <KpiCard label="Leagues" value={leagues} hint="Competitions" />
         </section>
 
         <section className="grid gap-5 xl:grid-cols-3">
