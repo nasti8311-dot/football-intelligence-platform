@@ -7,20 +7,40 @@ export const metadata = {
 };
 
 const nav = [
-  ["/", "Home"],
-  ["/team-intelligence", "Team Analysis"],
-  ["/form-guide", "Form Guide"],
-  ["/league-intelligence", "Leagues"],
-  ["/prediction-center", "Predictions"],
-  ["/ai-scout-report", "Scout Reports"],
-  ["/player-radar", "Player Radar"],
-  ["/event-map", "Event Map"],
-  ["/event-intelligence", "Advanced Events"],
-  ["/admin/import", "Import Data"],
-  ["/guide", "Guide"],
-  ["/upload-center", "Upload"],
-  ["/executive-summary", "Summary"],
-  ["/action-center", "Actions"],
+  {
+    title: "Overview",
+    items: [
+      ["/", "Dashboard"],
+      ["/executive-summary", "Summary"],
+      ["/action-center", "Actions"],
+      ["/guide", "Guide"],
+    ],
+  },
+  {
+    title: "Analytics",
+    items: [
+      ["/team-intelligence", "Teams"],
+      ["/league-intelligence", "Leagues"],
+      ["/form-guide", "Form"],
+      ["/event-map", "Event Map"],
+    ],
+  },
+  {
+    title: "AI Tools",
+    items: [
+      ["/prediction-center", "Predictions"],
+      ["/ai-scout-report", "Scout Reports"],
+      ["/player-radar", "Player Radar"],
+      ["/event-intelligence", "Advanced Events"],
+    ],
+  },
+  {
+    title: "Data",
+    items: [
+      ["/upload-center", "Upload"],
+      ["/admin/import", "Import"],
+    ],
+  },
 ];
 
 export default function RootLayout({
@@ -32,7 +52,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="bg-slate-950 text-white">
         <div className="flex min-h-screen">
-          <aside className="hidden w-72 border-r border-white/10 bg-black/20 xl:block">
+          <aside className="hidden w-72 shrink-0 border-r border-white/10 bg-black/20 xl:block">
             <div className="border-b border-white/10 p-6">
               <p className="text-sm uppercase tracking-[0.3em] text-cyan-400">
                 Football AI
@@ -43,15 +63,25 @@ export default function RootLayout({
               </h1>
             </div>
 
-            <nav className="flex flex-col gap-2 p-4">
-              {nav.map(([href, label]) => (
-                <Link
-                  key={href}
-                  href={href}
-                  className="rounded-2xl px-4 py-3 text-slate-300 transition hover:bg-white/10 hover:text-white"
-                >
-                  {label}
-                </Link>
+            <nav className="space-y-8 p-4">
+              {nav.map((group) => (
+                <div key={group.title}>
+                  <p className="mb-3 px-3 text-xs uppercase tracking-[0.2em] text-slate-500">
+                    {group.title}
+                  </p>
+
+                  <div className="flex flex-col gap-2">
+                    {group.items.map(([href, label]) => (
+                      <Link
+                        key={href}
+                        href={href}
+                        className="rounded-2xl px-4 py-3 text-slate-300 transition hover:bg-white/10 hover:text-white"
+                      >
+                        {label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
               ))}
             </nav>
           </aside>
@@ -59,15 +89,17 @@ export default function RootLayout({
           <main className="flex-1">
             <div className="border-b border-white/10 bg-black/20 px-6 py-4 xl:hidden">
               <div className="flex flex-wrap gap-2">
-                {nav.map(([href, label]) => (
-                  <Link
-                    key={href}
-                    href={href}
-                    className="rounded-xl bg-white/5 px-3 py-2 text-sm text-slate-300"
-                  >
-                    {label}
-                  </Link>
-                ))}
+                {nav.flatMap((group) =>
+                  group.items.map(([href, label]) => (
+                    <Link
+                      key={href}
+                      href={href}
+                      className="rounded-xl bg-white/5 px-3 py-2 text-sm text-slate-300"
+                    >
+                      {label}
+                    </Link>
+                  ))
+                )}
               </div>
             </div>
 
