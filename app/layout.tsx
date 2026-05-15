@@ -20,6 +20,7 @@ const nav = [
   ["/guide", "Guide"],
   ["/upload-center", "Upload"],
   ["/executive-summary", "Summary"],
+  ["/action-center", "Actions"],
 ];
 
 export default function RootLayout({
