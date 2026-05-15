@@ -1,3 +1,4 @@
+import PageHero from "@/components/PageHero";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -78,20 +79,7 @@ export default async function ScoutDashboardPage() {
   return (
     <main className="min-h-screen stadium-page p-6 text-white">
       <div className="mx-auto max-w-7xl space-y-8">
-        <section>
-          <p className="text-sm text-cyan-400">
-            Recruitment Intelligence
-          </p>
-
-          <h1 className="page-title text-5xl font-black">
-            Scout Dashboard
-          </h1>
-
-          <p className="mt-4 max-w-3xl text-slate-400">
-            Automatische Spieleranalyse basierend auf Eventdaten,
-            Aktionen und AI-Scores.
-          </p>
-        </section>
+        <PageHero eyebrow="Recruitment Intelligence" title="Scout Dashboard" description="Spieler-Rankings, Rollen, Scores und Scouting-Kandidaten." />
 
         <section className="grid gap-5 md:grid-cols-4">
           <Stat

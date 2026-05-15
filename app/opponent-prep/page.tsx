@@ -1,3 +1,4 @@
+import PageHero from "@/components/PageHero";
 import TeamBadge from "@/components/TeamBadge";
 import { prisma } from "@/lib/prisma";
 
@@ -82,13 +83,7 @@ export default async function OpponentPrepPage({
   return (
     <main className="min-h-screen bg-slate-950 p-6 text-white">
       <div className="mx-auto max-w-7xl space-y-8">
-        <section>
-          <p className="text-sm text-cyan-400">Opponent Intelligence</p>
-          <h1 className="text-5xl font-black">Opponent Prep</h1>
-          <p className="mt-4 max-w-3xl text-slate-400">
-            Einfache Gegneranalyse: Bedrohung, Schwächen und Matchplan.
-          </p>
-        </section>
+        <PageHero eyebrow="Opponent Intelligence" title="Opponent Prep" description="Gegneranalyse mit Schwächen, Bedrohung und Matchplan." />
 
         <section className="flex max-h-44 flex-wrap gap-2 overflow-auto rounded-3xl border border-white/10 bg-white/[0.04] p-4">
           {teams.slice(0, 60).map((t) => (

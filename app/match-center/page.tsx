@@ -1,3 +1,4 @@
+import PageHero from "@/components/PageHero";
 import TeamBadge from "@/components/TeamBadge";
 import { prisma } from "@/lib/prisma";
 
@@ -46,13 +47,7 @@ export default async function MatchCenterPage({
   return (
     <main className="min-h-screen stadium-page p-6 text-white">
       <div className="mx-auto max-w-7xl space-y-8">
-        <section>
-          <p className="text-sm text-cyan-400">Match Deep Dive</p>
-          <h1 className="page-title text-5xl font-black">Match Center</h1>
-          <p className="mt-4 max-w-3xl text-slate-400">
-            Wähle ein Spiel und sieh Ergebnis, Events, Schüsse, Pässe und Momentum.
-          </p>
-        </section>
+        <PageHero eyebrow="Match Deep Dive" title="Match Center" description="Einzelne Spiele mit Score, Events und Spielfeldkarte analysieren." />
 
         <section className="max-h-72 space-y-2 overflow-auto rounded-3xl border border-white/10 bg-white/[0.04] p-4">
           {matches.map((m) => {

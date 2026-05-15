@@ -1,3 +1,4 @@
+import PageHero from "@/components/PageHero";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import TeamBadge from "@/components/TeamBadge";

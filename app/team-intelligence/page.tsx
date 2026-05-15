@@ -1,3 +1,4 @@
+import PageHero from "@/components/PageHero";
 import TeamBadge from "@/components/TeamBadge";
 import { prisma } from "@/lib/prisma";
 
@@ -84,15 +85,7 @@ export default async function TeamIntelligencePage() {
   return (
     <main className="min-h-screen stadium-page p-6 text-white">
       <div className="mx-auto max-w-7xl space-y-8">
-        <section>
-          <p className="text-sm text-cyan-400">Club Intelligence</p>
-          <h1 className="text-5xl font-bold">Team Intelligence</h1>
-
-          <p className="mt-3 max-w-3xl text-slate-400">
-            Tactical profiles, performance analytics and automated
-            strength evaluation for all tracked clubs.
-          </p>
-        </section>
+        <PageHero eyebrow="Club Intelligence" title="Team Intelligence" description="Taktische Profile, Form, Tore und Performance aller Teams." />
 
         <section className="overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04]">
           <table className="w-full text-sm">

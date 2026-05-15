@@ -1,3 +1,4 @@
+import PageHero from "@/components/PageHero";
 import Link from "next/link";
 
 const reports = [
@@ -43,14 +44,7 @@ export default function ReportsCenterPage() {
   return (
     <main className="min-h-screen stadium-page p-6 text-white">
       <div className="mx-auto max-w-7xl space-y-8">
-        <section>
-          <p className="text-sm text-cyan-400">Reports</p>
-          <h1 className="text-5xl font-black">Reports Center</h1>
-          <p className="mt-4 max-w-3xl text-slate-400">
-            Alle verständlichen Analyseberichte an einem Ort — für Coaches,
-            Scouts, Analysten und Entscheider.
-          </p>
-        </section>
+        <PageHero eyebrow="Reports" title="Reports Center" description="Alle verständlichen Analyseberichte an einem Ort." />
 
         <section className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {reports.map((report) => (
