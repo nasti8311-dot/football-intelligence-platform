@@ -1,3 +1,5 @@
+import AnalyticsOverview from "@/components/AnalyticsOverview";
+import PlayerCarousel from "@/components/PlayerCarousel";
 import QuickActions from "@/components/QuickActions";
 import StatsStrip from "@/components/StatsStrip";
 import LiveMatches from "@/components/LiveMatches";
@@ -47,6 +49,8 @@ export default async function DashboardPage() {
 
         <StatsStrip />
 
+        <AnalyticsOverview />
+
         <LiveTicker />
 
         <QuickActions />
@@ -61,6 +65,8 @@ export default async function DashboardPage() {
         <FeatureGrid />
 
         <TopPlayers />
+
+        <PlayerCarousel />
 
         <LiveMatches />
 

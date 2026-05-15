@@ -65,8 +65,9 @@ export default function RootLayout({
         <BackgroundFX />
         <div className="flex min-h-screen">
           <aside className="hidden w-80 shrink-0 border-r border-white/10 bg-black/20 xl:block">
-            <div className="border-b border-white/10 p-6">
-              <p className="text-sm uppercase tracking-[0.3em] text-cyan-400">
+            <div className="relative overflow-hidden border-b border-white/10 p-6">
+              <div className="absolute right-0 top-0 h-32 w-32 rounded-full bg-cyan-400/10 blur-3xl"></div>
+              <p className="relative text-sm uppercase tracking-[0.3em] text-cyan-400">
                 Football AI
               </p>
 
