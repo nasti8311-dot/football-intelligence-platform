@@ -54,7 +54,9 @@ export default async function PredictionCenterPage() {
                 <div>
                   <p className="text-sm text-cyan-300">
                     {p.match.league?.name ?? "League"} ·{" "}
-                    {new Date(p.match.kickoff).toLocaleDateString("de-DE")}
+                    {p.match.kickoff
+  ? new Date(p.match.kickoff).toLocaleDateString("de-DE")
+  : "No date"}
                   </p>
 
                   <h2 className="mt-1 text-2xl font-bold">
