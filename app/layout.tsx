@@ -14,6 +14,7 @@ const nav = [
       ["/", "Dashboard"],
       ["/executive-summary", "Summary"],
       ["/action-center", "Actions"],
+      ["/coach-view", "Coach View"],
       ["/guide", "Guide"],
     ],
   },
