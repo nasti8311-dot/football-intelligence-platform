@@ -40,6 +40,7 @@ const nav = [
       ["/match-center", "Match Center"],
       ["/ai-scout-report", "Scout Reports"],
       ["/scout-dashboard", "Scout Dashboard"],
+      ["/transfer-market", "Transfer Market"],
       ["/player-radar", "Player Radar"],
       ["/player-profile", "Player Profile"],
       ["/event-intelligence", "Advanced Events"],
