@@ -17,6 +17,7 @@ const nav = [
   ["/event-map", "Event Map"],
   ["/event-intelligence", "Advanced Events"],
   ["/admin/import", "Import Data"],
+  ["/guide", "Guide"],
 ];
 
 export default function RootLayout({
