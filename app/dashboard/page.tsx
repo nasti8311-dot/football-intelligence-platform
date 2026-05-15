@@ -1,3 +1,6 @@
+import BigCTA from "@/components/BigCTA";
+import PerformanceBars from "@/components/PerformanceBars";
+import ActivityFeed from "@/components/ActivityFeed";
 import AnalyticsOverview from "@/components/AnalyticsOverview";
 import PlayerCarousel from "@/components/PlayerCarousel";
 import QuickActions from "@/components/QuickActions";
@@ -67,6 +70,11 @@ export default async function DashboardPage() {
         <TopPlayers />
 
         <PlayerCarousel />
+
+        <div className="grid gap-6 xl:grid-cols-2">
+          <ActivityFeed />
+          <PerformanceBars />
+        </div>
 
         <LiveMatches />
 
@@ -145,7 +153,9 @@ export default async function DashboardPage() {
             />
           </div>
         </section>
-              <TrustBar />
+              <BigCTA />
+
+        <TrustBar />
       </div>
     </main>
   );
