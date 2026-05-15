@@ -1,3 +1,5 @@
+import QuickActions from "@/components/QuickActions";
+import StatsStrip from "@/components/StatsStrip";
 import LiveMatches from "@/components/LiveMatches";
 import TopPlayers from "@/components/TopPlayers";
 import LiveTicker from "@/components/LiveTicker";
@@ -43,7 +45,11 @@ export default async function DashboardPage() {
 
         <CommandSearch />
 
+        <StatsStrip />
+
         <LiveTicker />
+
+        <QuickActions />
 
         <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
           <KpiCard label="Matches" value={matches} hint="Processed games" />
