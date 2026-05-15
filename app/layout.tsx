@@ -6,6 +6,7 @@ const nav = [
   ["/matches", "Matches"],
   ["/teams", "Teams"],
   ["/event-intelligence", "Event Intelligence"],
+  ["/event-map", "Event Map"],
   ["/players", "Players"],
   ["/recruitment", "Recruitment"],
   ["/scouting", "Scouting"],
