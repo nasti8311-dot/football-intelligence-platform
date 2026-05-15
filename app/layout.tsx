@@ -10,6 +10,7 @@ const nav = [
   {
     title: "Overview",
     items: [
+      ["/insight-hub", "Insight Hub"],
       ["/", "Dashboard"],
       ["/executive-summary", "Summary"],
       ["/action-center", "Actions"],
