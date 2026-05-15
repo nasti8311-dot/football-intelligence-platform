@@ -1,3 +1,4 @@
+import LiveTicker from "@/components/LiveTicker";
 import CommandSearch from "@/components/CommandSearch";
 import FeatureGrid from "@/components/FeatureGrid";
 import PremiumHero from "@/components/PremiumHero";
@@ -39,6 +40,8 @@ export default async function DashboardPage() {
         <PremiumHero />
 
         <CommandSearch />
+
+        <LiveTicker />
 
         <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
           <KpiCard label="Matches" value={matches} hint="Processed games" />

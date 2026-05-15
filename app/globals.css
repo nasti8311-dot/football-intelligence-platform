@@ -84,3 +84,17 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+
+.ticker {
+  animation: tickerMove 28s linear infinite;
+}
+
+@keyframes tickerMove {
+  0% {
+    transform: translateX(0%);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
