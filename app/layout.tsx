@@ -28,6 +28,7 @@ const nav = [
       ["/form-guide", "Form"],
       ["/event-map", "Event Map"],
       ["/team-profile", "Team Profile"],
+      ["/club-house", "Club House"],
       ["/club-comparison", "Club Comparison"],
     ],
   },
