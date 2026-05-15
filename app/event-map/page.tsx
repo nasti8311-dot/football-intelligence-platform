@@ -2,12 +2,26 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-export default async function EventMapPage() {
+export default async function EventMapPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ team?: string }>;
+}) {
   const events = await prisma.event.findMany({
+  where: selectedTeam
+    ? { team: selectedTeam }
+    : undefined,
     take: 700,
     orderBy: { minute: "asc" },
   });
-
+  
+  const teams = await prisma.event.findMany({
+  distinct: ["team"],
+  select: { team: true },
+  orderBy: { team: "asc" },
+});
+  const params = await searchParams;
+  const selectedTeam = params.team;
   const shots = events.filter((e) => e.eventType === "shot");
   const passes = events.filter((e) => e.eventType === "pass");
 
@@ -21,6 +35,29 @@ export default async function EventMapPage() {
             Passlinien, Shotmap und Eventpositionen auf dem Spielfeld.
           </p>
         </section>
+
+<div className="flex flex-wrap gap-2">
+  <a
+    href="/event-map"
+    className="rounded-xl bg-white/10 px-4 py-2 text-sm"
+  >
+    All
+  </a>
+
+  {teams.map((t) => (
+    <a
+      key={t.team}
+      href={`/event-map?team=${encodeURIComponent(t.team ?? "")}`}
+      className={`rounded-xl px-4 py-2 text-sm ${
+        selectedTeam === t.team
+          ? "bg-cyan-500 text-black"
+          : "bg-white/10"
+      }`}
+    >
+      {t.team}
+    </a>
+  ))}
+</div>
 
         <section className="relative aspect-[105/68] overflow-hidden rounded-3xl border-4 border-white/20 bg-emerald-900">
           <div className="absolute left-1/2 top-0 h-full w-px bg-white/30" />
