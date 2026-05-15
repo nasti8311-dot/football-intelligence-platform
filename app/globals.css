@@ -20,3 +20,45 @@ body {
   opacity: .035;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E");
 }
+
+body {
+  background:
+    linear-gradient(rgba(2, 6, 23, 0.92), rgba(2, 6, 23, 0.96)),
+    radial-gradient(circle at top, rgba(34, 211, 238, 0.18), transparent 35%),
+    url("https://images.unsplash.com/photo-1577223625816-7546f13df25d?auto=format&fit=crop&w=2200&q=80");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+.glass-card {
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(15,23,42,0.72);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 25px 80px rgba(0,0,0,0.35);
+}
+
+.team-badge {
+  display: inline-flex;
+  height: 42px;
+  width: 42px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #22d3ee, #10b981);
+  color: #020617;
+  font-weight: 900;
+  box-shadow: 0 10px 30px rgba(34,211,238,0.25);
+}
+
+.page-title {
+  background: linear-gradient(to right, #ffffff, #67e8f9);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.glow {
+  box-shadow:
+    0 0 30px rgba(34,211,238,0.2),
+    0 0 80px rgba(34,211,238,0.08);
+}

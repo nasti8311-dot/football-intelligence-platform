@@ -138,7 +138,7 @@ export default async function TeamIntelligencePage() {
           {teams.slice(0, 9).map((t) => (
             <div
               key={t.team}
-              className="rounded-3xl border border-white/10 bg-white/[0.04] p-6"
+              className="glass-card rounded-3xl p-6"
             >
               <p className="text-sm text-cyan-300">Tactical Profile</p>
 

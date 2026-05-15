@@ -36,7 +36,7 @@ export default async function DashboardPage() {
             Overview
           </p>
 
-          <h1 className="mt-2 text-5xl font-black">
+          <h1 className="mt-2 page-title text-5xl font-black">
             Football Dashboard
           </h1>
 
@@ -140,12 +140,12 @@ function Card({
   value: string;
 }) {
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6">
+    <div className="glass-card rounded-3xl p-6">
       <p className="text-sm text-slate-400">
         {title}
       </p>
 
-      <p className="mt-3 text-5xl font-black text-cyan-300">
+      <p className="mt-3 page-title text-5xl font-black text-cyan-300">
         {value}
       </p>
     </div>

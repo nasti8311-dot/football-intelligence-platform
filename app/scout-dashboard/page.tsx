@@ -83,7 +83,7 @@ export default async function ScoutDashboardPage() {
             Recruitment Intelligence
           </p>
 
-          <h1 className="text-5xl font-black">
+          <h1 className="page-title text-5xl font-black">
             Scout Dashboard
           </h1>
 
@@ -187,7 +187,7 @@ function Stat({
   value: string;
 }) {
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6">
+    <div className="glass-card rounded-3xl p-6">
       <p className="text-sm text-slate-400">
         {label}
       </p>

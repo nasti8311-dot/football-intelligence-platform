@@ -91,7 +91,7 @@ export default async function ClubComparisonPage({
       <div className="mx-auto max-w-7xl space-y-8">
         <section>
           <p className="text-sm text-cyan-400">Competitive Intelligence</p>
-          <h1 className="text-5xl font-black">Club Comparison</h1>
+          <h1 className="page-title text-5xl font-black">Club Comparison</h1>
           <p className="mt-4 max-w-3xl text-slate-400">
             Vergleiche zwei Teams direkt nach Form, Angriff, Ballbesitz und Defensive.
           </p>
@@ -107,7 +107,7 @@ export default async function ClubComparisonPage({
           <ClubCard profile={b} />
         </section>
 
-        <section className="rounded-3xl border border-white/10 bg-white/[0.04] p-6">
+        <section className="glass-card rounded-3xl p-6">
           <h2 className="text-3xl font-bold">Head-to-Head Profile</h2>
 
           <div className="mt-6 space-y-5">
@@ -159,7 +159,7 @@ function TeamSelector({
 
 function ClubCard({ profile }: { profile: any }) {
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-7">
+    <div className="glass-card rounded-3xl p-7">
       <h2 className="text-4xl font-black">{profile.team}</h2>
       <div className="mt-6 grid grid-cols-2 gap-4">
         <Stat label="Matches" value={profile.matches} />
