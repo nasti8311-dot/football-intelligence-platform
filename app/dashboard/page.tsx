@@ -1,3 +1,4 @@
+import TopPlayers from "@/components/TopPlayers";
 import LiveTicker from "@/components/LiveTicker";
 import CommandSearch from "@/components/CommandSearch";
 import FeatureGrid from "@/components/FeatureGrid";
@@ -51,6 +52,8 @@ export default async function DashboardPage() {
         </section>
 
         <FeatureGrid />
+
+        <TopPlayers />
 
         <section className="grid gap-5 xl:grid-cols-3">
 
