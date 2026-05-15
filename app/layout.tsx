@@ -33,6 +33,7 @@ const nav = [
       ["/prediction-center", "Predictions"],
       ["/ai-scout-report", "Scout Reports"],
       ["/player-radar", "Player Radar"],
+      ["/player-profile", "Player Profile"],
       ["/event-intelligence", "Advanced Events"],
     ],
   },
