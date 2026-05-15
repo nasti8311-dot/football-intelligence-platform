@@ -1,3 +1,4 @@
+import PremiumHero from "@/components/PremiumHero";
 import KpiCard from "@/components/KpiCard";
 import TrustBar from "@/components/TrustBar";
 import { prisma } from "@/lib/prisma";
@@ -33,19 +34,7 @@ export default async function DashboardPage() {
     <main className="min-h-screen stadium-page p-6 text-white">
       <div className="mx-auto max-w-7xl space-y-8">
 
-        <section>
-          <p className="text-sm text-cyan-400">
-            Overview
-          </p>
-
-          <h1 className="mt-2 page-title text-5xl font-black">
-            Football Dashboard
-          </h1>
-
-          <p className="mt-4 max-w-2xl text-slate-400">
-            Übersicht über Teams, Spiele, Events und aktuelle Matchdaten.
-          </p>
-        </section>
+        <PremiumHero />
 
         <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
           <KpiCard label="Matches" value={matches} hint="Processed games" />
