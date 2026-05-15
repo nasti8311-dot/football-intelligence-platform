@@ -76,7 +76,7 @@ export default async function ScoutDashboardPage() {
   rows.sort((a, b) => b.score - a.score);
 
   return (
-    <main className="min-h-screen bg-slate-950 p-6 text-white">
+    <main className="min-h-screen stadium-page p-6 text-white">
       <div className="mx-auto max-w-7xl space-y-8">
         <section>
           <p className="text-sm text-cyan-400">

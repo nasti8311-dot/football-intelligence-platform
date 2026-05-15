@@ -63,7 +63,7 @@ export default async function ClubHousePage() {
   rows.sort((a, b) => b.points - a.points);
 
   return (
-    <main className="min-h-screen bg-slate-950/80 p-6 text-white">
+    <main className="min-h-screen stadium-page/80 p-6 text-white">
       <div className="mx-auto max-w-7xl space-y-8">
         <section className="glass-card rounded-3xl p-8 glow">
           <p className="text-sm text-cyan-400">Club Overview</p>
