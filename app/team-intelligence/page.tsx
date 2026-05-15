@@ -1,3 +1,4 @@
+import TrustBar from "@/components/TrustBar";
 import PageHero from "@/components/PageHero";
 import TeamBadge from "@/components/TeamBadge";
 import { prisma } from "@/lib/prisma";
@@ -171,6 +172,7 @@ export default async function TeamIntelligencePage() {
             </div>
           ))}
         </section>
+              <TrustBar />
       </div>
     </main>
   );

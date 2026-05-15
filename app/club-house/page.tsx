@@ -1,3 +1,4 @@
+import TrustBar from "@/components/TrustBar";
 import PageHero from "@/components/PageHero";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
@@ -130,6 +131,7 @@ export default async function ClubHousePage() {
             </div>
           ))}
         </section>
+              <TrustBar />
       </div>
     </main>
   );

@@ -1,3 +1,4 @@
+import TrustBar from "@/components/TrustBar";
 import PageHero from "@/components/PageHero";
 import Link from "next/link";
 
@@ -71,6 +72,7 @@ export default function ReportsCenterPage() {
             </Link>
           ))}
         </section>
+              <TrustBar />
       </div>
     </main>
   );

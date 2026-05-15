@@ -1,3 +1,4 @@
+import TrustBar from "@/components/TrustBar";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -127,6 +128,7 @@ export default async function DashboardPage() {
             />
           </div>
         </section>
+              <TrustBar />
       </div>
     </main>
   );
