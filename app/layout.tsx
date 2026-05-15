@@ -1,68 +1,74 @@
 import "./globals.css";
-
-const nav = [
-  ["/", "Command Center"],
-  ["/predictions", "Predictions"],
-  ["/matches", "Matches"],
-  ["/teams", "Teams"],
-  ["/event-intelligence", "Event Intelligence"],
-  ["/event-map", "Event Map"],
-  ["/players", "Players"],
-  ["/recruitment", "Recruitment"],
-  ["/scouting", "Scouting"],
-  ["/team-style", "Team Style"],
-  ["/opponent-analysis", "Opponent"],
-  ["/tactical", "Tactical"],
-  ["/admin/import", "CSV Import"],
-  ["/admin/events", "Event Import"],
-  ["/executive", "Executive"],
-  ["/model-registry", "Model Registry"],
-  ["/feature-store", "Feature Store"],
-  ["/ml-lab", "ML Lab"],
-  ["/control-room", "Control Room"],
-  ["/api-center", "API Center"],
-  ["/war-room", "War Room"],
-  ["/live", "Live Engine"],
-  ["/finance", "Finance"],
-  ["/board-room", "Board Room"],
-  ["/transfer-center", "Transfer Center"],
-  ["/command", "Command"],
-  ["/ai-assistant", "AI Assistant"],
-  ["/workspace", "Workspaces"],
-  ["/billing", "Billing"],
-  ["/club-os", "Club OS"],
-];
+import Link from "next/link";
 
 export const metadata = {
   title: "Football Intelligence Platform",
-  description: "Professional football analytics SaaS platform",
+  description: "Modern football analytics powered by AI",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+const nav = [
+  ["/", "Home"],
+  ["/team-intelligence", "Team Analysis"],
+  ["/form-guide", "Form Guide"],
+  ["/league-intelligence", "Leagues"],
+  ["/prediction-center", "Predictions"],
+  ["/ai-scout-report", "Scout Reports"],
+  ["/player-radar", "Player Radar"],
+  ["/event-map", "Event Map"],
+  ["/event-intelligence", "Advanced Events"],
+  ["/admin/import", "Import Data"],
+];
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="de">
+    <html lang="en">
       <body className="bg-slate-950 text-white">
-        <div className="min-h-screen md:flex">
-          <aside className="border-r border-white/10 bg-slate-950/95 p-4 md:fixed md:inset-y-0 md:left-0 md:w-72">
-            <div className="mb-6 rounded-3xl border border-cyan-400/20 bg-cyan-400/[0.06] p-4">
-              <p className="text-xs uppercase tracking-[0.3em] text-cyan-300">Football AI</p>
-              <h1 className="mt-2 text-xl font-bold">Command Center</h1>
+        <div className="flex min-h-screen">
+          <aside className="hidden w-72 border-r border-white/10 bg-black/20 xl:block">
+            <div className="border-b border-white/10 p-6">
+              <p className="text-sm uppercase tracking-[0.3em] text-cyan-400">
+                Football AI
+              </p>
+
+              <h1 className="mt-3 text-2xl font-black">
+                Intelligence Platform
+              </h1>
             </div>
 
-            <nav className="space-y-1">
+            <nav className="flex flex-col gap-2 p-4">
               {nav.map(([href, label]) => (
-                <a
+                <Link
                   key={href}
                   href={href}
-                  className="block rounded-2xl px-4 py-3 text-sm text-slate-300 transition hover:bg-white/10 hover:text-white"
+                  className="rounded-2xl px-4 py-3 text-slate-300 transition hover:bg-white/10 hover:text-white"
                 >
                   {label}
-                </a>
+                </Link>
               ))}
             </nav>
           </aside>
 
-          <div className="flex-1 md:ml-72">{children}</div>
+          <main className="flex-1">
+            <div className="border-b border-white/10 bg-black/20 px-6 py-4 xl:hidden">
+              <div className="flex flex-wrap gap-2">
+                {nav.map(([href, label]) => (
+                  <Link
+                    key={href}
+                    href={href}
+                    className="rounded-xl bg-white/5 px-3 py-2 text-sm text-slate-300"
+                  >
+                    {label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            {children}
+          </main>
         </div>
       </body>
     </html>
