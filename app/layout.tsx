@@ -19,6 +19,7 @@ const nav = [
   ["/admin/import", "Import Data"],
   ["/guide", "Guide"],
   ["/upload-center", "Upload"],
+  ["/executive-summary", "Summary"],
 ];
 
 export default function RootLayout({
