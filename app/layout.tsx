@@ -62,7 +62,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="bg-slate-950 text-white">
         <div className="flex min-h-screen">
-          <aside className="hidden w-72 shrink-0 border-r border-white/10 bg-black/20 xl:block">
+          <aside className="hidden w-80 shrink-0 border-r border-white/10 bg-black/20 xl:block">
             <div className="border-b border-white/10 p-6">
               <p className="text-sm uppercase tracking-[0.3em] text-cyan-400">
                 Football AI
