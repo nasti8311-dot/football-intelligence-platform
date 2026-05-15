@@ -13,6 +13,7 @@ const nav = [
       ["/insight-hub", "Insight Hub"],
       ["/", "Dashboard"],
       ["/executive-summary", "Summary"],
+      ["/reports-center", "Reports"],
       ["/action-center", "Actions"],
       ["/coach-view", "Coach View"],
       ["/opponent-prep", "Opponent Prep"],
