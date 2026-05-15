@@ -1,3 +1,5 @@
+import FeatureStats from "@/components/FeatureStats";
+import HeatmapPreview from "@/components/HeatmapPreview";
 import BigCTA from "@/components/BigCTA";
 import PerformanceBars from "@/components/PerformanceBars";
 import ActivityFeed from "@/components/ActivityFeed";
@@ -54,6 +56,8 @@ export default async function DashboardPage() {
 
         <AnalyticsOverview />
 
+        <FeatureStats />
+
         <LiveTicker />
 
         <QuickActions />
@@ -77,6 +81,8 @@ export default async function DashboardPage() {
         </div>
 
         <LiveMatches />
+
+        <HeatmapPreview />
 
         <section className="grid gap-5 xl:grid-cols-3">
 

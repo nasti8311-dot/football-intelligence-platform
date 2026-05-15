@@ -133,3 +133,15 @@ html {
     0 20px 60px rgba(0,0,0,.35),
     0 0 30px rgba(34,211,238,.08);
 }
+
+.floating-nav {
+  backdrop-filter: blur(20px);
+  background: rgba(2,6,23,0.55);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.glow-text {
+  text-shadow:
+    0 0 10px rgba(34,211,238,.5),
+    0 0 30px rgba(34,211,238,.25);
+}

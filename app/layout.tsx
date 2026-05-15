@@ -71,7 +71,7 @@ export default function RootLayout({
                 Football AI
               </p>
 
-              <h1 className="page-title mt-3 text-2xl font-black">
+              <h1 className="page-title glow-text mt-3 text-2xl font-black">
                 Intelligence Platform
               </h1>
             </div>
@@ -100,7 +100,7 @@ export default function RootLayout({
           </aside>
 
           <main className="relative z-10 flex-1">
-            <div className="border-b border-white/10 bg-black/20 px-6 py-4 xl:hidden">
+            <div className="floating-nav sticky top-0 z-50 px-6 py-4 xl:hidden">
               <div className="flex flex-wrap gap-2">
                 {nav.flatMap((group) =>
                   group.items.map(([href, label]) => (
