@@ -25,6 +25,8 @@ const nav = [
       ["/contact", "Contact"],
       ["/pricing", "Pricing"],
       ["/case-studies", "Case Studies"],
+      ["/features", "Features"],
+      ["/product-roadmap", "Roadmap"],
     ],
   },
   {
