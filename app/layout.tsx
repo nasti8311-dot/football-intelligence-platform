@@ -27,6 +27,7 @@ const nav = [
       ["/case-studies", "Case Studies"],
       ["/features", "Features"],
       ["/product-roadmap", "Roadmap"],
+      ["/help-center", "Help Center"],
     ],
   },
   {
