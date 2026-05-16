@@ -1,3 +1,5 @@
+import ProductStatus from "@/components/ProductStatus";
+import HomeSummary from "@/components/HomeSummary";
 import FeatureStats from "@/components/FeatureStats";
 import HeatmapPreview from "@/components/HeatmapPreview";
 import BigCTA from "@/components/BigCTA";
@@ -54,6 +56,8 @@ export default async function DashboardPage() {
 
         <StatsStrip />
 
+        <ProductStatus />
+
         <AnalyticsOverview />
 
         <FeatureStats />
@@ -68,6 +72,8 @@ export default async function DashboardPage() {
           <KpiCard label="Events" value={events} hint="On-ball actions" />
           <KpiCard label="Leagues" value={leagues} hint="Competitions" />
         </section>
+
+        <HomeSummary />
 
         <FeatureGrid />
 
