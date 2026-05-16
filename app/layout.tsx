@@ -23,6 +23,8 @@ const nav = [
       ["/newsroom", "Newsroom"],
       ["/about", "About"],
       ["/contact", "Contact"],
+      ["/pricing", "Pricing"],
+      ["/case-studies", "Case Studies"],
     ],
   },
   {
