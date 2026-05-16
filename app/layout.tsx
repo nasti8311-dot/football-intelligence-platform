@@ -19,6 +19,8 @@ const nav = [
       ["/coach-view", "Coach View"],
       ["/opponent-prep", "Opponent Prep"],
       ["/guide", "Guide"],
+      ["/demo-tour", "Demo Tour"],
+      ["/newsroom", "Newsroom"],
     ],
   },
   {
