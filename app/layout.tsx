@@ -21,6 +21,8 @@ const nav = [
       ["/guide", "Guide"],
       ["/demo-tour", "Demo Tour"],
       ["/newsroom", "Newsroom"],
+      ["/about", "About"],
+      ["/contact", "Contact"],
     ],
   },
   {
