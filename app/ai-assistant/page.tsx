@@ -1,73 +1,43 @@
-const messages = [
-  {
-    role: "AI Scout",
-    text: "Hohe Pressing-Intensität bei Team Alpha erkannt.",
-  },
-  {
-    role: "Prediction Engine",
-    text: "Win Probability steigt auf 68%.",
-  },
-  {
-    role: "Recruitment AI",
-    text: "Neues Similarity-Match für zentrale Mittelfeldrolle gefunden.",
-  },
-  {
-    role: "Tactical AI",
-    text: "Überladung auf linker Seite erkannt.",
-  },
+import PageHero from "@/components/PageHero";
+
+const prompts = [
+  "Which team has the strongest attack profile?",
+  "Show me high-value transfer targets.",
+  "Which club allows the most shots centrally?",
+  "Prepare an opponent report for Bayern.",
+  "Which players exceed scouting thresholds?",
 ];
 
 export default function AIAssistantPage() {
   return (
-    <main className="min-h-screen bg-slate-950 p-6 text-white">
-      <div className="mx-auto max-w-5xl space-y-8">
-        <section>
-          <p className="text-sm text-cyan-400">
-            Conversational Intelligence
-          </p>
+    <main className="min-h-screen stadium-page p-6 text-white">
+      <div className="mx-auto max-w-6xl space-y-8">
+        <PageHero
+          eyebrow="Artificial Intelligence"
+          title="AI Assistant"
+          description="A future AI workflow for football scouting, coaching and analytics questions."
+        />
 
-          <h1 className="text-5xl font-bold">
-            AI Assistant
-          </h1>
+        <section className="glass-card rounded-3xl p-8">
+          <div className="rounded-3xl bg-slate-950/60 p-6">
+            <p className="text-sm text-cyan-300">AI Assistant</p>
 
-          <p className="mt-3 max-w-3xl text-slate-400">
-            Interaktive Football-Intelligence-
-            Konsole für Tactical-, Recruitment-
-            und Match-Insights.
-          </p>
+            <div className="mt-4 rounded-2xl border border-white/10 bg-slate-950 px-5 py-4 text-slate-500">
+              Ask anything about teams, matches, scouting or performance...
+            </div>
+
+            <button className="mt-5 rounded-2xl bg-cyan-400 px-5 py-3 font-bold text-slate-950">
+              Coming Soon
+            </button>
+          </div>
         </section>
 
-        <section className="space-y-4">
-          {messages.map((m, i) => (
-            <div
-              key={i}
-              className="rounded-3xl border border-white/10 bg-white/[0.04] p-5"
-            >
-              <p className="text-sm text-cyan-300">
-                {m.role}
-              </p>
-
-              <p className="mt-2 text-lg">
-                {m.text}
-              </p>
+        <section className="grid gap-4">
+          {prompts.map((p) => (
+            <div key={p} className="glass-card rounded-2xl p-5">
+              <p className="font-bold text-slate-200">{p}</p>
             </div>
           ))}
-        </section>
-
-        <section className="rounded-3xl border border-cyan-400/20 bg-cyan-400/[0.06] p-6">
-          <p className="text-sm text-cyan-300">
-            Future Vision
-          </p>
-
-          <h2 className="mt-2 text-2xl font-bold">
-            Conversational Football Intelligence
-          </h2>
-
-          <p className="mt-3 text-slate-300">
-            Zukünftig kann deine Plattform
-            komplette Match-, Tactical- und
-            Recruitment-Fragen per AI beantworten.
-          </p>
         </section>
       </div>
     </main>
