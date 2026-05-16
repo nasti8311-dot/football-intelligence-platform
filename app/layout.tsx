@@ -1,3 +1,5 @@
+import SidebarStatus from "@/components/SidebarStatus";
+import TopBar from "@/components/TopBar";
 import BackgroundFX from "@/components/BackgroundFX";
 import "./globals.css";
 import Link from "next/link";
@@ -108,9 +110,12 @@ export default function RootLayout({
                 </div>
               ))}
             </nav>
+
+            <SidebarStatus />
           </aside>
 
           <main className="relative z-10 flex-1">
+            <TopBar />
             <div className="floating-nav sticky top-0 z-50 px-6 py-4 xl:hidden">
               <div className="flex flex-wrap gap-2">
                 {nav.flatMap((group) =>
