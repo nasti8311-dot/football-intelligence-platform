@@ -23,6 +23,8 @@ const nav = [
       ["/settings", "Settings"],
       ["/onboarding", "Onboarding"],
       ["/workspace", "Workspace"],
+      ["/client-portal", "Client Portal"],
+      ["/saved-reports", "Saved Reports"],
       ["/coach-view", "Coach View"],
       ["/opponent-prep", "Opponent Prep"],
       ["/guide", "Guide"],
