@@ -29,6 +29,8 @@ const nav = [
       ["/contact", "Contact"],
       ["/trust", "Trust"],
       ["/pricing", "Pricing"],
+      ["/pitch", "Pitch"],
+      ["/white-label", "White Label"],
       ["/case-studies", "Case Studies"],
       ["/features", "Features"],
       ["/mobile-preview", "Mobile Preview"],
