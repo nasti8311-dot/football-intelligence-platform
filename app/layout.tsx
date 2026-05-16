@@ -21,6 +21,8 @@ const nav = [
       ["/action-center", "Actions"],
       ["/notification-center", "Notifications"],
       ["/settings", "Settings"],
+      ["/onboarding", "Onboarding"],
+      ["/workspace", "Workspace"],
       ["/coach-view", "Coach View"],
       ["/opponent-prep", "Opponent Prep"],
       ["/guide", "Guide"],

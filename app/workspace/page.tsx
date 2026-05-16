@@ -1,46 +1,30 @@
-const workspaces = [
-  {
-    name: "First Team Analysis",
-    role: "Performance Department",
-    members: 8,
-  },
-  {
-    name: "Recruitment Unit",
-    role: "Scouting Department",
-    members: 5,
-  },
-  {
-    name: "Academy Analytics",
-    role: "Youth Development",
-    members: 4,
-  },
+import PageHero from "@/components/PageHero";
+
+const modules = [
+  ["Club Workspace", "Manage club-level analytics and reports."],
+  ["Scout Workspace", "Track player profiles and recruitment targets."],
+  ["Coach Workspace", "Prepare opponents and match plans."],
+  ["Data Workspace", "Monitor uploads, data health and sources."],
 ];
 
 export default function WorkspacePage() {
   return (
-    <main className="min-h-screen bg-slate-950 p-6 text-white">
+    <main className="min-h-screen stadium-page p-6 text-white">
       <div className="mx-auto max-w-7xl space-y-8">
-        <section>
-          <p className="text-sm text-cyan-400">Club SaaS</p>
-          <h1 className="text-5xl font-bold">Workspaces</h1>
-          <p className="mt-3 max-w-3xl text-slate-400">
-            Club-Arbeitsbereiche für Analysten, Scouts und Coaching Staff.
-          </p>
-        </section>
+        <PageHero
+          eyebrow="Workspace"
+          title="Workspace"
+          description="A future home for teams, users, roles and saved football analytics projects."
+        />
 
-        <section className="grid gap-5 md:grid-cols-3">
-          {workspaces.map((w) => (
-            <div
-              key={w.name}
-              className="rounded-3xl border border-white/10 bg-white/[0.04] p-6"
-            >
-              <p className="text-sm text-cyan-300">{w.role}</p>
-              <h2 className="mt-2 text-2xl font-bold">{w.name}</h2>
-              <p className="mt-4 text-slate-400">{w.members} members</p>
-
-              <button className="mt-6 rounded-2xl bg-cyan-400 px-5 py-3 font-bold text-slate-950">
-                Open Workspace
-              </button>
+        <section className="grid gap-6 md:grid-cols-2">
+          {modules.map(([title, text]) => (
+            <div key={title} className="glass-card rounded-3xl p-8">
+              <h2 className="text-3xl font-black">{title}</h2>
+              <p className="mt-4 text-slate-300">{text}</p>
+              <span className="mt-6 inline-block rounded-full bg-cyan-400/10 px-4 py-2 text-sm text-cyan-300">
+                Coming Soon
+              </span>
             </div>
           ))}
         </section>
