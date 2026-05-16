@@ -1,3 +1,4 @@
+import Footer from "@/components/Footer";
 import SidebarStatus from "@/components/SidebarStatus";
 import TopBar from "@/components/TopBar";
 import BackgroundFX from "@/components/BackgroundFX";
@@ -133,6 +134,7 @@ export default function RootLayout({
             </div>
 
             {children}
+            <Footer />
           </main>
         </div>
       </body>
