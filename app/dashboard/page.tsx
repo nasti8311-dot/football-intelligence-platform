@@ -1,3 +1,5 @@
+import NextSteps from "@/components/NextSteps";
+import TeamSpotlight from "@/components/TeamSpotlight";
 import ProductStatus from "@/components/ProductStatus";
 import HomeSummary from "@/components/HomeSummary";
 import FeatureStats from "@/components/FeatureStats";
@@ -88,6 +90,8 @@ export default async function DashboardPage() {
 
         <LiveMatches />
 
+        <TeamSpotlight />
+
         <HeatmapPreview />
 
         <section className="grid gap-5 xl:grid-cols-3">
@@ -165,7 +169,9 @@ export default async function DashboardPage() {
             />
           </div>
         </section>
-              <BigCTA />
+              <NextSteps />
+
+        <BigCTA />
 
         <TrustBar />
       </div>
