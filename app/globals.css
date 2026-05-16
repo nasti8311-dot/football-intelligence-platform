@@ -161,3 +161,13 @@ html {
 .glass-card {
   animation: fadeUp .45s ease;
 }
+
+.stadium-page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at top left, rgba(34,211,238,.12), transparent 30%),
+    radial-gradient(circle at bottom right, rgba(16,185,129,.08), transparent 35%);
+  pointer-events: none;
+}
