@@ -19,6 +19,8 @@ const nav = [
       ["/executive-summary", "Summary"],
       ["/reports-center", "Reports"],
       ["/action-center", "Actions"],
+      ["/notification-center", "Notifications"],
+      ["/settings", "Settings"],
       ["/coach-view", "Coach View"],
       ["/opponent-prep", "Opponent Prep"],
       ["/guide", "Guide"],
