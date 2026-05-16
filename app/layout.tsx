@@ -31,6 +31,7 @@ const nav = [
       ["/pricing", "Pricing"],
       ["/case-studies", "Case Studies"],
       ["/features", "Features"],
+      ["/mobile-preview", "Mobile Preview"],
       ["/product-roadmap", "Roadmap"],
       ["/help-center", "Help Center"],
     ],
