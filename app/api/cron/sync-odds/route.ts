@@ -72,6 +72,12 @@ async function syncSport(sport: string) {
   let matched = 0;
 
   for (const game of games) {
+    console.log("ODDS GAME", {
+      home: game.home_team,
+      away: game.away_team,
+      commence: game.commence_time,
+    });
+
     const match = await findMatch(game.home_team, game.away_team, game.commence_time);
     if (!match) continue;
 
