@@ -432,57 +432,13 @@ export function buildPredictions(matches: MatchInput[], now = new Date()) {
         ? 1
         : 1.04;
 
-    let marketOdds = null;
-    let impliedProbability = null;
-    let bestEdge = 0;
-
-    if (match.odds && match.odds.length > 0) {
-      const mapped = match.odds.find((o: any) => {
-        if (best.market === "Sieg Heim") {
-          return o.market === "h2h" && o.outcome === match.home;
-        }
-
-        if (best.market === "Sieg Auswärts") {
-          return o.market === "h2h" && o.outcome === match.away;
-        }
-
-        if (best.market === "Unentschieden") {
-          return o.market === "h2h" &&
-            (o.outcome === "Draw" || o.outcome === "Unentschieden");
-        }
-
-        if (best.market === "Über 2.5 Tore") {
-          return o.market === "totals" &&
-            o.outcome.toLowerCase().includes("over");
-        }
-
-        if (best.market === "Unter 2.5 Tore") {
-          return o.market === "totals" &&
-            o.outcome.toLowerCase().includes("under");
-        }
-
-        return false;
-      });
-
-      if (mapped?.price) {
-        marketOdds = mapped.price;
-        impliedProbability = 100 / mapped.price;
-        bestEdge = best.prob - impliedProbability;
-      }
-    }
-
     const probabilityEdge = Math.max(0, best.prob - 50);
     const xgEdge = Math.abs(homeXg - awayXg) * 10;
     const totalGoalsSignal = Math.abs(homeXg + awayXg - 2.5) * 8;
-    const edgeBonus = Math.max(0, bestEdge) * 1.35;
     const dataBonus = dataQuality >= 0.85 ? 3 : dataQuality >= 0.65 ? 1 : -2;
 
     const valueScore = Math.round(
-      (probabilityEdge +
-        xgEdge +
-        totalGoalsSignal +
-        edgeBonus +
-        dataBonus) *
+      (probabilityEdge + xgEdge + totalGoalsSignal + dataBonus) *
         dataQuality *
         marketPenalty
     );
@@ -496,11 +452,8 @@ export function buildPredictions(matches: MatchInput[], now = new Date()) {
 
     const reason =
       `${m.home} xG ${homeXg.toFixed(2)} vs ${m.away} xG ${awayXg.toFixed(2)}. ` +
-      `Modell nutzt Liga-Schnitt, Heim/Auswärtswerte, letzte 5/10 Spiele, Elo, Gegnerstärke, Form und Marktvergleich. ` +
-      `Stärkster Markt: ${best.market}. ` +
-      (bestEdge > 0
-        ? `Value Edge: ${bestEdge.toFixed(1)}%.`
-        : `Kein klarer Marktfehler erkannt.`);
+      `Modell nutzt Liga-Schnitt, Heim/Auswärtswerte, letzte 5/10 Spiele, Elo, Gegnerstärke und Form. ` +
+      `Stärkster Markt: ${best.market}.`;
 
     return {
       id: m.id,
