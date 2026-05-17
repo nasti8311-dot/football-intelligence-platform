@@ -232,7 +232,6 @@ export function buildPredictions(matches: MatchInput[], now = new Date()) {
         recentGf: [],
         recentGa: [],
         recentPoints: [],
-        recentOpponentElo: [],
       });
     }
 
@@ -300,22 +299,18 @@ export function buildPredictions(matches: MatchInput[], now = new Date()) {
     h.recentGf.push(hg);
     h.recentGa.push(ag);
     h.recentPoints.push(hPoints);
-    h.recentOpponentElo.push(aElo);
 
     a.recentGf.push(ag);
     a.recentGa.push(hg);
     a.recentPoints.push(aPoints);
-    a.recentOpponentElo.push(hElo);
 
     h.recentGf = h.recentGf.slice(-10);
     h.recentGa = h.recentGa.slice(-10);
     h.recentPoints = h.recentPoints.slice(-10);
-    h.recentOpponentElo = h.recentOpponentElo.slice(-10);
 
     a.recentGf = a.recentGf.slice(-10);
     a.recentGa = a.recentGa.slice(-10);
     a.recentPoints = a.recentPoints.slice(-10);
-    a.recentOpponentElo = a.recentOpponentElo.slice(-10);
 
     form.get(homeKey)!.push({
       opponent: m.away,
@@ -353,36 +348,22 @@ export function buildPredictions(matches: MatchInput[], now = new Date()) {
     const aAwayAttack = a.awayPlayed ? a.awayGf / a.awayPlayed : a.played ? a.gf / a.played : af.attack;
     const aAwayDefense = a.awayPlayed ? a.awayGa / a.awayPlayed : a.played ? a.ga / a.played : af.defense;
 
-    const hRecentAttack10 = mean(h.recentGf, hHomeAttack);
-    const hRecentDefense10 = mean(h.recentGa, hHomeDefense);
-    const aRecentAttack10 = mean(a.recentGf, aAwayAttack);
-    const aRecentDefense10 = mean(a.recentGa, aAwayDefense);
+    const hRecentAttack = mean(h.recentGf, hHomeAttack);
+    const hRecentDefense = mean(h.recentGa, hHomeDefense);
+    const aRecentAttack = mean(a.recentGf, aAwayAttack);
+    const aRecentDefense = mean(a.recentGa, aAwayDefense);
 
-    const hRecentAttack5 = mean(h.recentGf.slice(-5), hRecentAttack10);
-    const hRecentDefense5 = mean(h.recentGa.slice(-5), hRecentDefense10);
-    const aRecentAttack5 = mean(a.recentGf.slice(-5), aRecentAttack10);
-    const aRecentDefense5 = mean(a.recentGa.slice(-5), aRecentDefense10);
+    const hAttackBlend = hHomeAttack * 0.55 + hRecentAttack * 0.45;
+    const hDefenseBlend = hHomeDefense * 0.55 + hRecentDefense * 0.45;
 
-    const hAttackBlend = hHomeAttack * 0.45 + hRecentAttack10 * 0.25 + hRecentAttack5 * 0.30;
-    const hDefenseBlend = hHomeDefense * 0.45 + hRecentDefense10 * 0.25 + hRecentDefense5 * 0.30;
-
-    const aAttackBlend = aAwayAttack * 0.45 + aRecentAttack10 * 0.25 + aRecentAttack5 * 0.30;
-    const aDefenseBlend = aAwayDefense * 0.45 + aRecentDefense10 * 0.25 + aRecentDefense5 * 0.30;
+    const aAttackBlend = aAwayAttack * 0.55 + aRecentAttack * 0.45;
+    const aDefenseBlend = aAwayDefense * 0.55 + aRecentDefense * 0.45;
 
     const hElo = elo.get(homeKey) ?? hf.elo;
     const aElo = elo.get(awayKey) ?? af.elo;
 
-    const hOppElo = mean(h.recentOpponentElo, 1500);
-    const aOppElo = mean(a.recentOpponentElo, 1500);
-
-    const hScheduleAdj = clamp((hOppElo - 1500) / 700, -0.18, 0.18);
-    const aScheduleAdj = clamp((aOppElo - 1500) / 700, -0.18, 0.18);
-
-    const hRecentPpg5 = mean(h.recentPoints.slice(-5), hWeightedPpg);
-    const aRecentPpg5 = mean(a.recentPoints.slice(-5), aWeightedPpg);
-
     const eloDiff = clamp((hElo - aElo) / 500, -0.7, 0.7);
-    const formEdge = clamp(((hWeightedPpg * 0.55 + hRecentPpg5 * 0.45) - (aWeightedPpg * 0.55 + aRecentPpg5 * 0.45)) / 3, -0.45, 0.45);
+    const formEdge = clamp((hWeightedPpg - aWeightedPpg) / 3, -0.4, 0.4);
 
     const homeAttackStrength = clamp(hAttackBlend / lb.homeGoals, 0.45, 2.25);
     const awayDefenseWeakness = clamp(aDefenseBlend / lb.homeGoals, 0.45, 2.25);
@@ -391,18 +372,16 @@ export function buildPredictions(matches: MatchInput[], now = new Date()) {
     const homeDefenseWeakness = clamp(hDefenseBlend / lb.awayGoals, 0.45, 2.25);
 
     let homeXg = lb.homeGoals *
-      Math.pow(homeAttackStrength, 0.66) *
-      Math.pow(awayDefenseWeakness, 0.50) *
-      (1 + eloDiff * 0.26) *
-      (1 + formEdge * 0.20) *
-      (1 + hScheduleAdj * 0.35 - aScheduleAdj * 0.20);
+      Math.pow(homeAttackStrength, 0.62) *
+      Math.pow(awayDefenseWeakness, 0.48) *
+      (1 + eloDiff * 0.24) *
+      (1 + formEdge * 0.18);
 
     let awayXg = lb.awayGoals *
-      Math.pow(awayAttackStrength, 0.66) *
-      Math.pow(homeDefenseWeakness, 0.50) *
-      (1 - eloDiff * 0.24) *
-      (1 - formEdge * 0.17) *
-      (1 + aScheduleAdj * 0.35 - hScheduleAdj * 0.20);
+      Math.pow(awayAttackStrength, 0.62) *
+      Math.pow(homeDefenseWeakness, 0.48) *
+      (1 - eloDiff * 0.22) *
+      (1 - formEdge * 0.15);
 
     homeXg = clamp(homeXg, 0.25, 3.4);
     awayXg = clamp(awayXg, 0.20, 3.1);
@@ -433,12 +412,11 @@ export function buildPredictions(matches: MatchInput[], now = new Date()) {
         : 1.04;
 
     const probabilityEdge = Math.max(0, best.prob - 50);
-    const xgEdge = Math.abs(homeXg - awayXg) * 10;
-    const totalGoalsSignal = Math.abs(homeXg + awayXg - 2.5) * 8;
-    const dataBonus = dataQuality >= 0.85 ? 3 : dataQuality >= 0.65 ? 1 : -2;
+    const xgEdge = Math.abs(homeXg - awayXg) * 9;
+    const totalGoalsSignal = Math.abs(homeXg + awayXg - 2.5) * 7;
 
     const valueScore = Math.round(
-      (probabilityEdge + xgEdge + totalGoalsSignal + dataBonus) *
+      (probabilityEdge + xgEdge + totalGoalsSignal) *
         dataQuality *
         marketPenalty
     );
@@ -452,7 +430,7 @@ export function buildPredictions(matches: MatchInput[], now = new Date()) {
 
     const reason =
       `${m.home} xG ${homeXg.toFixed(2)} vs ${m.away} xG ${awayXg.toFixed(2)}. ` +
-      `Modell nutzt Liga-Schnitt, Heim/Auswärtswerte, letzte 5/10 Spiele, Elo, Gegnerstärke und Form. ` +
+      `Modell nutzt Liga-Schnitt, Heim/Auswärtswerte, letzte 10 Spiele, Elo und Form. ` +
       `Stärkster Markt: ${best.market}.`;
 
     return {
