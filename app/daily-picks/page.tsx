@@ -228,7 +228,21 @@ export default async function DailyPicksPage() {
                     </Link>
                   </div>
 
-                  <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-4">
+                  <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-5">
+                    <div className="rounded-2xl bg-slate-950/60 p-3">
+                      <p className="text-[11px] uppercase tracking-[0.2em] text-slate-500">
+                        Risk Profile
+                      </p>
+                      <p className={`mt-1 text-sm font-black ${
+                        p.confidence === "High"
+                          ? "text-emerald-300"
+                          : p.confidence === "Medium"
+                          ? "text-yellow-300"
+                          : "text-red-300"
+                      }`}>
+                        {p.confidence}
+                      </p>
+                    </div>
                     <div className="rounded-2xl bg-slate-950/60 p-3">
                       <p className="text-[11px] uppercase tracking-[0.2em] text-slate-500">
                         Prediction Details

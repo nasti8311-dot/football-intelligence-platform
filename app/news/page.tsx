@@ -153,7 +153,7 @@ export default async function NewsPage() {
                   <div className="mt-5 space-y-3">
                     {news.length === 0 ? (
                       <div className="rounded-2xl bg-white/5 p-4 text-sm text-slate-400">
-                        Noch keine News gespeichert. Öffne zuerst <code>/api/cron/sync-news</code>.
+                        Noch keine gespeicherten News für dieses Spiel. Der tägliche News-Sync sammelt automatisch relevante Artikel, sobald News verfügbar sind.
                       </div>
                     ) : (
                       news.map((n: any) => (
