@@ -6,19 +6,65 @@ const prisma = new PrismaClient();
 function slug(s) {
   return String(s || "")
     .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
 }
 
 function parseCSV(text) {
   const lines = text.trim().split(/\r?\n/);
-  const headers = lines[0].split(",").map(h => h.trim());
+  const headers = lines[0].split(",").map((h) => h.trim());
 
-  return lines.slice(1).map(line => {
+  return lines.slice(1).map((line) => {
     const values = line.split(",");
     const row = {};
-    headers.forEach((h, i) => row[h] = values[i]);
+    headers.forEach((h, i) => {
+      row[h] = values[i]?.trim();
+    });
     return row;
+  });
+}
+
+function parseDate(date, time = "15:00") {
+  let d, m, y;
+
+  if (date.includes("/")) {
+    [d, m, y] = date.split("/");
+  } else {
+    const parts = date.split("-");
+    if (parts[0].length === 4) {
+      [y, m, d] = parts;
+    } else {
+      [d, m, y] = parts;
+    }
+  }
+
+  if (y.length === 2) y = "20" + y;
+
+  return new Date(`${y}-${m.padStart(2, "0")}-${d.padStart(2, "0")}T${time}:00.000Z`);
+}
+
+async function upsertTeam(name) {
+  const id = slug(name);
+
+  return prisma.team.upsert({
+    where: { id },
+    update: {
+      name,
+      shortName: name,
+    },
+    create: {
+      id,
+      name,
+      shortName: name,
+      attack: 50,
+      defense: 50,
+      elo: 1500,
+      form: 0,
+      xgFor: 0,
+      xgAgainst: 0,
+    },
   });
 }
 
@@ -47,12 +93,7 @@ async function main() {
       continue;
     }
 
-    const [d, m, y] = date.includes("/")
-      ? date.split("/")
-      : date.split("-").reverse();
-
-    const year = y.length === 2 ? `20${y}` : y;
-    const kickoff = new Date(`${year}-${m}-${d}T${time}:00Z`);
+    const kickoff = parseDate(date, time);
 
     const league = await prisma.league.upsert({
       where: { code: div },
@@ -64,28 +105,18 @@ async function main() {
       },
     });
 
-    const homeTeam = await prisma.team.upsert({
-      where: { id: slug(home) },
-      update: { name: home },
-      create: {
-        id: slug(home),
-        name: home,
-      },
-    });
+    const homeTeam = await upsertTeam(home);
+    const awayTeam = await upsertTeam(away);
 
-    const awayTeam = await prisma.team.upsert({
-      where: { id: slug(away) },
-      update: { name: away },
-      create: {
-        id: slug(away),
-        name: away,
-      },
-    });
-
-    const sourceId = `${div}-fixture-${date}-${slug(home)}-${slug(away)}`;
+    const sourceId = `${div}-fixture-${date}-${time}-${slug(home)}-${slug(away)}`;
 
     await prisma.match.upsert({
-      where: { sourceId },
+      where: {
+        source_sourceId: {
+          source: "fixture-import",
+          sourceId,
+        },
+      },
       update: {
         kickoff,
         status: "SCHEDULED",
@@ -110,6 +141,14 @@ async function main() {
   }
 
   console.log({ imported, skipped });
+
+  const upcoming = await prisma.match.count({
+    where: {
+      kickoff: { gt: new Date() },
+    },
+  });
+
+  console.log("Upcoming now:", upcoming);
 }
 
 main()
