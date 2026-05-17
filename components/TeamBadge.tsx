@@ -6,39 +6,46 @@ type Props = {
 function logoFor(team: string) {
   const key = team.toLowerCase();
 
-  if (key.includes("arsenal")) return "/logos/arsenal.svg";
-  if (key.includes("liverpool")) return "/logos/liverpool.svg";
-  if (key.includes("manchester city") || key.includes("man city") || key === "city") return "/logos/manchester-city.svg";
-  if (key.includes("chelsea")) return "/logos/chelsea.svg";
-  if (key.includes("tottenham")) return "/logos/tottenham.svg";
-  if (key.includes("newcastle")) return "/logos/newcastle.svg";
-  if (key.includes("west ham")) return "/logos/west-ham.svg";
-  if (key.includes("everton")) return "/logos/everton.svg";
-  if (key.includes("crystal palace")) return "/logos/crystal-palace.svg";
-  if (key.includes("brighton")) return "/logos/brighton.svg";
-  if (key.includes("wolves") || key.includes("wolverhampton")) return "/logos/wolves.svg";
-  if (key.includes("fulham")) return "/logos/fulham.svg";
-  if (key.includes("bournemouth")) return "/logos/bournemouth.svg";
-  if (key.includes("brentford")) return "/logos/brentford.svg";
-  if (key.includes("leeds")) return "/logos/leeds.svg";
-  if (key.includes("burnley")) return "/logos/burnley.png";
-  if (key.includes("aston villa")) return "/logos/aston-villa.svg";
+  // EPL
+  if (key.includes("arsenal")) return "https://crests.football-data.org/57.png";
+  if (key.includes("aston villa")) return "https://crests.football-data.org/58.png";
+  if (key.includes("chelsea")) return "https://crests.football-data.org/61.png";
+  if (key.includes("liverpool")) return "https://crests.football-data.org/64.png";
+  if (key.includes("manchester city") || key.includes("man city")) return "https://crests.football-data.org/65.png";
+  if (key.includes("manchester united")) return "https://crests.football-data.org/66.png";
+  if (key.includes("newcastle")) return "https://crests.football-data.org/67.png";
+  if (key.includes("tottenham")) return "https://crests.football-data.org/73.png";
+  if (key.includes("everton")) return "https://crests.football-data.org/62.png";
+  if (key.includes("west ham")) return "https://crests.football-data.org/563.png";
+  if (key.includes("brighton")) return "https://crests.football-data.org/397.png";
+  if (key.includes("wolves") || key.includes("wolverhampton")) return "https://crests.football-data.org/76.png";
+  if (key.includes("crystal palace")) return "https://crests.football-data.org/354.png";
+  if (key.includes("brentford")) return "https://crests.football-data.org/402.png";
+  if (key.includes("fulham")) return "https://crests.football-data.org/63.png";
+  if (key.includes("bournemouth")) return "https://crests.football-data.org/1044.png";
+  if (key.includes("burnley")) return "https://crests.football-data.org/328.png";
+  if (key.includes("leeds")) return "https://crests.football-data.org/341.png";
 
-  if (key.includes("bayern")) return "/logos/bayern.svg";
-  if (key.includes("dortmund")) return "/logos/dortmund.svg";
-  if (key.includes("leverkusen")) return "/logos/leverkusen.svg";
-  if (key.includes("leipzig")) return "/logos/leipzig.svg";
+  // Bundesliga
+  if (key.includes("bayern")) return "https://crests.football-data.org/5.png";
+  if (key.includes("dortmund")) return "https://crests.football-data.org/4.png";
+  if (key.includes("leverkusen")) return "https://crests.football-data.org/3.png";
+  if (key.includes("leipzig")) return "https://crests.football-data.org/721.png";
 
-  if (key.includes("real madrid")) return "/logos/real-madrid.svg";
-  if (key.includes("barcelona")) return "/logos/barcelona.svg";
-  if (key.includes("atletico")) return "/logos/atletico.svg";
+  // Spain
+  if (key.includes("real madrid")) return "https://crests.football-data.org/86.png";
+  if (key.includes("barcelona")) return "https://crests.football-data.org/81.png";
+  if (key.includes("atletico")) return "https://crests.football-data.org/78.png";
 
-  if (key.includes("psg") || key.includes("paris")) return "/logos/psg.svg";
-  if (key.includes("juventus")) return "/logos/juventus.svg";
-  if (key.includes("inter")) return "/logos/inter.svg";
-  if (key.includes("milan") && !key.includes("inter")) return "/logos/milan.svg";
-  if (key.includes("napoli")) return "/logos/napoli.svg";
-  if (key.includes("roma")) return "/logos/roma.svg";
+  // Italy
+  if (key.includes("juventus")) return "https://crests.football-data.org/109.png";
+  if (key.includes("inter")) return "https://crests.football-data.org/108.png";
+  if (key.includes("milan") && !key.includes("inter")) return "https://crests.football-data.org/98.png";
+  if (key.includes("napoli")) return "https://crests.football-data.org/113.png";
+  if (key.includes("roma")) return "https://crests.football-data.org/100.png";
+
+  // France
+  if (key.includes("psg") || key.includes("paris")) return "https://crests.football-data.org/524.png";
 
   return null;
 }
@@ -46,25 +53,23 @@ function logoFor(team: string) {
 export default function TeamBadge({ team, size = 44 }: Props) {
   const logo = logoFor(team);
 
-  if (logo) {
-    return (
-      <div
-        className="flex items-center justify-center rounded-full bg-white p-2 shadow-2xl ring-2 ring-white/25"
-        style={{ width: size, height: size, minWidth: size }}
-        title={team}
-      >
-        <img src={logo} alt={team} className="h-full w-full object-contain" />
-      </div>
-    );
-  }
-
   return (
     <div
-      className="flex items-center justify-center rounded-full bg-gradient-to-br from-cyan-400 to-emerald-400 font-black text-slate-950 shadow-2xl ring-2 ring-white/25"
+      className="flex items-center justify-center overflow-hidden rounded-full bg-white shadow-2xl ring-2 ring-white/20"
       style={{ width: size, height: size, minWidth: size }}
       title={team}
     >
-      {team.slice(0, 2).toUpperCase()}
+      {logo ? (
+        <img
+          src={logo}
+          alt={team}
+          className="h-full w-full object-contain bg-white p-1"
+        />
+      ) : (
+        <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-cyan-400 to-emerald-400 font-black text-slate-950">
+          {team.slice(0, 2).toUpperCase()}
+        </div>
+      )}
     </div>
   );
 }
