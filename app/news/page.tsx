@@ -37,7 +37,10 @@ export default async function NewsPage() {
     awayGoals: m.awayGoals,
   }));
 
-  const predictions = buildPredictions(matches)
+  const dayStart = new Date();
+  dayStart.setHours(0, 0, 0, 0);
+
+  const predictions = buildPredictions(matches, dayStart)
     .filter((p) => p.kickoff && dateKey(new Date(p.kickoff)) === today)
     .sort((a, b) => {
       if (b.valueScore !== a.valueScore) return b.valueScore - a.valueScore;
