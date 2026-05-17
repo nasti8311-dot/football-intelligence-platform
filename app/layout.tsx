@@ -67,6 +67,7 @@ const nav = [
     title: "AI Tools",
     items: [
       ["/prediction-center", "Predictions"],
+      ["/predictions-hub", "Predictions Hub"],
       ["/best-predictions", "Best Predictions"],
       ["/prediction-performance", "Performance"],
       ["/match-center", "Match Center"],
