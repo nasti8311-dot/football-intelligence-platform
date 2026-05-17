@@ -47,12 +47,18 @@ export default async function NewsPage() {
 
   const ids = predictions.map((p) => p.id);
 
-  const newsRows: any[] = ids.length
-    ? await prisma.$queryRawUnsafe(
-        `SELECT * FROM "MatchNews" WHERE "matchId" = ANY($1) ORDER BY "publishedAt" DESC NULLS LAST`,
-        ids
-      )
-    : [];
+  let newsRows: any[] = [];
+
+  try {
+    newsRows = ids.length
+      ? await prisma.$queryRawUnsafe(
+          `SELECT * FROM "MatchNews" WHERE "matchId" = ANY($1) ORDER BY "publishedAt" DESC NULLS LAST`,
+          ids
+        )
+      : [];
+  } catch (error) {
+    newsRows = [];
+  }
 
   const newsMap = new Map<string, any[]>();
 
