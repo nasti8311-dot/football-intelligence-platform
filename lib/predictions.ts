@@ -445,6 +445,12 @@ export function buildPredictions(matches: MatchInput[], now = new Date()) {
     const hRecentPpg5 = mean(h.recentPoints.slice(-5), hWeightedPpg);
     const aRecentPpg5 = mean(a.recentPoints.slice(-5), aWeightedPpg);
 
+    const homeWinRate = h.homePlayed ? h.homeWins / h.homePlayed : 0.5;
+    const awayWinRate = a.awayPlayed ? a.awayWins / a.awayPlayed : 0.5;
+
+    const homeTableStrength = clamp((homeWinRate - 0.5) * 1.2, -0.25, 0.35);
+    const awayTableStrength = clamp((awayWinRate - 0.5) * 1.2, -0.25, 0.35);
+
     const eloDiff = clamp((hElo - aElo) / 500, -0.7, 0.7);
     const formEdge = clamp(((hWeightedPpg * 0.55 + hRecentPpg5 * 0.45) - (aWeightedPpg * 0.55 + aRecentPpg5 * 0.45)) / 3, -0.45, 0.45);
 
