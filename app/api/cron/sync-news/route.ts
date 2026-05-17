@@ -100,6 +100,7 @@ export async function GET() {
     away: m.awayTeam?.name || m.awayTeamId,
     homeGoals: m.homeGoals,
     awayGoals: m.awayGoals,
+    odds: (m as any).bookmakerOdds || [],
   }));
 
   const dayStart = new Date();
