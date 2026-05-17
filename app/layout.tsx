@@ -1,3 +1,4 @@
+import MobileBottomNav from "@/components/MobileBottomNav";
 import Footer from "@/components/Footer";
 import SidebarStatus from "@/components/SidebarStatus";
 import TopBar from "@/components/TopBar";
@@ -156,6 +157,7 @@ export default function RootLayout({
 
             {children}
             <Footer />
+            <MobileBottomNav />
           </main>
         </div>
       </body>
