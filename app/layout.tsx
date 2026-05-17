@@ -70,6 +70,7 @@ const nav = [
       ["/predictions-hub", "Predictions Hub"],
       ["/best-predictions", "Best Predictions"],
       ["/prediction-performance", "Performance"],
+      ["/elo-ratings", "Elo Ratings"],
       ["/match-center", "Match Center"],
       ["/match-room", "Match Room"],
       ["/ai-scout-report", "Scout Reports"],
