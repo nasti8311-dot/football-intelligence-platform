@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import TeamBadge from "@/components/TeamBadge";
 import { buildPredictions, topDailyPicks } from "@/lib/predictions";
@@ -8,9 +9,18 @@ function pct(v: number) {
   return `${Math.round(v)}%`;
 }
 
+function dateKey(date: Date) {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Berlin",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(date);
+}
+
 export default async function DailyPicksPage() {
   const rows = await prisma.match.findMany({
-    take: 1800,
+    take: 2500,
     orderBy: { kickoff: "asc" },
     include: { homeTeam: true, awayTeam: true, league: true },
   });
@@ -25,27 +35,24 @@ export default async function DailyPicksPage() {
     awayGoals: m.awayGoals,
   }));
 
-  const todayKey = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Europe/Berlin",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date());
+  const allPredictions = buildPredictions(matches);
+  const today = dateKey(new Date());
 
-  const predictions = buildPredictions(matches).filter((p) => {
+  const todayPredictions = allPredictions.filter((p) => {
     if (!p.kickoff) return false;
-
-    const matchKey = new Intl.DateTimeFormat("en-CA", {
-      timeZone: "Europe/Berlin",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    }).format(new Date(p.kickoff));
-
-    return matchKey === todayKey;
+    return dateKey(new Date(p.kickoff)) === today;
   });
 
-  const picks = topDailyPicks(predictions, 10);
+  const todayPicks = topDailyPicks(todayPredictions, 10);
+
+  const fillPicks = allPredictions
+    .filter((p) => !todayPicks.some((x) => x.id === p.id))
+    .sort((a, b) => {
+      if (b.valueScore !== a.valueScore) return b.valueScore - a.valueScore;
+      return b.bestProbability - a.bestProbability;
+    });
+
+  const picks = [...todayPicks, ...fillPicks].slice(0, 10);
 
   return (
     <main className="min-h-screen stadium-page px-4 pb-28 pt-4 text-white md:px-6">
@@ -54,84 +61,141 @@ export default async function DailyPicksPage() {
           <p className="text-xs uppercase tracking-[0.3em] text-cyan-300">
             Daily Top 10
           </p>
-          <h1 className="page-title mt-4 text-4xl font-black md:text-6xl">
-            Die besten Picks des Tages
+
+          <h1 className="page-title mt-4 text-4xl font-black leading-tight md:text-6xl">
+            10 beste Football Picks
           </h1>
+
           <p className="mt-4 max-w-2xl text-slate-300">
-            Nur Spiele, die heute stattfinden — sortiert nach Value Score,
-            Confidence, Elo, Form, Heim-/Auswärtsprofil und Poisson-Torverteilung.
+            Jeden Tag 10 Picks: bevorzugt heutige Spiele. Wenn heute weniger
+            verfügbar sind, füllen wir mit den stärksten kommenden Value Picks auf.
           </p>
 
           <div className="mt-6 grid grid-cols-3 gap-3">
             <Top label="Picks" value={String(picks.length)} />
-            <Top label="Top Chance" value={picks[0] ? pct(picks[0].bestProbability) : "0%"} />
+            <Top label="Heute" value={String(todayPicks.length)} />
             <Top label="Modell" value="Elo+" />
+          </div>
+        </section>
+
+        <section className="glass-card rounded-[2rem] border border-cyan-400/20 bg-gradient-to-r from-cyan-400/10 to-emerald-400/10 p-5">
+          <div className="flex items-center gap-4">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-400 text-3xl">
+              🏆
+            </div>
+
+            <div>
+              <p className="text-xs uppercase tracking-[0.25em] text-cyan-300">
+                Coming Soon
+              </p>
+              <h2 className="text-2xl font-black">
+                WM 2026 Predictions
+              </h2>
+              <p className="mt-1 text-sm text-slate-300">
+                Bald mit täglichen World Cup Picks, Gruppenphase, Knockout-Wahrscheinlichkeiten und Spezialmärkten.
+              </p>
+            </div>
           </div>
         </section>
 
         {picks.length === 0 ? (
           <section className="glass-card rounded-3xl p-8 text-center">
-            <h2 className="text-3xl font-black">Keine starken Picks gefunden</h2>
+            <h2 className="text-3xl font-black">Keine Picks gefunden</h2>
             <p className="mt-3 text-slate-300">
-              Heute wurden keine kommenden Spiele mit genug Value gefunden. Synchronisiere Fixtures oder warte auf den nächsten Spieltag.
+              Synchronisiere Fixtures oder prüfe deine Datenquelle.
             </p>
           </section>
         ) : (
           <section className="grid gap-5">
-            {picks.map((p, index) => (
-              <article key={p.id} className="glass-card rounded-[2rem] p-5">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.2em] text-cyan-300">
-                      #{index + 1} · {p.league}
-                    </p>
-                    <p className="mt-1 text-xs text-slate-500">
-                      {p.kickoff ? new Date(p.kickoff).toLocaleDateString("de-DE") : "No date"}
-                    </p>
+            {picks.map((p, index) => {
+              const isToday = p.kickoff && dateKey(new Date(p.kickoff)) === today;
+
+              return (
+                <article key={p.id} className="glass-card rounded-[2rem] p-5">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.2em] text-cyan-300">
+                        #{index + 1} · {p.league}
+                      </p>
+                      <p className="mt-1 text-xs text-slate-500">
+                        {p.kickoff
+                          ? new Date(p.kickoff).toLocaleDateString("de-DE")
+                          : "No date"}
+                      </p>
+                    </div>
+
+                    <div className="flex gap-2">
+                      {!isToday && (
+                        <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-bold text-slate-300">
+                          Next
+                        </span>
+                      )}
+                      <span
+                        className={`rounded-full px-3 py-1 text-xs font-bold ${
+                          p.confidence === "High"
+                            ? "bg-emerald-400/15 text-emerald-300"
+                            : p.confidence === "Medium"
+                            ? "bg-yellow-400/15 text-yellow-300"
+                            : "bg-red-400/15 text-red-300"
+                        }`}
+                      >
+                        {p.confidence}
+                      </span>
+                    </div>
                   </div>
 
-                  <span className="rounded-full bg-emerald-400/15 px-3 py-1 text-xs font-bold text-emerald-300">
-                    {p.confidence}
-                  </span>
-                </div>
+                  <div className="mt-6 flex items-center justify-between gap-4">
+                    <Link
+                      href={`/team-form?team=${encodeURIComponent(p.home)}`}
+                      className="flex flex-1 flex-col items-center text-center"
+                    >
+                      <TeamBadge team={p.home} size={66} />
+                      <p className="mt-3 text-sm font-black">{p.home}</p>
+                      <p className="mt-1 text-[11px] text-cyan-300">
+                        Form ansehen
+                      </p>
+                    </Link>
 
-                <div className="mt-6 flex items-center justify-between gap-4">
-                  <div className="flex flex-1 flex-col items-center text-center">
-                    <TeamBadge team={p.home} size={64} />
-                    <p className="mt-3 text-sm font-black">{p.home}</p>
+                    <div className="text-center">
+                      <p className="text-xs text-slate-500">Top Pick</p>
+                      <p className="mt-1 text-4xl font-black text-cyan-300">
+                        {pct(p.bestProbability)}
+                      </p>
+                      <p className="mt-1 text-xs font-bold text-slate-300">
+                        {p.bestMarket}
+                      </p>
+                    </div>
+
+                    <Link
+                      href={`/team-form?team=${encodeURIComponent(p.away)}`}
+                      className="flex flex-1 flex-col items-center text-center"
+                    >
+                      <TeamBadge team={p.away} size={66} />
+                      <p className="mt-3 text-sm font-black">{p.away}</p>
+                      <p className="mt-1 text-[11px] text-cyan-300">
+                        Form ansehen
+                      </p>
+                    </Link>
                   </div>
 
-                  <div className="text-center">
-                    <p className="text-xs text-slate-500">Top Pick</p>
-                    <p className="mt-1 text-4xl font-black text-cyan-300">
-                      {pct(p.bestProbability)}
+                  <div className="mt-6 grid grid-cols-3 gap-2">
+                    <Market label="1" value={pct(p.homeWin)} tone="cyan" />
+                    <Market label="X" value={pct(p.draw)} tone="slate" />
+                    <Market label="2" value={pct(p.awayWin)} tone="cyan" />
+                    <Market label="Over 2.5" value={pct(p.over25)} tone="green" />
+                    <Market label="Under 2.5" value={pct(p.under25)} tone="blue" />
+                    <Market label="BTTS" value={pct(p.bttsYes)} tone="pink" />
+                  </div>
+
+                  <div className="mt-5 rounded-2xl bg-slate-950/60 p-4">
+                    <p className="text-sm font-bold text-cyan-300">
+                      Begründung
                     </p>
-                    <p className="mt-1 text-xs font-bold text-slate-300">
-                      {p.bestMarket}
-                    </p>
+                    <p className="mt-2 text-sm text-slate-300">{p.reason}</p>
                   </div>
-
-                  <div className="flex flex-1 flex-col items-center text-center">
-                    <TeamBadge team={p.away} size={64} />
-                    <p className="mt-3 text-sm font-black">{p.away}</p>
-                  </div>
-                </div>
-
-                <div className="mt-6 grid grid-cols-3 gap-2">
-                  <Mini label="1" value={pct(p.homeWin)} />
-                  <Mini label="X" value={pct(p.draw)} />
-                  <Mini label="2" value={pct(p.awayWin)} />
-                  <Mini label="Over 2.5" value={pct(p.over25)} />
-                  <Mini label="Under 2.5" value={pct(p.under25)} />
-                  <Mini label="BTTS" value={pct(p.bttsYes)} />
-                </div>
-
-                <div className="mt-5 rounded-2xl bg-slate-950/60 p-4">
-                  <p className="text-sm font-bold text-cyan-300">Begründung</p>
-                  <p className="mt-2 text-sm text-slate-300">{p.reason}</p>
-                </div>
-              </article>
-            ))}
+                </article>
+              );
+            })}
           </section>
         )}
       </div>
@@ -148,11 +212,29 @@ function Top({ label, value }: { label: string; value: string }) {
   );
 }
 
-function Mini({ label, value }: { label: string; value: string }) {
+function Market({
+  label,
+  value,
+  tone,
+}: {
+  label: string;
+  value: string;
+  tone: "cyan" | "green" | "blue" | "pink" | "slate";
+}) {
+  const tones = {
+    cyan: "from-cyan-400/20 to-cyan-400/5 border-cyan-400/20 text-cyan-300",
+    green: "from-emerald-400/20 to-emerald-400/5 border-emerald-400/20 text-emerald-300",
+    blue: "from-sky-400/20 to-sky-400/5 border-sky-400/20 text-sky-300",
+    pink: "from-fuchsia-400/20 to-fuchsia-400/5 border-fuchsia-400/20 text-fuchsia-300",
+    slate: "from-white/10 to-white/5 border-white/10 text-slate-300",
+  };
+
   return (
-    <div className="rounded-2xl bg-slate-950/60 p-3 text-center">
-      <p className="text-[11px] text-slate-500">{label}</p>
-      <p className="mt-1 text-lg font-black text-cyan-300">{value}</p>
+    <div className={`rounded-2xl border bg-gradient-to-br p-3 text-center ${tones[tone]}`}>
+      <p className="text-[11px] font-bold uppercase tracking-wide opacity-80">
+        {label}
+      </p>
+      <p className="mt-1 text-xl font-black">{value}</p>
     </div>
   );
 }

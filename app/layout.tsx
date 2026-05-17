@@ -5,12 +5,11 @@ import MobileBottomNav from "@/components/MobileBottomNav";
 
 export const metadata = {
   title: "Daily Football Predictions",
-  description: "Mobile-first football predictions with probabilities and match insights",
+  description: "Daily top football predictions with odds markets and team form",
 };
 
 const nav = [
-  ["/", "Predictions"],
-  ["/upcoming-predictions", "Upcoming"],
+  ["/", "Top 10"],
   ["/prediction-performance", "Performance"],
   ["/elo-ratings", "Ratings"],
 ];
@@ -33,7 +32,11 @@ export default function RootLayout({
 
             <nav className="hidden gap-3 md:flex">
               {nav.map(([href, label]) => (
-                <Link key={href} href={href} className="rounded-xl px-4 py-2 text-sm font-bold text-slate-300 hover:bg-white/10 hover:text-cyan-300">
+                <Link
+                  key={href}
+                  href={href}
+                  className="rounded-xl px-4 py-2 text-sm font-bold text-slate-300 hover:bg-white/10 hover:text-cyan-300"
+                >
                   {label}
                 </Link>
               ))}
@@ -41,9 +44,7 @@ export default function RootLayout({
           </div>
         </header>
 
-        <main className="relative z-10">
-          {children}
-        </main>
+        <main className="relative z-10">{children}</main>
 
         <MobileBottomNav />
       </body>

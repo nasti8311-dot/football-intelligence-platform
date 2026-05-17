@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 
 const items = [
   ["🏠", "/", "Top 10"],
-  ["📅", "/upcoming-predictions", "Alle"],
   ["📊", "/prediction-performance", "Stats"],
   ["⭐", "/elo-ratings", "Ratings"],
 ];
@@ -15,7 +14,7 @@ export default function MobileBottomNav() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/10 bg-slate-950/95 backdrop-blur-xl md:hidden">
-      <div className="grid grid-cols-4">
+      <div className="grid grid-cols-3">
         {items.map(([icon, href, label]) => {
           const active = pathname === href;
 
