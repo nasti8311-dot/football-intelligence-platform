@@ -68,6 +68,7 @@ const nav = [
     items: [
       ["/prediction-center", "Predictions"],
       ["/best-predictions", "Best Predictions"],
+      ["/prediction-performance", "Performance"],
       ["/match-center", "Match Center"],
       ["/match-room", "Match Room"],
       ["/ai-scout-report", "Scout Reports"],
