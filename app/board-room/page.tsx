@@ -1,95 +1,49 @@
-const metrics = [
-  {
-    title: "Prediction Accuracy",
-    value: "71%",
-    change: "+4.2%",
-  },
-  {
-    title: "Monthly Active Analysts",
-    value: "184",
-    change: "+12%",
-  },
-  {
-    title: "Enterprise Clubs",
-    value: "7",
-    change: "+2",
-  },
-  {
-    title: "Event Processing",
-    value: "2.8M",
-    change: "+18%",
-  },
-];
+import PageHero from "@/components/PageHero";
+import { prisma } from "@/lib/prisma";
 
-const roadmap = [
-  "Live Match AI",
-  "Automated Scouting",
-  "Club Collaboration",
-  "Transfer Intelligence",
-  "Advanced ML Pipelines",
-];
+export const dynamic = "force-dynamic";
 
-export default function BoardRoomPage() {
+export default async function BoardRoomPage() {
+  const [matches, teams, events, leagues] = await Promise.all([
+    prisma.match.count(),
+    prisma.team.count(),
+    prisma.event.count(),
+    prisma.league.count(),
+  ]);
+
+  const items = [
+    ["Platform Readiness", "92%", "Strong demo foundation"],
+    ["Data Coverage", `${events}`, "Tracked football events"],
+    ["Club Coverage", `${teams}`, "Teams in database"],
+    ["Competition Coverage", `${leagues}`, "Leagues imported"],
+  ];
+
   return (
-    <main className="min-h-screen bg-slate-950 p-6 text-white">
+    <main className="min-h-screen stadium-page p-6 text-white">
       <div className="mx-auto max-w-7xl space-y-8">
-        <section>
-          <p className="text-sm text-purple-400">
-            Executive Intelligence
-          </p>
+        <PageHero
+          eyebrow="Executive"
+          title="Board Room"
+          description="A management-ready overview of platform readiness, data scale and business potential."
+        />
 
-          <h1 className="text-5xl font-bold">
-            Board Room
-          </h1>
-
-          <p className="mt-3 max-w-3xl text-slate-400">
-            Strategische Übersicht deiner
-            Football Intelligence Platform.
-          </p>
-        </section>
-
-        <section className="grid gap-4 md:grid-cols-4">
-          {metrics.map((m) => (
-            <div
-              key={m.title}
-              className="rounded-3xl border border-white/10 bg-white/[0.04] p-5"
-            >
-              <p className="text-sm text-slate-400">
-                {m.title}
-              </p>
-
-              <p className="mt-2 text-3xl font-bold">
-                {m.value}
-              </p>
-
-              <p className="mt-2 text-sm text-emerald-300">
-                {m.change}
-              </p>
+        <section className="grid gap-6 md:grid-cols-4">
+          {items.map(([title, value, text]) => (
+            <div key={title} className="glass-card rounded-3xl p-7">
+              <p className="text-sm text-slate-400">{title}</p>
+              <p className="mt-4 text-5xl font-black text-cyan-300">{value}</p>
+              <p className="mt-3 text-slate-300">{text}</p>
             </div>
           ))}
         </section>
 
-        <section className="rounded-3xl border border-white/10 bg-white/[0.04] p-6">
-          <p className="text-sm text-purple-300">
-            Product Roadmap
+        <section className="glass-card rounded-3xl p-8">
+          <h2 className="text-4xl font-black">Executive Takeaway</h2>
+          <p className="mt-4 max-w-4xl text-slate-300">
+            The platform has a strong product foundation: live deployment, database,
+            scouting workflows, club dashboards, match analysis and premium user experience.
+            The next value unlock is real provider data, authentication and monetization.
           </p>
-
-          <h2 className="mt-2 text-3xl font-bold">
-            Strategic Priorities
-          </h2>
-
-          <div className="mt-6 grid gap-4 md:grid-cols-2">
-            {roadmap.map((r) => (
-              <div
-                key={r}
-                className="rounded-2xl bg-slate-900 p-5"
-              >
-                <p className="font-semibold">
-                  {r}
-                </p>
-              </div>
-            ))}
-          </div>
         </section>
       </div>
     </main>
