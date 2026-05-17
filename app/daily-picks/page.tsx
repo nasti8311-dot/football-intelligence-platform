@@ -45,7 +45,35 @@ export default async function DailyPicksPage() {
   const dayStart = new Date();
   dayStart.setHours(0, 0, 0, 0);
 
-  const allPredictions = buildPredictions(matches, dayStart);
+  const matchIds = matches.map((m) => m.id);
+
+  let matchNewsRows: any[] = [];
+  try {
+    matchNewsRows = matchIds.length
+      ? await prisma.$queryRawUnsafe(
+          `SELECT * FROM "MatchNews" WHERE "matchId" = ANY($1) ORDER BY "publishedAt" DESC NULLS LAST`,
+          matchIds
+        )
+      : [];
+  } catch {
+    matchNewsRows = [];
+  }
+
+  const newsByMatch = new Map<string, any[]>();
+  for (const item of matchNewsRows) {
+    const list = newsByMatch.get(item.matchId) || [];
+    if (list.length < 6) {
+      list.push(item);
+      newsByMatch.set(item.matchId, list);
+    }
+  }
+
+  const matchesWithNews = matches.map((m) => ({
+    ...m,
+    news: newsByMatch.get(m.id) || [],
+  }));
+
+  const allPredictions = buildPredictions(matchesWithNews, dayStart);
   const today = dateKey(new Date());
 
   const todayPredictions = allPredictions.filter((p) => {
