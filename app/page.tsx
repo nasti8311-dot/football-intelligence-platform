@@ -130,6 +130,31 @@ export default async function HomePage() {
     }
   }
 
+  function lastTen(team: string) {
+    return past
+      .filter((m) => {
+        const home = m.homeTeam?.name || m.homeTeamId;
+        const away = m.awayTeam?.name || m.awayTeamId;
+        return teamKey(home) === teamKey(team) || teamKey(away) === teamKey(team);
+      })
+      .slice(-10)
+      .reverse()
+      .map((m) => {
+        const home = m.homeTeam?.name || m.homeTeamId;
+        const away = m.awayTeam?.name || m.awayTeamId;
+        const isHome = teamKey(home) === teamKey(team);
+
+        const gf = isHome ? Number(m.homeGoals ?? 0) : Number(m.awayGoals ?? 0);
+        const ga = isHome ? Number(m.awayGoals ?? 0) : Number(m.homeGoals ?? 0);
+
+        return {
+          opponent: isHome ? away : home,
+          result: gf > ga ? "W" : gf < ga ? "L" : "D",
+          score: `${gf}:${ga}`,
+        };
+      });
+  }
+
   const predictions = upcoming.map((m) => {
     const home = m.homeTeam?.name || m.homeTeamId;
     const away = m.awayTeam?.name || m.awayTeamId;
@@ -176,6 +201,8 @@ export default async function HomePage() {
       best,
       markets: mk,
       confidence: best.prob >= 62 ? "High" : best.prob >= 54 ? "Medium" : "Low",
+      homeLast10: lastTen(home),
+      awayLast10: lastTen(away),
     };
   }).sort((a, b) => b.best.prob - a.best.prob);
 
@@ -263,6 +290,11 @@ export default async function HomePage() {
                     Das Modell bewertet daraus 1X2, Tore und BTTS.
                   </p>
                 </div>
+
+                <div className="mt-4 grid gap-3 md:grid-cols-2">
+                  <LastTen title={p.home} games={p.homeLast10} />
+                  <LastTen title={p.away} games={p.awayLast10} />
+                </div>
               </article>
             ))}
           </section>
@@ -277,6 +309,46 @@ function Top({ label, value }: { label: string; value: string }) {
     <div className="rounded-2xl bg-slate-950/60 p-4">
       <p className="text-xs text-slate-500">{label}</p>
       <p className="mt-1 text-xl font-black text-cyan-300">{value}</p>
+    </div>
+  );
+}
+
+function LastTen({
+  title,
+  games,
+}: {
+  title: string;
+  games: { opponent: string; result: string; score: string }[];
+}) {
+  return (
+    <div className="rounded-2xl bg-slate-950/60 p-4">
+      <p className="text-xs font-bold text-slate-400">
+        Letzte 10: {title}
+      </p>
+
+      {games.length === 0 ? (
+        <p className="mt-3 text-xs text-slate-500">
+          Keine Historie gefunden
+        </p>
+      ) : (
+        <div className="mt-3 flex flex-wrap gap-2">
+          {games.map((g, i) => (
+            <div
+              key={`${g.opponent}-${i}`}
+              title={`${g.opponent} ${g.score}`}
+              className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-black ${
+                g.result === "W"
+                  ? "bg-emerald-400 text-slate-950"
+                  : g.result === "D"
+                  ? "bg-yellow-400 text-slate-950"
+                  : "bg-red-400 text-slate-950"
+              }`}
+            >
+              {g.result}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
