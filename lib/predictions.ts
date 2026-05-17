@@ -436,14 +436,14 @@ export function buildPredictions(matches: MatchInput[], now = new Date()) {
     let impliedProbability = null;
     let bestEdge = 0;
 
-    if (match.odds && match.odds.length > 0) {
-      const mapped = match.odds.find((o: any) => {
+    if ((m as any).odds && (m as any).odds.length > 0) {
+      const mapped = (m as any).odds.find((o: any) => {
         if (best.market === "Sieg Heim") {
-          return o.market === "h2h" && o.outcome === match.home;
+          return o.market === "h2h" && o.outcome === m.home;
         }
 
         if (best.market === "Sieg Auswärts") {
-          return o.market === "h2h" && o.outcome === match.away;
+          return o.market === "h2h" && o.outcome === m.away;
         }
 
         if (best.market === "Unentschieden") {
