@@ -48,7 +48,12 @@ export default async function DailyPicksPage() {
     return dateKey(new Date(p.kickoff)) === today;
   });
 
-  const rawPicks = topDailyPicks(todayPredictions, 10);
+  const rawPicks = todayPredictions
+    .sort((a, b) => {
+      if (b.valueScore !== a.valueScore) return b.valueScore - a.valueScore;
+      return b.bestProbability - a.bestProbability;
+    })
+    .slice(0, 10);
 
   const oddsByMatch = new Map(
     rows.map((m: any) => [
