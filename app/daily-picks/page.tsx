@@ -22,7 +22,12 @@ export default async function DailyPicksPage() {
   const rows = await prisma.match.findMany({
     take: 2500,
     orderBy: { kickoff: "asc" },
-    include: { homeTeam: true, awayTeam: true, league: true },
+    include: {
+      homeTeam: true,
+      awayTeam: true,
+      league: true,
+      bookmakerOdds: true,
+    },
   });
 
   const matches = rows.map((m) => ({
@@ -43,7 +48,39 @@ export default async function DailyPicksPage() {
     return dateKey(new Date(p.kickoff)) === today;
   });
 
-  const picks = topDailyPicks(todayPredictions, 10);
+  const rawPicks = topDailyPicks(todayPredictions, 10);
+
+  const oddsByMatch = new Map(
+    rows.map((m: any) => [
+      m.id,
+      m.bookmakerOdds || [],
+    ])
+  );
+
+  const picks = rawPicks.map((p) => {
+    const odds = oddsByMatch.get(p.id) || [];
+    const bestOdds = odds
+      .filter((o: any) => {
+        if (p.bestMarket === "Sieg Heim") return o.market === "h2h" && o.outcome === p.home;
+        if (p.bestMarket === "Sieg Auswärts") return o.market === "h2h" && o.outcome === p.away;
+        if (p.bestMarket === "Unentschieden") return o.market === "h2h" && (o.outcome === "Draw" || o.outcome === "Unentschieden");
+        if (p.bestMarket === "Über 2.5 Tore") return o.market === "totals" && o.outcome.toLowerCase().includes("over");
+        if (p.bestMarket === "Unter 2.5 Tore") return o.market === "totals" && o.outcome.toLowerCase().includes("under");
+        return false;
+      })
+      .sort((a: any, b: any) => b.price - a.price)[0];
+
+    const impliedProb = bestOdds ? Number(bestOdds.impliedProb) * 100 : null;
+    const edge = impliedProb !== null ? p.bestProbability - impliedProb : null;
+
+    return {
+      ...p,
+      oddsPrice: bestOdds ? Number(bestOdds.price) : null,
+      oddsBookmaker: bestOdds ? bestOdds.bookmaker : null,
+      impliedProb,
+      edge,
+    };
+  });
 
   return (
     <main className="min-h-screen stadium-page px-4 pb-28 pt-4 text-white md:px-6">
@@ -183,6 +220,18 @@ export default async function DailyPicksPage() {
                       Begründung
                     </p>
                     <p className="mt-2 text-sm text-slate-300">{p.reason}</p>
+
+                    {p.oddsPrice && (
+                      <div className="mt-4 rounded-2xl bg-cyan-400/10 p-3">
+                        <p className="text-xs font-bold text-cyan-300">
+                          Bookmaker Value
+                        </p>
+                        <p className="mt-1 text-sm text-slate-300">
+                          Quote {p.oddsPrice.toFixed(2)} bei {p.oddsBookmaker}. 
+                          Modell: {pct(p.bestProbability)} · Markt: {p.impliedProb ? pct(p.impliedProb) : "n/a"} · Edge: {p.edge ? `${p.edge.toFixed(1)}%` : "n/a"}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </article>
               );
