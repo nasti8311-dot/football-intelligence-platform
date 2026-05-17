@@ -223,6 +223,44 @@ export default async function DailyPicksPage() {
                     </Link>
                   </div>
 
+                  <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-4">
+                    <div className="rounded-2xl bg-slate-950/60 p-3">
+                      <p className="text-[11px] uppercase tracking-[0.2em] text-slate-500">
+                        Prediction Details
+                      </p>
+                      <p className="mt-1 text-sm font-black text-cyan-300">
+                        {p.bestMarket}
+                      </p>
+                    </div>
+
+                    <div className="rounded-2xl bg-slate-950/60 p-3">
+                      <p className="text-[11px] uppercase tracking-[0.2em] text-slate-500">
+                        Probability
+                      </p>
+                      <p className="mt-1 text-sm font-black text-white">
+                        {Math.round(p.bestProbability)}%
+                      </p>
+                    </div>
+
+                    <div className="rounded-2xl bg-slate-950/60 p-3">
+                      <p className="text-[11px] uppercase tracking-[0.2em] text-slate-500">
+                        Expected Goals
+                      </p>
+                      <p className="mt-1 text-sm font-black text-white">
+                        {p.homeXg.toFixed(1)} : {p.awayXg.toFixed(1)}
+                      </p>
+                    </div>
+
+                    <div className="rounded-2xl bg-slate-950/60 p-3">
+                      <p className="text-[11px] uppercase tracking-[0.2em] text-slate-500">
+                        Tracking
+                      </p>
+                      <p className="mt-1 text-sm font-black text-emerald-300">
+                        LIVE
+                      </p>
+                    </div>
+                  </div>
+
                   <div className="mt-6 grid grid-cols-3 gap-2">
                     <Market label="1" value={pct(p.homeWin)} tone="cyan" />
                     <Market label="X" value={pct(p.draw)} tone="slate" />
@@ -232,11 +270,11 @@ export default async function DailyPicksPage() {
                     <Market label="BTTS" value={pct(p.bttsYes)} tone="pink" />
                   </div>
 
-                  <div className="mt-5 rounded-2xl bg-slate-950/60 p-4">
-                    <p className="text-sm font-bold text-cyan-300">
-                      Begründung
+                  <div className="mt-5 rounded-2xl border border-cyan-400/10 bg-cyan-400/5 p-4">
+                    <p className="text-xs font-black uppercase tracking-[0.2em] text-cyan-300">
+                      Match Insight
                     </p>
-                    <p className="mt-2 text-sm text-slate-300">{p.reason}</p>
+                    <p className="mt-2 text-sm leading-7 text-slate-200">{p.reason}</p>
 
                     {p.oddsPrice && (
                       <div className="mt-4 rounded-2xl bg-cyan-400/10 p-3">
