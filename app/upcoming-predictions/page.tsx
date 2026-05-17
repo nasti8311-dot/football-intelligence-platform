@@ -25,6 +25,49 @@ function teamKey(name: string) {
     .replace(/^-|-$/g, "");
 }
 
+
+function fallbackStrength(name: string) {
+  const key = teamKey(name);
+
+  const elite = [
+    "bayern",
+    "dortmund",
+    "leverkusen",
+    "real-madrid",
+    "barcelona",
+    "arsenal",
+    "liverpool",
+    "city",
+    "chelsea",
+    "psg",
+    "inter",
+    "milan",
+    "juventus",
+  ];
+
+  const strong = [
+    "leipzig",
+    "tottenham",
+    "napoli",
+    "roma",
+    "atletico",
+    "monaco",
+    "marseille",
+    "newcastle",
+    "aston-villa",
+  ];
+
+  if (elite.some((x) => key.includes(x))) {
+    return { ppg: 2.05, attack: 2.0, defense: 0.9 };
+  }
+
+  if (strong.some((x) => key.includes(x))) {
+    return { ppg: 1.65, attack: 1.55, defense: 1.15 };
+  }
+
+  return { ppg: 1.25, attack: 1.2, defense: 1.35 };
+}
+
 function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value));
 }
@@ -113,14 +156,17 @@ export default async function UpcomingPredictionsPage() {
     const h = stats.get(teamKey(home)) || init(teamKey(home));
     const a = stats.get(teamKey(away)) || init(teamKey(away));
 
-    const hPpg = h.played ? h.points / h.played : 1;
-    const aPpg = a.played ? a.points / a.played : 1;
+    const hFallback = fallbackStrength(home);
+    const aFallback = fallbackStrength(away);
 
-    const hAttack = h.played ? h.gf / h.played : 1;
-    const aAttack = a.played ? a.gf / a.played : 1;
+    const hPpg = h.played ? h.points / h.played : hFallback.ppg;
+    const aPpg = a.played ? a.points / a.played : aFallback.ppg;
 
-    const hDefense = h.played ? h.ga / h.played : 1;
-    const aDefense = a.played ? a.ga / a.played : 1;
+    const hAttack = h.played ? h.gf / h.played : hFallback.attack;
+    const aAttack = a.played ? a.gf / a.played : aFallback.attack;
+
+    const hDefense = h.played ? h.ga / h.played : hFallback.defense;
+    const aDefense = a.played ? a.ga / a.played : aFallback.defense;
 
     const homeStrength = 50 + hPpg * 12 + hAttack * 7 - hDefense * 4 + 7;
     const awayStrength = 50 + aPpg * 12 + aAttack * 7 - aDefense * 4;
