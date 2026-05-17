@@ -4,8 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const items = [
-  ["🏠", "/", "Picks"],
-  ["📅", "/upcoming-predictions", "Spiele"],
+  ["🏠", "/", "Top 10"],
+  ["📅", "/upcoming-predictions", "Alle"],
   ["📊", "/prediction-performance", "Stats"],
   ["⭐", "/elo-ratings", "Ratings"],
 ];
