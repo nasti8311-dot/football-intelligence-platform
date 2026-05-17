@@ -8,12 +8,6 @@ export type MatchInput = {
   awayGoals: number | null;
 };
 
-export type FormGame = {
-  opponent: string;
-  result: "W" | "D" | "L";
-  score: string;
-};
-
 export type Prediction = {
   id: string;
   kickoff: Date | null;
@@ -39,6 +33,12 @@ export type Prediction = {
   awayLast10: FormGame[];
 };
 
+export type FormGame = {
+  opponent: string;
+  result: "W" | "D" | "L";
+  score: string;
+};
+
 function clamp(v: number, min: number, max: number) {
   return Math.max(min, Math.min(max, v));
 }
@@ -47,7 +47,7 @@ function teamKey(name: string) {
   return String(name || "")
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[\\u0300-\\u036f]/g, "")
     .replace(/fc|cf|afc|sc|sv|club|football|munchen|muenchen/g, "")
     .replace(/manchester city/g, "city")
     .replace(/fc bayern/g, "bayern")
@@ -67,21 +67,37 @@ function fallbackStrength(name: string) {
   const key = teamKey(name);
 
   const elite = [
-    "bayern", "dortmund", "leverkusen", "real-madrid", "barcelona",
-    "arsenal", "liverpool", "city", "psg", "inter", "juventus",
+    "bayern",
+    "dortmund",
+    "leverkusen",
+    "real-madrid",
+    "barcelona",
+    "arsenal",
+    "liverpool",
+    "city",
+    "psg",
+    "inter",
+    "juventus",
   ];
 
   const strong = [
-    "leipzig", "chelsea", "tottenham", "napoli", "roma",
-    "atletico", "milan", "newcastle", "aston-villa", "monaco",
+    "leipzig",
+    "chelsea",
+    "tottenham",
+    "napoli",
+    "roma",
+    "atletico",
+    "milan",
+    "newcastle",
+    "aston-villa",
   ];
 
   if (elite.some((x) => key.includes(x))) {
-    return { ppg: 2.0, attack: 1.75, defense: 0.95, elo: 1660 };
+    return { ppg: 2.0, attack: 1.9, defense: 0.9, elo: 1660 };
   }
 
   if (strong.some((x) => key.includes(x))) {
-    return { ppg: 1.6, attack: 1.45, defense: 1.15, elo: 1570 };
+    return { ppg: 1.65, attack: 1.55, defense: 1.15, elo: 1570 };
   }
 
   return { ppg: 1.25, attack: 1.2, defense: 1.35, elo: 1500 };
@@ -128,10 +144,6 @@ function expectedElo(a: number, b: number) {
   return 1 / (1 + Math.pow(10, (b - a) / 400));
 }
 
-function mean(values: number[], fallback: number) {
-  return values.length ? values.reduce((a, b) => a + b, 0) / values.length : fallback;
-}
-
 export function buildPredictions(matches: MatchInput[], now = new Date()) {
   const past = matches
     .filter(
@@ -152,53 +164,6 @@ export function buildPredictions(matches: MatchInput[], now = new Date()) {
     )
     .sort((a, b) => Number(a.kickoff) - Number(b.kickoff));
 
-  const leagueStats = new Map<string, any>();
-
-  for (const m of past) {
-    if (!leagueStats.has(m.league)) {
-      leagueStats.set(m.league, {
-        matches: 0,
-        homeGoals: 0,
-        awayGoals: 0,
-        totalGoals: 0,
-        btts: 0,
-        over25: 0,
-      });
-    }
-
-    const l = leagueStats.get(m.league);
-    const hg = Number(m.homeGoals);
-    const ag = Number(m.awayGoals);
-
-    l.matches++;
-    l.homeGoals += hg;
-    l.awayGoals += ag;
-    l.totalGoals += hg + ag;
-    if (hg > 0 && ag > 0) l.btts++;
-    if (hg + ag >= 3) l.over25++;
-  }
-
-  function leagueBase(league: string) {
-    const l = leagueStats.get(league);
-    if (!l || l.matches < 20) {
-      return {
-        homeGoals: 1.42,
-        awayGoals: 1.15,
-        avgGoals: 2.57,
-        over25: 0.52,
-        btts: 0.51,
-      };
-    }
-
-    return {
-      homeGoals: clamp(l.homeGoals / l.matches, 0.9, 2.2),
-      awayGoals: clamp(l.awayGoals / l.matches, 0.75, 1.9),
-      avgGoals: clamp(l.totalGoals / l.matches, 1.8, 3.8),
-      over25: l.over25 / l.matches,
-      btts: l.btts / l.matches,
-    };
-  }
-
   const elo = new Map<string, number>();
   const stats = new Map<string, any>();
   const form = new Map<string, FormGame[]>();
@@ -215,23 +180,14 @@ export function buildPredictions(matches: MatchInput[], now = new Date()) {
         points: 0,
         gf: 0,
         ga: 0,
-
         homePlayed: 0,
         homeGf: 0,
         homeGa: 0,
-        homePoints: 0,
-
         awayPlayed: 0,
         awayGf: 0,
         awayGa: 0,
-        awayPoints: 0,
-
         weightedPoints: 0,
         weightedGames: 0,
-
-        recentGf: [],
-        recentGa: [],
-        recentPoints: [],
       });
     }
 
@@ -241,40 +197,36 @@ export function buildPredictions(matches: MatchInput[], now = new Date()) {
   }
 
   past.forEach((m, index) => {
-    const homeKey = teamKey(m.home);
-    const awayKey = teamKey(m.away);
+    const home = m.home;
+    const away = m.away;
+    const homeKey = teamKey(home);
+    const awayKey = teamKey(away);
 
-    const h = init(m.home);
-    const a = init(m.away);
+    const h = init(home);
+    const a = init(away);
 
-    const hg = Number(m.homeGoals);
-    const ag = Number(m.awayGoals);
+    const hg = Number(m.homeGoals ?? 0);
+    const ag = Number(m.awayGoals ?? 0);
 
     const hResult = hg > ag ? 1 : hg === ag ? 0.5 : 0;
     const aResult = ag > hg ? 1 : ag === hg ? 0.5 : 0;
 
-    const hElo = (elo.get(homeKey) ?? 1500) + 60;
+    const hElo = (elo.get(homeKey) ?? 1500) + 55;
     const aElo = elo.get(awayKey) ?? 1500;
 
     const hExpected = expectedElo(hElo, aElo);
     const aExpected = expectedElo(aElo, hElo);
 
     const goalDiff = Math.abs(hg - ag);
-    const k = 24 + Math.min(goalDiff, 4) * 5;
+    const k = 26 + Math.min(goalDiff, 4) * 4;
 
     elo.set(homeKey, (elo.get(homeKey) ?? 1500) + k * (hResult - hExpected));
     elo.set(awayKey, (elo.get(awayKey) ?? 1500) + k * (aResult - aExpected));
 
-    const recencyWeight = 0.65 + (index / Math.max(1, past.length)) * 1.35;
-
-    const hPoints = hResult === 1 ? 3 : hResult === 0.5 ? 1 : 0;
-    const aPoints = aResult === 1 ? 3 : aResult === 0.5 ? 1 : 0;
+    const recencyWeight = 1 + index / Math.max(1, past.length);
 
     h.played++;
     a.played++;
-
-    h.points += hPoints;
-    a.points += aPoints;
 
     h.gf += hg;
     h.ga += ag;
@@ -284,42 +236,30 @@ export function buildPredictions(matches: MatchInput[], now = new Date()) {
     h.homePlayed++;
     h.homeGf += hg;
     h.homeGa += ag;
-    h.homePoints += hPoints;
 
     a.awayPlayed++;
     a.awayGf += ag;
     a.awayGa += hg;
-    a.awayPoints += aPoints;
+
+    const hPoints = hResult === 1 ? 3 : hResult === 0.5 ? 1 : 0;
+    const aPoints = aResult === 1 ? 3 : aResult === 0.5 ? 1 : 0;
+
+    h.points += hPoints;
+    a.points += aPoints;
 
     h.weightedPoints += hPoints * recencyWeight;
     a.weightedPoints += aPoints * recencyWeight;
     h.weightedGames += recencyWeight;
     a.weightedGames += recencyWeight;
 
-    h.recentGf.push(hg);
-    h.recentGa.push(ag);
-    h.recentPoints.push(hPoints);
-
-    a.recentGf.push(ag);
-    a.recentGa.push(hg);
-    a.recentPoints.push(aPoints);
-
-    h.recentGf = h.recentGf.slice(-10);
-    h.recentGa = h.recentGa.slice(-10);
-    h.recentPoints = h.recentPoints.slice(-10);
-
-    a.recentGf = a.recentGf.slice(-10);
-    a.recentGa = a.recentGa.slice(-10);
-    a.recentPoints = a.recentPoints.slice(-10);
-
     form.get(homeKey)!.push({
-      opponent: m.away,
+      opponent: away,
       result: hg > ag ? "W" : hg < ag ? "L" : "D",
       score: `${hg}:${ag}`,
     });
 
     form.get(awayKey)!.push({
-      opponent: m.home,
+      opponent: home,
       result: ag > hg ? "W" : ag < hg ? "L" : "D",
       score: `${ag}:${hg}`,
     });
@@ -334,7 +274,6 @@ export function buildPredictions(matches: MatchInput[], now = new Date()) {
 
     const hf = fallbackStrength(m.home);
     const af = fallbackStrength(m.away);
-    const lb = leagueBase(m.league);
 
     const hPpg = h.played ? h.points / h.played : hf.ppg;
     const aPpg = a.played ? a.points / a.played : af.ppg;
@@ -342,49 +281,45 @@ export function buildPredictions(matches: MatchInput[], now = new Date()) {
     const hWeightedPpg = h.weightedGames ? h.weightedPoints / h.weightedGames : hPpg;
     const aWeightedPpg = a.weightedGames ? a.weightedPoints / a.weightedGames : aPpg;
 
-    const hHomeAttack = h.homePlayed ? h.homeGf / h.homePlayed : h.played ? h.gf / h.played : hf.attack;
-    const hHomeDefense = h.homePlayed ? h.homeGa / h.homePlayed : h.played ? h.ga / h.played : hf.defense;
+    const hAttack = h.homePlayed ? h.homeGf / h.homePlayed : h.played ? h.gf / h.played : hf.attack;
+    const aAttack = a.awayPlayed ? a.awayGf / a.awayPlayed : a.played ? a.gf / a.played : af.attack;
 
-    const aAwayAttack = a.awayPlayed ? a.awayGf / a.awayPlayed : a.played ? a.gf / a.played : af.attack;
-    const aAwayDefense = a.awayPlayed ? a.awayGa / a.awayPlayed : a.played ? a.ga / a.played : af.defense;
-
-    const hRecentAttack = mean(h.recentGf, hHomeAttack);
-    const hRecentDefense = mean(h.recentGa, hHomeDefense);
-    const aRecentAttack = mean(a.recentGf, aAwayAttack);
-    const aRecentDefense = mean(a.recentGa, aAwayDefense);
-
-    const hAttackBlend = hHomeAttack * 0.55 + hRecentAttack * 0.45;
-    const hDefenseBlend = hHomeDefense * 0.55 + hRecentDefense * 0.45;
-
-    const aAttackBlend = aAwayAttack * 0.55 + aRecentAttack * 0.45;
-    const aDefenseBlend = aAwayDefense * 0.55 + aRecentDefense * 0.45;
+    const hDefense = h.homePlayed ? h.homeGa / h.homePlayed : h.played ? h.ga / h.played : hf.defense;
+    const aDefense = a.awayPlayed ? a.awayGa / a.awayPlayed : a.played ? a.ga / a.played : af.defense;
 
     const hElo = elo.get(homeKey) ?? hf.elo;
     const aElo = elo.get(awayKey) ?? af.elo;
 
-    const eloDiff = clamp((hElo - aElo) / 500, -0.7, 0.7);
-    const formEdge = clamp((hWeightedPpg - aWeightedPpg) / 3, -0.4, 0.4);
+    const eloDiff = clamp((hElo - aElo) / 450, -0.65, 0.65);
 
-    const homeAttackStrength = clamp(hAttackBlend / lb.homeGoals, 0.45, 2.25);
-    const awayDefenseWeakness = clamp(aDefenseBlend / lb.homeGoals, 0.45, 2.25);
+    const homeAttackStrength = hAttack / 1.35;
+    const awayAttackStrength = aAttack / 1.20;
 
-    const awayAttackStrength = clamp(aAttackBlend / lb.awayGoals, 0.45, 2.25);
-    const homeDefenseWeakness = clamp(hDefenseBlend / lb.awayGoals, 0.45, 2.25);
+    const homeDefenseWeakness = hDefense / 1.20;
+    const awayDefenseWeakness = aDefense / 1.35;
 
-    let homeXg = lb.homeGoals *
-      Math.pow(homeAttackStrength, 0.62) *
-      Math.pow(awayDefenseWeakness, 0.48) *
-      (1 + eloDiff * 0.24) *
-      (1 + formEdge * 0.18);
+    const formEdge = clamp((hWeightedPpg - aWeightedPpg) / 3, -0.35, 0.35);
 
-    let awayXg = lb.awayGoals *
-      Math.pow(awayAttackStrength, 0.62) *
-      Math.pow(homeDefenseWeakness, 0.48) *
-      (1 - eloDiff * 0.22) *
-      (1 - formEdge * 0.15);
+    const homeXg = clamp(
+      1.42 *
+        homeAttackStrength *
+        awayDefenseWeakness *
+        (1 + eloDiff * 0.28) *
+        (1 + formEdge * 0.22) +
+        0.18,
+      0.35,
+      3.25
+    );
 
-    homeXg = clamp(homeXg, 0.25, 3.4);
-    awayXg = clamp(awayXg, 0.20, 3.1);
+    const awayXg = clamp(
+      1.18 *
+        awayAttackStrength *
+        homeDefenseWeakness *
+        (1 - eloDiff * 0.24) *
+        (1 - formEdge * 0.18),
+      0.25,
+      3.0
+    );
 
     const mk = marketProbabilities(homeXg, awayXg);
 
@@ -400,38 +335,30 @@ export function buildPredictions(matches: MatchInput[], now = new Date()) {
 
     const best = options.sort((x, y) => y.prob - x.prob)[0];
 
-    const hData = clamp(h.played / 12, 0.45, 1);
-    const aData = clamp(a.played / 12, 0.45, 1);
-    const dataQuality = hData * aData;
+    const dataQuality =
+      (h.played >= 8 ? 1 : 0.7) *
+      (a.played >= 8 ? 1 : 0.7);
 
-    const marketPenalty =
-      best.market === "Unentschieden"
-        ? 0.72
-        : best.market.includes("Sieg")
-        ? 1
-        : 1.04;
-
-    const probabilityEdge = Math.max(0, best.prob - 50);
-    const xgEdge = Math.abs(homeXg - awayXg) * 9;
-    const totalGoalsSignal = Math.abs(homeXg + awayXg - 2.5) * 7;
+    const marketStrength =
+      best.market.includes("Über") || best.market.includes("Unter") || best.market.includes("Beide")
+        ? 1.05
+        : 1.0;
 
     const valueScore = Math.round(
-      (probabilityEdge + xgEdge + totalGoalsSignal) *
-        dataQuality *
-        marketPenalty
+      ((best.prob - 48) * marketStrength + Math.abs(homeXg - awayXg) * 8) *
+        dataQuality
     );
 
     const confidence =
-      best.prob >= 68 && valueScore >= 18 && dataQuality >= 0.75
+      best.prob >= 66 && valueScore >= 18 && dataQuality >= 0.85
         ? "High"
-        : best.prob >= 58 && valueScore >= 9
+        : best.prob >= 58 && valueScore >= 10
         ? "Medium"
         : "Low";
 
     const reason =
       `${m.home} xG ${homeXg.toFixed(2)} vs ${m.away} xG ${awayXg.toFixed(2)}. ` +
-      `Modell nutzt Liga-Schnitt, Heim/Auswärtswerte, letzte 10 Spiele, Elo und Form. ` +
-      `Stärkster Markt: ${best.market}.`;
+      `Elo/Form und Heim-Auswärtsprofil sprechen am stärksten für ${best.market}.`;
 
     return {
       id: m.id,
