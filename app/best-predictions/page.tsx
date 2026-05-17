@@ -290,10 +290,10 @@ export default async function BestPredictionsPage() {
               </div>
 
               <a
-                href={`/match-center?match=${p.id}`}
+                href={`/prediction-detail?match=${p.id}`}
                 className="mt-5 block rounded-2xl bg-cyan-400 px-5 py-4 text-center font-bold text-slate-950"
               >
-                Open Match
+                Why this pick?
               </a>
             </article>
           ))}
