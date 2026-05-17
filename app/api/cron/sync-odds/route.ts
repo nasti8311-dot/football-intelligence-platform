@@ -70,6 +70,7 @@ async function syncSport(sport: string) {
   const games = await res.json();
   let saved = 0;
   let matched = 0;
+  const debug: any[] = [];
 
   for (const game of games) {
     console.log("ODDS GAME", {
@@ -79,6 +80,16 @@ async function syncSport(sport: string) {
     });
 
     const match = await findMatch(game.home_team, game.away_team, game.commence_time);
+
+    if (debug.length < 8) {
+      debug.push({
+        oddsHome: game.home_team,
+        oddsAway: game.away_team,
+        commence: game.commence_time,
+        matched: !!match,
+      });
+    }
+
     if (!match) continue;
 
     matched++;
@@ -124,7 +135,7 @@ async function syncSport(sport: string) {
     }
   }
 
-  return { sport, matched, saved };
+  return { sport, matched, saved, debug };
 }
 
 export async function GET() {
