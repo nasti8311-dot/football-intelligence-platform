@@ -35,6 +35,7 @@ export type Prediction = {
   confidence: "High" | "Medium" | "Low";
   valueScore: number;
   reason: string;
+  trends: string[];
   homeLast10: FormGame[];
   awayLast10: FormGame[];
 };
@@ -127,6 +128,59 @@ function marketProbabilities(homeXg: number, awayXg: number) {
 function expectedElo(a: number, b: number) {
   return 1 / (1 + Math.pow(10, (b - a) / 400));
 }
+
+
+function countRecentOver(gf: number[], ga: number[], line = 2.5) {
+  const games = gf.slice(-5).map((g, i) => g + (ga.slice(-5)[i] || 0));
+  return games.filter((total) => total > line).length;
+}
+
+function countRecentBTTS(gf: number[], ga: number[]) {
+  const recentGf = gf.slice(-5);
+  const recentGa = ga.slice(-5);
+  return recentGf.filter((g, i) => g > 0 && (recentGa[i] || 0) > 0).length;
+}
+
+function countRecentWins(points: number[]) {
+  return points.slice(-5).filter((p) => p === 3).length;
+}
+
+function buildTrends(
+  home: string,
+  away: string,
+  homeXg: number,
+  awayXg: number,
+  hGf: number[],
+  hGa: number[],
+  aGf: number[],
+  aGa: number[],
+  hPts: number[],
+  aPts: number[]
+) {
+  const trends: string[] = [];
+
+  const hOver = countRecentOver(hGf, hGa);
+  const aOver = countRecentOver(aGf, aGa);
+  const hBtts = countRecentBTTS(hGf, hGa);
+  const aBtts = countRecentBTTS(aGf, aGa);
+  const hWins = countRecentWins(hPts);
+  const aWins = countRecentWins(aPts);
+
+  if (homeXg + awayXg >= 2.75) trends.push(`Hohe Torerwartung: ${(homeXg + awayXg).toFixed(2)} xG`);
+  if (homeXg + awayXg <= 2.15) trends.push(`Niedrige Torerwartung: ${(homeXg + awayXg).toFixed(2)} xG`);
+
+  if (hOver >= 4 || aOver >= 4) trends.push(`Over-Trend: ${Math.max(hOver, aOver)}/5 letzte Spiele`);
+  if (hBtts >= 4 || aBtts >= 4) trends.push(`BTTS-Trend: ${Math.max(hBtts, aBtts)}/5 letzte Spiele`);
+
+  if (hWins >= 4) trends.push(`${home}: ${hWins}/5 Siege zuletzt`);
+  if (aWins >= 4) trends.push(`${away}: ${aWins}/5 Siege zuletzt`);
+
+  if (homeXg - awayXg >= 0.55) trends.push(`${home} mit klarem xG-Vorteil`);
+  if (awayXg - homeXg >= 0.55) trends.push(`${away} mit klarem xG-Vorteil`);
+
+  return trends.slice(0, 4);
+}
+
 
 function mean(values: number[], fallback: number) {
   return values.length ? values.reduce((a, b) => a + b, 0) / values.length : fallback;
@@ -523,6 +577,18 @@ export function buildPredictions(matches: MatchInput[], now = new Date()) {
       confidence,
       valueScore,
       reason,
+      trends: buildTrends(
+        m.home,
+        m.away,
+        homeXg,
+        awayXg,
+        h.recentGf,
+        h.recentGa,
+        a.recentGf,
+        a.recentGa,
+        h.recentPoints,
+        a.recentPoints
+      ),
       homeLast10: (form.get(homeKey) || []).slice(-10).reverse(),
       awayLast10: (form.get(awayKey) || []).slice(-10).reverse(),
     };

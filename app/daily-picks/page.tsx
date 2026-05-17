@@ -275,6 +275,25 @@ export default async function DailyPicksPage() {
                     <Market label="BTTS" value={pct(p.bttsYes)} tone="pink" />
                   </div>
 
+                  {p.trends && p.trends.length > 0 && (
+                    <div className="mt-5 rounded-2xl border border-emerald-400/10 bg-emerald-400/5 p-4">
+                      <p className="text-xs font-black uppercase tracking-[0.2em] text-emerald-300">
+                        Trend Signals
+                      </p>
+
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {p.trends.map((trend: string) => (
+                          <span
+                            key={trend}
+                            className="rounded-full bg-slate-950/70 px-3 py-2 text-xs font-bold text-slate-200"
+                          >
+                            {trend}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   <div className="mt-5 rounded-2xl border border-cyan-400/10 bg-cyan-400/5 p-4">
                     <p className="text-xs font-black uppercase tracking-[0.2em] text-cyan-300">
                       Match Insight
