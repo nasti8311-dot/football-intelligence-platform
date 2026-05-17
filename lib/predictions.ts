@@ -175,6 +175,12 @@ function buildTrends(
   if (hWins >= 4) trends.push(`${home}: ${hWins}/5 Siege zuletzt`);
   if (aWins >= 4) trends.push(`${away}: ${aWins}/5 Siege zuletzt`);
 
+  if (homeXg >= 2.1) trends.push(`${home} offensiv sehr stark`);
+  if (awayXg >= 1.9) trends.push(`${away} offensiv sehr stark`);
+
+  if (homeXg <= 0.9) trends.push(`${home} offensiv schwach`);
+  if (awayXg <= 0.9) trends.push(`${away} offensiv schwach`);
+
   if (homeXg - awayXg >= 0.55) trends.push(`${home} mit klarem xG-Vorteil`);
   if (awayXg - homeXg >= 0.55) trends.push(`${away} mit klarem xG-Vorteil`);
 
@@ -287,6 +293,10 @@ export function buildPredictions(matches: MatchInput[], now = new Date()) {
         recentGa: [],
         recentPoints: [],
         recentOpponentElo: [],
+        homeWins: 0,
+        awayWins: 0,
+        homeGames: 0,
+        awayGames: 0,
       });
     }
 
@@ -449,6 +459,8 @@ export function buildPredictions(matches: MatchInput[], now = new Date()) {
       Math.pow(awayDefenseWeakness, 0.50) *
       (1 + eloDiff * 0.26) *
       (1 + formEdge * 0.20) *
+      (1 + homeTableStrength * 0.22) *
+      (1 - awayTableStrength * 0.14) *
       (1 + hScheduleAdj * 0.35 - aScheduleAdj * 0.20);
 
     let awayXg = lb.awayGoals *
@@ -456,6 +468,8 @@ export function buildPredictions(matches: MatchInput[], now = new Date()) {
       Math.pow(homeDefenseWeakness, 0.50) *
       (1 - eloDiff * 0.24) *
       (1 - formEdge * 0.17) *
+      (1 + awayTableStrength * 0.22) *
+      (1 - homeTableStrength * 0.14) *
       (1 + aScheduleAdj * 0.35 - hScheduleAdj * 0.20);
 
     homeXg = clamp(homeXg, 0.25, 3.4);
