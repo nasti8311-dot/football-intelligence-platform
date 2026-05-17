@@ -6,10 +6,6 @@ export const maxDuration = 60;
 
 const sports = [
   "soccer_germany_bundesliga",
-  "soccer_epl",
-  "soccer_spain_la_liga",
-  "soccer_italy_serie_a",
-  "soccer_france_ligue_one",
 ];
 
 function key(name: string) {
