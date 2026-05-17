@@ -4,6 +4,27 @@ import TeamBadge from "@/components/TeamBadge";
 
 export const dynamic = "force-dynamic";
 
+
+function teamKey(name: string) {
+  return String(name || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/fc|cf|afc|sc|sv|club|football|munchen|muenchen/g, "")
+    .replace(/manchester city/g, "city")
+    .replace(/fc bayern/g, "bayern")
+    .replace(/bayern munich/g, "bayern")
+    .replace(/borussia dortmund/g, "dortmund")
+    .replace(/bayer leverkusen/g, "leverkusen")
+    .replace(/rb leipzig/g, "leipzig")
+    .replace(/real madrid/g, "real-madrid")
+    .replace(/barcelona/g, "barcelona")
+    .replace(/internazionale/g, "inter")
+    .replace(/paris saint germain/g, "psg")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
 function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value));
 }
@@ -58,9 +79,11 @@ export default async function UpcomingPredictionsPage() {
   for (const m of pastMatches) {
     const home = m.homeTeam?.name || m.homeTeamId;
     const away = m.awayTeam?.name || m.awayTeamId;
+    const homeKey = teamKey(home);
+    const awayKey = teamKey(away);
 
-    const h = init(home);
-    const a = init(away);
+    const h = init(homeKey);
+    const a = init(awayKey);
 
     const hg = Number(m.homeGoals ?? 0);
     const ag = Number(m.awayGoals ?? 0);
@@ -84,9 +107,11 @@ export default async function UpcomingPredictionsPage() {
   const predictions = upcoming.map((m) => {
     const home = m.homeTeam?.name || m.homeTeamId;
     const away = m.awayTeam?.name || m.awayTeamId;
+    const homeKey = teamKey(home);
+    const awayKey = teamKey(away);
 
-    const h = stats.get(home) || init(home);
-    const a = stats.get(away) || init(away);
+    const h = stats.get(teamKey(home)) || init(teamKey(home));
+    const a = stats.get(teamKey(away)) || init(teamKey(away));
 
     const hPpg = h.played ? h.points / h.played : 1;
     const aPpg = a.played ? a.points / a.played : 1;
