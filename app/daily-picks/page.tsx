@@ -25,7 +25,26 @@ export default async function DailyPicksPage() {
     awayGoals: m.awayGoals,
   }));
 
-  const predictions = buildPredictions(matches);
+  const todayKey = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Berlin",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
+
+  const predictions = buildPredictions(matches).filter((p) => {
+    if (!p.kickoff) return false;
+
+    const matchKey = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Europe/Berlin",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(new Date(p.kickoff));
+
+    return matchKey === todayKey;
+  });
+
   const picks = topDailyPicks(predictions, 10);
 
   return (
@@ -39,8 +58,8 @@ export default async function DailyPicksPage() {
             Die besten Picks des Tages
           </h1>
           <p className="mt-4 max-w-2xl text-slate-300">
-            Nur die stärksten kommenden Predictions nach Value Score, Confidence,
-            Elo, Form, Heim-/Auswärtsprofil und Poisson-Torverteilung.
+            Nur Spiele, die heute stattfinden — sortiert nach Value Score,
+            Confidence, Elo, Form, Heim-/Auswärtsprofil und Poisson-Torverteilung.
           </p>
 
           <div className="mt-6 grid grid-cols-3 gap-3">
@@ -54,7 +73,7 @@ export default async function DailyPicksPage() {
           <section className="glass-card rounded-3xl p-8 text-center">
             <h2 className="text-3xl font-black">Keine starken Picks gefunden</h2>
             <p className="mt-3 text-slate-300">
-              Entweder fehlen kommende Fixtures oder das Modell sieht aktuell keine Picks mit genug Value.
+              Heute wurden keine kommenden Spiele mit genug Value gefunden. Synchronisiere Fixtures oder warte auf den nächsten Spieltag.
             </p>
           </section>
         ) : (
