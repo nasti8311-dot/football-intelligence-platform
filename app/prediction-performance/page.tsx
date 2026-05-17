@@ -23,6 +23,10 @@ export default async function PredictionPerformancePage() {
   const highCorrect = high.filter((s) => s.isCorrect === true).length;
   const highAccuracy = high.length ? (highCorrect / high.length) * 100 : 0;
 
+  const value = evaluated.filter((s) => Number(s.edge || 0) >= 6);
+  const valueCorrect = value.filter((s) => s.isCorrect === true).length;
+  const valueAccuracy = value.length ? (valueCorrect / value.length) * 100 : 0;
+
   return (
     <main className="min-h-screen stadium-page px-4 pb-28 pt-4 text-white md:px-6">
       <div className="mx-auto max-w-6xl space-y-6">
@@ -44,6 +48,7 @@ export default async function PredictionPerformancePage() {
             <Card label="Ausgewertet" value={String(evaluated.length)} />
             <Card label="Accuracy" value={pct(accuracy)} />
             <Card label="High Accuracy" value={pct(highAccuracy)} />
+            <Card label="Value Accuracy" value={pct(valueAccuracy)} />
           </div>
         </section>
 
@@ -62,6 +67,7 @@ export default async function PredictionPerformancePage() {
 
                   <p className="mt-1 text-sm text-slate-400">
                     Pick: {s.pick} · Modell {Math.round(Number(s.probability))}%
+                    {s.edge ? ` · Edge +${Number(s.edge).toFixed(1)}%` : ""}
                   </p>
                 </div>
 

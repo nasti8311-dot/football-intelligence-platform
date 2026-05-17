@@ -208,6 +208,12 @@ export default async function DailyPicksPage() {
                         </span>
                       )}
 
+                      {p.edge !== null && p.edge !== undefined && p.edge >= 6 && (
+                        <span className="rounded-full bg-cyan-400/15 px-3 py-1 text-xs font-black text-cyan-300">
+                          ENGINE EDGE +{p.edge.toFixed(1)}%
+                        </span>
+                      )}
+
                       <span
                         className={`rounded-full px-3 py-1 text-xs font-bold ${
                           p.confidence === "High"

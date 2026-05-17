@@ -56,9 +56,9 @@ export async function GET() {
   for (const p of predictions) {
     await prisma.$executeRawUnsafe(
       `INSERT INTO "PredictionSnapshot"
-        ("id","matchId","market","pick","probability","homeWin","draw","awayWin","over25","under25","bttsYes","bttsNo","homeXg","awayXg","confidence","valueScore","createdAt","updatedAt")
+        ("id","matchId","market","pick","probability","homeWin","draw","awayWin","over25","under25","bttsYes","bttsNo","homeXg","awayXg","confidence","valueScore","oddsPrice","impliedProb","edge","createdAt","updatedAt")
        VALUES
-        (gen_random_uuid()::text,$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,NOW(),NOW())`,
+        (gen_random_uuid()::text,$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,NOW(),NOW())`,
       p.id,
       p.bestMarket,
       p.bestPick,
@@ -73,7 +73,10 @@ export async function GET() {
       p.homeXg,
       p.awayXg,
       p.confidence,
-      p.valueScore
+      p.valueScore,
+      (p as any).marketOdds || null,
+      (p as any).impliedProbability || null,
+      (p as any).edge || null
     );
 
     saved++;
