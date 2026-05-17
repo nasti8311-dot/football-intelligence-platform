@@ -87,16 +87,27 @@ function fallbackSvg(team: string) {
       </linearGradient>
     </defs>
     <circle cx="128" cy="128" r="124" fill="url(#g)"/>
-    <circle cx="128" cy="128" r="104" fill="rgba(255,255,255,0.18)" stroke="white" stroke-width="6"/>
-    <text x="128" y="145" text-anchor="middle" font-family="Arial, sans-serif" font-size="72" font-weight="900" fill="#020617">${initials}</text>
+    <circle cx="128" cy="128" r="104" fill="rgba(255,255,255,0.2)" stroke="white" stroke-width="8"/>
+    <text x="128" y="150" text-anchor="middle" font-family="Arial" font-size="72" font-weight="900" fill="#020617">${initials}</text>
   </svg>`;
 }
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const team = searchParams.get("team") || "Team";
+  const debug = searchParams.get("debug") === "1";
+
   const key = keyFor(team);
   const id = key ? ids[key] : null;
+
+  if (debug) {
+    return NextResponse.json({
+      team,
+      key,
+      id,
+      url: id ? `https://crests.football-data.org/${id}.png` : null,
+    });
+  }
 
   if (!id) {
     return new NextResponse(fallbackSvg(team), {
@@ -104,29 +115,23 @@ export async function GET(req: Request) {
     });
   }
 
-  const url = `https://crests.football-data.org/${id}.png`;
+  const res = await fetch(`https://crests.football-data.org/${id}.png`, {
+    cache: "no-store",
+    headers: { "User-Agent": "PredictPro/1.0" },
+  });
 
-  try {
-    const res = await fetch(url, {
-      headers: {
-        "User-Agent": "Mozilla/5.0 PredictPro",
-      },
-      cache: "force-cache",
-    });
-
-    if (!res.ok) throw new Error("Crest fetch failed");
-
-    const buffer = await res.arrayBuffer();
-
-    return new NextResponse(buffer, {
-      headers: {
-        "Content-Type": "image/png",
-        "Cache-Control": "public, max-age=86400",
-      },
-    });
-  } catch {
+  if (!res.ok) {
     return new NextResponse(fallbackSvg(team), {
       headers: { "Content-Type": "image/svg+xml" },
     });
   }
+
+  const buffer = await res.arrayBuffer();
+
+  return new NextResponse(buffer, {
+    headers: {
+      "Content-Type": "image/png",
+      "Cache-Control": "public, max-age=86400",
+    },
+  });
 }

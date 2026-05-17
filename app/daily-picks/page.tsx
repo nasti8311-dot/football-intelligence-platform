@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import TeamBadge from "@/components/TeamBadge";
-import { buildPredictions, topDailyPicks } from "@/lib/predictions";
+import { buildPredictions } from "@/lib/predictions";
 
 export const dynamic = "force-dynamic";
 
