@@ -169,13 +169,13 @@ export default async function DailyPicksPage() {
                       )}
                       {p.edge !== null && p.edge !== undefined && p.edge >= 6 && (
                         <span className="rounded-full bg-cyan-400/15 px-3 py-1 text-xs font-black text-cyan-300">
-                          VALUE +{p.edge.toFixed(1)}%
+                          SHARP VALUE +{p.edge.toFixed(1)}%
                         </span>
                       )}
 
                       {(p.edge === null || p.edge === undefined) && p.valueScore >= 10 && (
                         <span className="rounded-full bg-emerald-400/15 px-3 py-1 text-xs font-black text-emerald-300">
-                          MODEL VALUE
+                          MODEL EDGE
                         </span>
                       )}
 
@@ -310,6 +310,21 @@ export default async function DailyPicksPage() {
                         </p>
                       </div>
                     )}
+                    <div className="mt-4 flex gap-3">
+                      <a
+                        href={`/news`}
+                        className="flex-1 rounded-2xl bg-white/10 px-4 py-3 text-center text-sm font-bold text-white"
+                      >
+                        News zum Spiel
+                      </a>
+
+                      <a
+                        href={`/team-form?team=${encodeURIComponent(p.home)}`}
+                        className="flex-1 rounded-2xl bg-cyan-400 px-4 py-3 text-center text-sm font-bold text-slate-950"
+                      >
+                        Teamform
+                      </a>
+                    </div>
                   </div>
                 </article>
               );
@@ -348,7 +363,7 @@ function Market({
   };
 
   return (
-    <div className={`rounded-2xl border bg-gradient-to-br p-3 text-center ${tones[tone]}`}>
+    <div className={`rounded-2xl border bg-gradient-to-br p-3 text-center shadow-lg shadow-black/20 ${tones[tone]}`}>
       <p className="text-[11px] font-bold uppercase tracking-wide opacity-80">
         {label}
       </p>

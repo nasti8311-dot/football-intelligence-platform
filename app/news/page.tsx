@@ -98,6 +98,18 @@ export default async function NewsPage() {
           </Link>
         </section>
 
+        <section className="glass-card rounded-[2rem] border border-emerald-400/10 bg-emerald-400/5 p-5">
+          <p className="text-xs uppercase tracking-[0.25em] text-emerald-300">
+            Automatisch aktualisiert
+          </p>
+          <h2 className="mt-2 text-2xl font-black">
+            News-Kontext für deine Daily Picks
+          </h2>
+          <p className="mt-2 text-sm text-slate-300">
+            Diese Seite zeigt nur News zu den Spielen, die auch auf der Startseite als Picks erscheinen.
+          </p>
+        </section>
+
         {predictions.length === 0 ? (
           <section className="glass-card rounded-3xl p-8 text-center">
             <h2 className="text-3xl font-black">Keine heutigen Picks gefunden</h2>
