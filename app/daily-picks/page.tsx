@@ -40,7 +40,10 @@ export default async function DailyPicksPage() {
     awayGoals: m.awayGoals,
   }));
 
-  const allPredictions = buildPredictions(matches);
+  const dayStart = new Date();
+  dayStart.setHours(0, 0, 0, 0);
+
+  const allPredictions = buildPredictions(matches, dayStart);
   const today = dateKey(new Date());
 
   const todayPredictions = allPredictions.filter((p) => {
