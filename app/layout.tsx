@@ -44,6 +44,8 @@ const nav = [
       ["/mobile-preview", "Mobile Preview"],
       ["/product-roadmap", "Roadmap"],
       ["/help-center", "Help Center"],
+      ["/academy", "Academy"],
+      ["/glossary", "Glossary"],
     ],
   },
   {
