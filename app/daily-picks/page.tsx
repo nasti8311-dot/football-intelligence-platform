@@ -27,7 +27,6 @@ export default async function DailyPicksPage() {
       awayTeam: true,
       league: true,
       bookmakerOdds: true,
-      news: true,
     },
   });
 
@@ -40,7 +39,7 @@ export default async function DailyPicksPage() {
     homeGoals: m.homeGoals,
     awayGoals: m.awayGoals,
     odds: (m as any).bookmakerOdds || [],
-    news: (m as any).news || [],
+    news: [],
   }));
 
   const dayStart = new Date();

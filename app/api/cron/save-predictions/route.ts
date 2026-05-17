@@ -25,7 +25,6 @@ export async function GET() {
       awayTeam: true,
       league: true,
       bookmakerOdds: true,
-      news: true,
     },
   });
 
@@ -38,7 +37,7 @@ export async function GET() {
     homeGoals: m.homeGoals,
     awayGoals: m.awayGoals,
     odds: (m as any).bookmakerOdds || [],
-    news: (m as any).news || [],
+    news: [],
   }));
 
   const dayStart = new Date();
