@@ -77,60 +77,60 @@ model Team {
 }
 
 model TeamStatSnapshot {
-  id          String   @id @default(cuid())
-  teamId      String
-  team        Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  season      String
-  matchday    Int?
-  attack      Float
-  defense     Float
-  elo         Int
-  form        Float
-  xgFor       Float
-  xgAgainst   Float
-  possession  Float?
-  pressing    Float?
-  tempo       Float?
-  source      String   @default("internal")
-  capturedAt  DateTime @default(now())
+  id         String   @id @default(cuid())
+  teamId     String
+  team       Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  season     String
+  matchday   Int?
+  attack     Float
+  defense    Float
+  elo        Int
+  form       Float
+  xgFor      Float
+  xgAgainst  Float
+  possession Float?
+  pressing   Float?
+  tempo      Float?
+  source     String   @default("internal")
+  capturedAt DateTime @default(now())
 
-  @@index([teamId, season])
   @@unique([teamId, season, matchday])
+  @@index([teamId, season])
 }
 
 model Match {
-  id          String       @id @default(cuid())
-  leagueId    String?
-  league      League?      @relation(fields: [leagueId], references: [id])
-  season      String
-  matchday    Int?
-  kickoff     DateTime?
-  status      MatchStatus  @default(SCHEDULED)
-  homeTeamId  String
-  awayTeamId  String
-  homeTeam    Team         @relation("HomeTeam", fields: [homeTeamId], references: [id])
-  awayTeam    Team         @relation("AwayTeam", fields: [awayTeamId], references: [id])
-  homeGoals   Int?
-  awayGoals   Int?
-  venue       String?
-  source      String       @default("internal")
-  sourceId    String?
-  predictions Prediction[]
-  stats       MatchStat?
-  odds        MatchOdds[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id            String          @id @default(cuid())
+  leagueId      String?
+  league        League?         @relation(fields: [leagueId], references: [id])
+  season        String
+  matchday      Int?
+  kickoff       DateTime?
+  status        MatchStatus     @default(SCHEDULED)
+  homeTeamId    String
+  awayTeamId    String
+  homeTeam      Team            @relation("HomeTeam", fields: [homeTeamId], references: [id])
+  awayTeam      Team            @relation("AwayTeam", fields: [awayTeamId], references: [id])
+  homeGoals     Int?
+  awayGoals     Int?
+  venue         String?
+  source        String          @default("internal")
+  sourceId      String?
+  predictions   Prediction[]
+  stats         MatchStat?
+  odds          MatchOdds[]
+  bookmakerOdds BookmakerOdds[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
 
+  @@unique([source, sourceId])
   @@index([kickoff])
   @@index([homeTeamId, awayTeamId])
-  @@unique([source, sourceId])
 }
 
-
 model MatchStat {
-  id                String @id @default(cuid())
-  matchId           String @unique
-  match             Match  @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  id                String   @id @default(cuid())
+  matchId           String   @unique
+  match             Match    @relation(fields: [matchId], references: [id], onDelete: Cascade)
   homeShots         Int?
   awayShots         Int?
   homeShotsOnTarget Int?
@@ -155,9 +155,9 @@ model MatchStat {
 }
 
 model MatchOdds {
-  id        String @id @default(cuid())
+  id        String   @id @default(cuid())
   matchId   String
-  match     Match  @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  match     Match    @relation(fields: [matchId], references: [id], onDelete: Cascade)
   bookmaker String
   homeOdds  Float?
   drawOdds  Float?
@@ -232,32 +232,33 @@ model PredictionMarket {
 }
 
 model FixtureSource {
-  id          String   @id @default(cuid())
-  provider    String
-  externalId  String
-  payload     Json
-  importedAt  DateTime @default(now())
+  id         String   @id @default(cuid())
+  provider   String
+  externalId String
+  payload    Json
+  importedAt DateTime @default(now())
 
   @@unique([provider, externalId])
 }
 
 model ApiSyncLog {
-  id         String   @id @default(cuid())
+  id         String    @id @default(cuid())
   provider   String
   endpoint   String
   status     String
-  records    Int      @default(0)
+  records    Int       @default(0)
   message    String?
-  startedAt  DateTime @default(now())
+  startedAt  DateTime  @default(now())
   finishedAt DateTime?
 
   @@index([provider, startedAt])
 }
+
 model Event {
   id        String   @id @default(cuid())
   matchId   String
   team      String
-  player String?
+  player    String?
   eventType String
   minute    Int
   x         Float?
@@ -273,7 +274,6 @@ model Event {
   @@index([eventType])
 }
 
-
 model BookmakerOdds {
   id          String   @id @default(cuid())
   matchId     String
@@ -287,7 +287,7 @@ model BookmakerOdds {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  @@unique([matchId, bookmaker, market, outcome])
   @@index([matchId])
   @@index([market])
-  @@unique([matchId, bookmaker, market, outcome])
 }
