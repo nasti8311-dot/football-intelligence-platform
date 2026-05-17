@@ -24,10 +24,6 @@ export default async function NewsPage() {
       homeTeam: true,
       awayTeam: true,
       league: true,
-      news: {
-        orderBy: { publishedAt: "desc" },
-        take: 4,
-      },
     },
   });
 
@@ -49,7 +45,24 @@ export default async function NewsPage() {
     })
     .slice(0, 10);
 
-  const newsMap = new Map(rows.map((m: any) => [m.id, m.news || []]));
+  const newsRows = await prisma.matchNews.findMany({
+    where: {
+      matchId: {
+        in: predictions.map((p) => p.id),
+      },
+    },
+    orderBy: { publishedAt: "desc" },
+  });
+
+  const newsMap = new Map<string, any[]>();
+
+  for (const n of newsRows) {
+    const list = newsMap.get(n.matchId) || [];
+    if (list.length < 4) {
+      list.push(n);
+      newsMap.set(n.matchId, list);
+    }
+  }
 
   return (
     <main className="min-h-screen stadium-page px-4 pb-28 pt-4 text-white md:px-6">
