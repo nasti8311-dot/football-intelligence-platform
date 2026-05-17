@@ -27,6 +27,15 @@ export default async function PredictionPerformancePage() {
   const valueCorrect = value.filter((s) => s.isCorrect === true).length;
   const valueAccuracy = value.length ? (valueCorrect / value.length) * 100 : 0;
 
+  const roiBets = evaluated.filter((s) => s.oddsPrice);
+  const profit = roiBets.reduce((sum, s) => {
+    if (s.isCorrect === true) return sum + (Number(s.oddsPrice) - 1);
+    if (s.isCorrect === false) return sum - 1;
+    return sum;
+  }, 0);
+
+  const roi = roiBets.length ? (profit / roiBets.length) * 100 : 0;
+
   return (
     <main className="min-h-screen stadium-page px-4 pb-28 pt-4 text-white md:px-6">
       <div className="mx-auto max-w-6xl space-y-6">
@@ -49,6 +58,7 @@ export default async function PredictionPerformancePage() {
             <Card label="Accuracy" value={pct(accuracy)} />
             <Card label="High Accuracy" value={pct(highAccuracy)} />
             <Card label="Value Accuracy" value={pct(valueAccuracy)} />
+            <Card label="ROI Test" value={pct(roi)} />
           </div>
         </section>
 

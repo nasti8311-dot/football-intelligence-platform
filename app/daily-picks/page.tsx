@@ -139,8 +139,8 @@ export default async function DailyPicksPage() {
 
           <div className="mt-6 grid grid-cols-3 gap-3">
             <Top label="Picks" value={String(picks.length)} />
-            <Top label="Heute" value={String(picks.length)} />
-            <Top label="Modell" value="Elo+" />
+            <Top label="Avg Prob" value={`${avgProb}%`} />
+            <Top label="Value" value={String(valueCount)} />
           </div>
         </section>
 
@@ -205,12 +205,6 @@ export default async function DailyPicksPage() {
                       {(p.edge === null || p.edge === undefined) && p.valueScore >= 10 && (
                         <span className="rounded-full bg-emerald-400/15 px-3 py-1 text-xs font-black text-emerald-300">
                           MODEL EDGE
-                        </span>
-                      )}
-
-                      {p.edge !== null && p.edge !== undefined && p.edge >= 6 && (
-                        <span className="rounded-full bg-cyan-400/15 px-3 py-1 text-xs font-black text-cyan-300">
-                          ENGINE EDGE +{p.edge.toFixed(1)}%
                         </span>
                       )}
 
