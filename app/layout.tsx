@@ -50,6 +50,7 @@ const nav = [
       ["/team-intelligence", "Teams"],
       ["/league-intelligence", "Leagues"],
       ["/form-guide", "Form"],
+      ["/momentum", "Momentum"],
       ["/event-map", "Event Map"],
       ["/team-profile", "Team Profile"],
       ["/club-house", "Club House"],
@@ -62,6 +63,7 @@ const nav = [
     items: [
       ["/prediction-center", "Predictions"],
       ["/match-center", "Match Center"],
+      ["/match-room", "Match Room"],
       ["/ai-scout-report", "Scout Reports"],
       ["/scout-dashboard", "Scout Dashboard"],
       ["/transfer-market", "Transfer Market"],
