@@ -60,7 +60,15 @@ async function syncSport(sport: string) {
     `https://api.the-odds-api.com/v4/sports/${sport}/odds` +
     `?apiKey=${apiKey}&regions=eu,uk&markets=h2h,totals&oddsFormat=decimal&dateFormat=iso`;
 
-  const res = await fetch(url, { cache: "no-store" });
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 8000);
+
+  const res = await fetch(url, {
+    cache: "no-store",
+    signal: controller.signal,
+  });
+
+  clearTimeout(timeout);
 
   if (!res.ok) {
     const text = await res.text();
