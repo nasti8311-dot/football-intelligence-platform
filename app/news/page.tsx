@@ -36,6 +36,7 @@ export default async function NewsPage() {
     homeGoals: m.homeGoals,
     awayGoals: m.awayGoals,
     odds: (m as any).bookmakerOdds || [],
+    news: (m as any).news || [],
   }));
 
   const dayStart = new Date();

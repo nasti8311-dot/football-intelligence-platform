@@ -36,6 +36,8 @@ export type Prediction = {
   valueScore: number;
   reason: string;
   trends: string[];
+  injurySignals: string[];
+  injuryPenalty: number;
   homeLast10: FormGame[];
   awayLast10: FormGame[];
 };
@@ -185,6 +187,61 @@ function buildTrends(
   if (awayXg - homeXg >= 0.55) trends.push(`${away} mit klarem xG-Vorteil`);
 
   return trends.slice(0, 4);
+}
+
+
+
+function extractInjurySignals(news: any[] = []) {
+  const badKeywords = [
+    "injury",
+    "injured",
+    "suspended",
+    "doubtful",
+    "ruled out",
+    "out",
+    "absence",
+    "missing",
+    "unavailable"
+  ];
+
+  const strongKeywords = [
+    "returns",
+    "fit again",
+    "available",
+    "back in training"
+  ];
+
+  const signals: string[] = [];
+  let penalty = 0;
+
+  for (const item of news.slice(0, 6)) {
+    const text = `${item.title || ""} ${item.description || ""}`.toLowerCase();
+
+    for (const kw of badKeywords) {
+      if (text.includes(kw)) {
+        penalty += 0.04;
+
+        if (signals.length < 4) {
+          signals.push(`Injury concern: ${kw}`);
+        }
+      }
+    }
+
+    for (const kw of strongKeywords) {
+      if (text.includes(kw)) {
+        penalty -= 0.02;
+
+        if (signals.length < 4) {
+          signals.push(`Positive squad news`);
+        }
+      }
+    }
+  }
+
+  return {
+    signals: [...new Set(signals)].slice(0, 4),
+    penalty: Math.max(0, Math.min(0.18, penalty)),
+  };
 }
 
 
@@ -460,6 +517,8 @@ export function buildPredictions(matches: MatchInput[], now = new Date()) {
     const awayAttackStrength = clamp(aAttackBlend / lb.awayGoals, 0.45, 2.25);
     const homeDefenseWeakness = clamp(hDefenseBlend / lb.awayGoals, 0.45, 2.25);
 
+    const injury = extractInjurySignals((m as any).news || []);
+
     let homeXg = lb.homeGoals *
       Math.pow(homeAttackStrength, 0.66) *
       Math.pow(awayDefenseWeakness, 0.50) *
@@ -467,7 +526,8 @@ export function buildPredictions(matches: MatchInput[], now = new Date()) {
       (1 + formEdge * 0.20) *
       (1 + homeTableStrength * 0.22) *
       (1 - awayTableStrength * 0.14) *
-      (1 + hScheduleAdj * 0.35 - aScheduleAdj * 0.20);
+      (1 + hScheduleAdj * 0.35 - aScheduleAdj * 0.20) *
+      (1 - injury.penalty * 0.6);
 
     let awayXg = lb.awayGoals *
       Math.pow(awayAttackStrength, 0.66) *
@@ -476,7 +536,8 @@ export function buildPredictions(matches: MatchInput[], now = new Date()) {
       (1 - formEdge * 0.17) *
       (1 + awayTableStrength * 0.22) *
       (1 - homeTableStrength * 0.14) *
-      (1 + aScheduleAdj * 0.35 - hScheduleAdj * 0.20);
+      (1 + aScheduleAdj * 0.35 - hScheduleAdj * 0.20) *
+      (1 - injury.penalty * 0.45);
 
     homeXg = clamp(homeXg, 0.25, 3.4);
     awayXg = clamp(awayXg, 0.20, 3.1);
@@ -597,6 +658,8 @@ export function buildPredictions(matches: MatchInput[], now = new Date()) {
       confidence,
       valueScore,
       reason,
+      injurySignals: injury.signals,
+      injuryPenalty: injury.penalty,
       trends: buildTrends(
         m.home,
         m.away,

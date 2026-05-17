@@ -27,6 +27,7 @@ export default async function DailyPicksPage() {
       awayTeam: true,
       league: true,
       bookmakerOdds: true,
+      news: true,
     },
   });
 
@@ -39,6 +40,7 @@ export default async function DailyPicksPage() {
     homeGoals: m.homeGoals,
     awayGoals: m.awayGoals,
     odds: (m as any).bookmakerOdds || [],
+    news: (m as any).news || [],
   }));
 
   const dayStart = new Date();
@@ -273,6 +275,25 @@ export default async function DailyPicksPage() {
                     <Market label="Under 2.5" value={pct(p.under25)} tone="blue" />
                     <Market label="BTTS" value={pct(p.bttsYes)} tone="pink" />
                   </div>
+
+                  {p.injurySignals && p.injurySignals.length > 0 && (
+                    <div className="mt-5 rounded-2xl border border-red-400/10 bg-red-400/5 p-4">
+                      <p className="text-xs font-black uppercase tracking-[0.2em] text-red-300">
+                        Squad Signals
+                      </p>
+
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {p.injurySignals.map((trend: string) => (
+                          <span
+                            key={trend}
+                            className="rounded-full bg-slate-950/70 px-3 py-2 text-xs font-bold text-slate-200"
+                          >
+                            {trend}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   {p.trends && p.trends.length > 0 && (
                     <div className="mt-5 rounded-2xl border border-emerald-400/10 bg-emerald-400/5 p-4">
