@@ -34,7 +34,7 @@ async function syncSport(sport: string) {
   }
 
   const now = new Date();
-  const to = new Date(now.getTime() + 1000 * 60 * 60 * 24 * 14);
+  const to = new Date(now.getTime() + 1000 * 60 * 60 * 24 * 3);
 
   const dbMatches = await prisma.match.findMany({
     where: {
@@ -58,7 +58,7 @@ async function syncSport(sport: string) {
     `&dateFormat=iso`;
 
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 10000);
+  const timeout = setTimeout(() => controller.abort(), 6000);
 
   const res = await fetch(url, {
     cache: "no-store",
@@ -79,7 +79,7 @@ async function syncSport(sport: string) {
 
   const debug: any[] = [];
 
-  for (const game of games.slice(0, 40)) {
+  for (const game of games.slice(0, 10)) {
     const oddsHome = key(game.home_team);
     const oddsAway = key(game.away_team);
     const oddsTime = new Date(game.commence_time).getTime();
@@ -112,7 +112,7 @@ async function syncSport(sport: string) {
 
     matched++;
 
-    for (const bm of (game.bookmakers || []).slice(0, 3)) {
+    for (const bm of (game.bookmakers || []).slice(0, 1)) {
       for (const market of bm.markets || []) {
         for (const outcome of market.outcomes || []) {
           if (!outcome.price) continue;
