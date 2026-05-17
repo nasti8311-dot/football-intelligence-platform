@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
-const competitions = ["BL1", "PL", "PD", "SA", "FL1"];
+const competitions = ["BL1"];
 
 function slug(s: string) {
   return String(s || "")
