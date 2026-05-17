@@ -45,14 +45,14 @@ export default async function NewsPage() {
     })
     .slice(0, 10);
 
-  const newsRows = await prisma.matchNews.findMany({
-    where: {
-      matchId: {
-        in: predictions.map((p) => p.id),
-      },
-    },
-    orderBy: { publishedAt: "desc" },
-  });
+  const ids = predictions.map((p) => p.id);
+
+  const newsRows: any[] = ids.length
+    ? await prisma.$queryRawUnsafe(
+        `SELECT * FROM "MatchNews" WHERE "matchId" = ANY($1) ORDER BY "publishedAt" DESC NULLS LAST`,
+        ids
+      )
+    : [];
 
   const newsMap = new Map<string, any[]>();
 
