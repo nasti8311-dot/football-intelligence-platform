@@ -37,6 +37,7 @@ export async function GET() {
     homeGoals: m.homeGoals,
     awayGoals: m.awayGoals,
     odds: (m as any).bookmakerOdds || [],
+    odds: (m as any).bookmakerOdds || [],
   }));
 
   const dayStart = new Date();

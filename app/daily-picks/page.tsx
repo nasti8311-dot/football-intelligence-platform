@@ -39,6 +39,7 @@ export default async function DailyPicksPage() {
     homeGoals: m.homeGoals,
     awayGoals: m.awayGoals,
     odds: (m as any).bookmakerOdds || [],
+    odds: (m as any).bookmakerOdds || [],
   }));
 
   const dayStart = new Date();
