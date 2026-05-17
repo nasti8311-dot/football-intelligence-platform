@@ -10,6 +10,7 @@ export const metadata = {
 
 const nav = [
   ["/", "Top 10"],
+  ["/news", "News"],
   ["/prediction-performance", "Performance"],
   ["/elo-ratings", "Ratings"],
 ];

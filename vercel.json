@@ -8,6 +8,10 @@
     {
       "path": "/api/cron/sync-odds",
       "schedule": "20 0 * * *"
+    },
+    {
+      "path": "/api/cron/sync-news",
+      "schedule": "35 0 * * *"
     }
   ]
 }
