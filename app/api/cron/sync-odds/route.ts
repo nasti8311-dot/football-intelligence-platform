@@ -2,11 +2,9 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 60;
+export const maxDuration = 30;
 
-const sports = [
-  "soccer_epl",
-];
+const sports = ["soccer_epl"];
 
 function key(name: string) {
   return String(name || "")
@@ -14,39 +12,18 @@ function key(name: string) {
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/fc|cf|afc|sc|sv|club|football|munchen|muenchen/g, "")
+    .replace(/manchester-city/g, "city")
+    .replace(/manchester city/g, "city")
+    .replace(/tottenham-hotspur/g, "tottenham")
+    .replace(/tottenham hotspur/g, "tottenham")
+    .replace(/nottingham-forest/g, "nottingham")
+    .replace(/nottingham forest/g, "nottingham")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
 }
 
 function implied(price: number) {
   return price > 0 ? 1 / price : 0;
-}
-
-async function findMatch(home: string, away: string, commence: string) {
-  const h = key(home);
-  const a = key(away);
-  const date = new Date(commence);
-  const from = new Date(date.getTime() - 1000 * 60 * 60 * 18);
-  const to = new Date(date.getTime() + 1000 * 60 * 60 * 18);
-
-  const candidates = await prisma.match.findMany({
-    where: {
-      kickoff: {
-        gte: from,
-        lte: to,
-      },
-    },
-    include: {
-      homeTeam: true,
-      awayTeam: true,
-    },
-  });
-
-  return candidates.find((m) => {
-    const mh = key(m.homeTeam?.name || m.homeTeamId);
-    const ma = key(m.awayTeam?.name || m.awayTeamId);
-    return mh === h && ma === a;
-  });
 }
 
 async function syncSport(sport: string) {
@@ -56,12 +33,32 @@ async function syncSport(sport: string) {
     throw new Error("Missing ODDS_API_KEY");
   }
 
+  const now = new Date();
+  const to = new Date(now.getTime() + 1000 * 60 * 60 * 24 * 14);
+
+  const dbMatches = await prisma.match.findMany({
+    where: {
+      kickoff: {
+        gte: now,
+        lte: to,
+      },
+    },
+    include: {
+      homeTeam: true,
+      awayTeam: true,
+    },
+  });
+
   const url =
     `https://api.the-odds-api.com/v4/sports/${sport}/odds` +
-    `?apiKey=${apiKey}&regions=eu,uk&markets=h2h,totals&oddsFormat=decimal&dateFormat=iso`;
+    `?apiKey=${apiKey}` +
+    `&regions=eu` +
+    `&markets=h2h,totals` +
+    `&oddsFormat=decimal` +
+    `&dateFormat=iso`;
 
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 8000);
+  const timeout = setTimeout(() => controller.abort(), 10000);
 
   const res = await fetch(url, {
     cache: "no-store",
@@ -76,18 +73,31 @@ async function syncSport(sport: string) {
   }
 
   const games = await res.json();
-  let saved = 0;
+
   let matched = 0;
+  let saved = 0;
+
   const debug: any[] = [];
 
-  for (const game of games) {
-    console.log("ODDS GAME", {
-      home: game.home_team,
-      away: game.away_team,
-      commence: game.commence_time,
-    });
+  for (const game of games.slice(0, 40)) {
+    const oddsHome = key(game.home_team);
+    const oddsAway = key(game.away_team);
+    const oddsTime = new Date(game.commence_time).getTime();
 
-    const match = await findMatch(game.home_team, game.away_team, game.commence_time);
+    const match = dbMatches.find((m) => {
+      const dbHome = key(m.homeTeam?.name || m.homeTeamId);
+      const dbAway = key(m.awayTeam?.name || m.awayTeamId);
+      const dbTime = m.kickoff ? new Date(m.kickoff).getTime() : 0;
+
+      const sameTeams =
+        dbHome === oddsHome &&
+        dbAway === oddsAway;
+
+      const timeClose =
+        Math.abs(dbTime - oddsTime) < 1000 * 60 * 60 * 30;
+
+      return sameTeams && timeClose;
+    });
 
     if (debug.length < 8) {
       debug.push({
@@ -102,7 +112,7 @@ async function syncSport(sport: string) {
 
     matched++;
 
-    for (const bm of game.bookmakers || []) {
+    for (const bm of (game.bookmakers || []).slice(0, 3)) {
       for (const market of bm.markets || []) {
         for (const outcome of market.outcomes || []) {
           if (!outcome.price) continue;
@@ -143,7 +153,14 @@ async function syncSport(sport: string) {
     }
   }
 
-  return { sport, matched, saved, debug };
+  return {
+    sport,
+    apiGames: games.length,
+    dbMatches: dbMatches.length,
+    matched,
+    saved,
+    debug,
+  };
 }
 
 export async function GET() {
@@ -153,7 +170,10 @@ export async function GET() {
     try {
       results.push(await syncSport(sport));
     } catch (e: any) {
-      results.push({ sport, error: e?.message || "Unknown error" });
+      results.push({
+        sport,
+        error: e?.name === "AbortError" ? "Odds API timeout" : e?.message || "Unknown error",
+      });
     }
   }
 
