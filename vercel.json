@@ -12,6 +12,14 @@
     {
       "path": "/api/cron/sync-news",
       "schedule": "35 0 * * *"
+    },
+    {
+      "path": "/api/cron/save-predictions",
+      "schedule": "10 0 * * *"
+    },
+    {
+      "path": "/api/cron/evaluate-predictions",
+      "schedule": "50 23 * * *"
     }
   ]
 }

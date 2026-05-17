@@ -99,28 +99,29 @@ model TeamStatSnapshot {
 }
 
 model Match {
-  id            String          @id @default(cuid())
-  leagueId      String?
-  league        League?         @relation(fields: [leagueId], references: [id])
-  season        String
-  matchday      Int?
-  kickoff       DateTime?
-  status        MatchStatus     @default(SCHEDULED)
-  homeTeamId    String
-  awayTeamId    String
-  homeTeam      Team            @relation("HomeTeam", fields: [homeTeamId], references: [id])
-  awayTeam      Team            @relation("AwayTeam", fields: [awayTeamId], references: [id])
-  homeGoals     Int?
-  awayGoals     Int?
-  venue         String?
-  source        String          @default("internal")
-  sourceId      String?
-  predictions   Prediction[]
-  stats         MatchStat?
-  odds          MatchOdds[]
-  bookmakerOdds BookmakerOdds[]
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  id                  String               @id @default(cuid())
+  leagueId            String?
+  league              League?              @relation(fields: [leagueId], references: [id])
+  season              String
+  matchday            Int?
+  kickoff             DateTime?
+  status              MatchStatus          @default(SCHEDULED)
+  homeTeamId          String
+  awayTeamId          String
+  homeTeam            Team                 @relation("HomeTeam", fields: [homeTeamId], references: [id])
+  awayTeam            Team                 @relation("AwayTeam", fields: [awayTeamId], references: [id])
+  homeGoals           Int?
+  awayGoals           Int?
+  venue               String?
+  source              String               @default("internal")
+  sourceId            String?
+  predictions         Prediction[]
+  stats               MatchStat?
+  odds                MatchOdds[]
+  bookmakerOdds       BookmakerOdds[]
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  predictionSnapshots PredictionSnapshot[]
 
   @@unique([source, sourceId])
   @@index([kickoff])
@@ -288,6 +289,37 @@ model BookmakerOdds {
   updatedAt   DateTime @updatedAt
 
   @@unique([matchId, bookmaker, market, outcome])
+  @@index([matchId])
+  @@index([market])
+}
+
+model PredictionSnapshot {
+  id          String   @id @default(cuid())
+  matchId     String
+  match       Match    @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  market      String
+  pick        String
+  probability Float
+  homeWin     Float
+  draw        Float
+  awayWin     Float
+  over25      Float
+  under25     Float
+  bttsYes     Float
+  bttsNo      Float
+  homeXg      Float
+  awayXg      Float
+  confidence  String
+  valueScore  Int
+  oddsPrice   Float?
+  impliedProb Float?
+  edge        Float?
+  result      String?
+  isCorrect   Boolean?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([matchId, market, pick, createdAt])
   @@index([matchId])
   @@index([market])
 }
