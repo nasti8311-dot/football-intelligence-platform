@@ -91,6 +91,43 @@ export default async function BestPredictionsPage() {
     }
   }
 
+  const elo = new Map<string, number>();
+
+  function initElo(team: string) {
+    if (!elo.has(team)) elo.set(team, 1500);
+  }
+
+  function expected(a: number, b: number) {
+    return 1 / (1 + Math.pow(10, (b - a) / 400));
+  }
+
+  for (const m of [...matches].reverse()) {
+    if (m.homeGoals === null || m.awayGoals === null) continue;
+
+    const home = m.homeTeam?.name || m.homeTeamId;
+    const away = m.awayTeam?.name || m.awayTeamId;
+
+    initElo(home);
+    initElo(away);
+
+    const hRating = elo.get(home)! + 60;
+    const aRating = elo.get(away)!;
+
+    const hExpected = expected(hRating, aRating);
+    const aExpected = expected(aRating, hRating);
+
+    const hg = Number(m.homeGoals);
+    const ag = Number(m.awayGoals);
+
+    const hResult = hg > ag ? 1 : hg < ag ? 0 : 0.5;
+    const aResult = ag > hg ? 1 : ag < hg ? 0 : 0.5;
+
+    const k = 30;
+
+    elo.set(home, elo.get(home)! + k * (hResult - hExpected));
+    elo.set(away, elo.get(away)! + k * (aResult - aExpected));
+  }
+
   const predictions = matches.slice(0, 60).map((m) => {
     const home = m.homeTeam?.name || m.homeTeamId;
     const away = m.awayTeam?.name || m.awayTeamId;
@@ -107,18 +144,23 @@ export default async function BestPredictionsPage() {
     const hDefense = h.played ? h.ga / h.played : 1;
     const aDefense = a.played ? a.ga / a.played : 1;
 
+    const hElo = elo.get(home) ?? 1500;
+    const aElo = elo.get(away) ?? 1500;
+
     const homeStrength =
       50 +
-      hPpg * 12 +
-      hAttack * 8 -
-      hDefense * 5 +
+      hPpg * 10 +
+      hAttack * 7 -
+      hDefense * 4 +
+      (hElo - 1500) / 18 +
       7;
 
     const awayStrength =
       50 +
-      aPpg * 12 +
-      aAttack * 8 -
-      aDefense * 5;
+      aPpg * 10 +
+      aAttack * 7 -
+      aDefense * 4 +
+      (aElo - 1500) / 18;
 
     const diff = homeStrength - awayStrength;
 
@@ -146,10 +188,10 @@ export default async function BestPredictionsPage() {
 
     const reason =
       best.label === "Home Win"
-        ? `${home} has stronger recent profile plus home advantage.`
+        ? `${home} has stronger form, Elo rating and home advantage.`
         : best.label === "Away Win"
-        ? `${away} rates higher on form and attacking output.`
-        : "Both teams rate closely, so draw probability is relevant.";
+        ? `${away} rates higher on Elo, form and attacking output.`
+        : "Both teams rate closely by Elo and form, so draw probability is relevant.";
 
     return {
       id: m.id,
@@ -185,7 +227,7 @@ export default async function BestPredictionsPage() {
         <section className="grid gap-4 md:grid-cols-3">
           <TopCard label="Best Pick" value={bestPicks[0]?.best.team ?? "N/A"} />
           <TopCard label="Highest Confidence" value={pct(bestPicks[0]?.best.prob ?? 0)} />
-          <TopCard label="Model Type" value="Form + Goals" />
+          <TopCard label="Model Type" value="Elo + Form" />
         </section>
 
         <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
