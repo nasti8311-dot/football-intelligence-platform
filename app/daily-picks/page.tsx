@@ -43,16 +43,7 @@ export default async function DailyPicksPage() {
     return dateKey(new Date(p.kickoff)) === today;
   });
 
-  const todayPicks = topDailyPicks(todayPredictions, 10);
-
-  const fillPicks = allPredictions
-    .filter((p) => !todayPicks.some((x) => x.id === p.id))
-    .sort((a, b) => {
-      if (b.valueScore !== a.valueScore) return b.valueScore - a.valueScore;
-      return b.bestProbability - a.bestProbability;
-    });
-
-  const picks = [...todayPicks, ...fillPicks].slice(0, 10);
+  const picks = topDailyPicks(todayPredictions, 10);
 
   return (
     <main className="min-h-screen stadium-page px-4 pb-28 pt-4 text-white md:px-6">
@@ -67,13 +58,13 @@ export default async function DailyPicksPage() {
           </h1>
 
           <p className="mt-4 max-w-2xl text-slate-300">
-            Jeden Tag 10 Picks: bevorzugt heutige Spiele. Wenn heute weniger
-            verfügbar sind, füllen wir mit den stärksten kommenden Value Picks auf.
+            Jeden Tag die stärksten heutigen Spiele nach Value Score,
+            Form, Elo, Heim-/Auswärtsprofil und Poisson-Modell.
           </p>
 
           <div className="mt-6 grid grid-cols-3 gap-3">
             <Top label="Picks" value={String(picks.length)} />
-            <Top label="Heute" value={String(todayPicks.length)} />
+            <Top label="Heute" value={String(picks.length)} />
             <Top label="Modell" value="Elo+" />
           </div>
         </section>
