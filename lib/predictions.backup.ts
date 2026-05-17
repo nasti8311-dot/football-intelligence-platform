@@ -292,33 +292,25 @@ export function buildPredictions(matches: MatchInput[], now = new Date()) {
 
     const eloDiff = clamp((hElo - aElo) / 450, -0.65, 0.65);
 
-    const homeAttackStrength = hAttack / 1.35;
-    const awayAttackStrength = aAttack / 1.20;
-
-    const homeDefenseWeakness = hDefense / 1.20;
-    const awayDefenseWeakness = aDefense / 1.35;
-
-    const formEdge = clamp((hWeightedPpg - aWeightedPpg) / 3, -0.35, 0.35);
-
     const homeXg = clamp(
-      1.42 *
-        homeAttackStrength *
-        awayDefenseWeakness *
-        (1 + eloDiff * 0.28) *
-        (1 + formEdge * 0.22) +
+      1.18 +
+        hAttack * 0.42 -
+        aDefense * 0.24 +
+        hWeightedPpg * 0.14 +
+        eloDiff * 0.45 +
         0.18,
       0.35,
-      3.25
+      3.4
     );
 
     const awayXg = clamp(
-      1.18 *
-        awayAttackStrength *
-        homeDefenseWeakness *
-        (1 - eloDiff * 0.24) *
-        (1 - formEdge * 0.18),
+      1.02 +
+        aAttack * 0.42 -
+        hDefense * 0.24 +
+        aWeightedPpg * 0.14 -
+        eloDiff * 0.38,
       0.25,
-      3.0
+      3.2
     );
 
     const mk = marketProbabilities(homeXg, awayXg);
@@ -339,20 +331,12 @@ export function buildPredictions(matches: MatchInput[], now = new Date()) {
       (h.played >= 8 ? 1 : 0.7) *
       (a.played >= 8 ? 1 : 0.7);
 
-    const marketStrength =
-      best.market.includes("Über") || best.market.includes("Unter") || best.market.includes("Beide")
-        ? 1.05
-        : 1.0;
-
-    const valueScore = Math.round(
-      ((best.prob - 48) * marketStrength + Math.abs(homeXg - awayXg) * 8) *
-        dataQuality
-    );
+    const valueScore = Math.round((best.prob - 45) * dataQuality + Math.abs(homeXg - awayXg) * 7);
 
     const confidence =
-      best.prob >= 66 && valueScore >= 18 && dataQuality >= 0.85
+      best.prob >= 64 && valueScore >= 18
         ? "High"
-        : best.prob >= 58 && valueScore >= 10
+        : best.prob >= 56 && valueScore >= 10
         ? "Medium"
         : "Low";
 
