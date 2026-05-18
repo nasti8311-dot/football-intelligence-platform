@@ -45,6 +45,13 @@ export default async function SystemStatusPage() {
         </section>
 
         <section className="glass-card rounded-[2rem] p-6">
+          <h2 className="text-2xl font-black">Latest Snapshot Health</h2>
+          <p className="mt-2 text-slate-300">
+            Wenn Snapshots > 0 sind, werden Daily Picks gespeichert und können später ausgewertet werden.
+          </p>
+        </section>
+
+        <section className="glass-card rounded-[2rem] p-6">
           <h2 className="text-2xl font-black">Manual Refresh</h2>
           <p className="mt-2 text-slate-300">
             Starte den kompletten täglichen Datenlauf manuell.

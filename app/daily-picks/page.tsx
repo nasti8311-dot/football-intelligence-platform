@@ -164,6 +164,35 @@ export default async function DailyPicksPage() {
             </a>
           </div>
 
+          <div className="mt-4 grid gap-3 md:grid-cols-3">
+            <div className="rounded-2xl border border-cyan-400/10 bg-cyan-400/5 p-4">
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-cyan-300">
+                Data Confidence
+              </p>
+              <p className="mt-2 text-sm text-slate-300">
+                Picks nutzen Form, Elo, Odds, News und Trends.
+              </p>
+            </div>
+
+            <a href="/news" className="rounded-2xl border border-white/10 bg-white/5 p-4">
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-white/70">
+                Match News
+              </p>
+              <p className="mt-2 text-sm text-slate-300">
+                Team-News, Verletzungen und Lineups prüfen.
+              </p>
+            </a>
+
+            <a href="/prediction-performance" className="rounded-2xl border border-emerald-400/10 bg-emerald-400/5 p-4">
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-emerald-300">
+                Performance
+              </p>
+              <p className="mt-2 text-sm text-slate-300">
+                Trefferquote und ROI live verfolgen.
+              </p>
+            </a>
+          </div>
+
           <div className="mt-4 rounded-2xl border border-emerald-400/10 bg-emerald-400/5 p-4">
             <p className="text-xs font-black uppercase tracking-[0.2em] text-emerald-300">
               Daily Tracking aktiv
