@@ -3,6 +3,7 @@ import Link from "next/link";
 import BackgroundFX from "@/components/BackgroundFX";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import Footer from "@/components/Footer";
+import BrandMark from "@/components/BrandMark";
 
 export const metadata = {
   title: "Daily Football Predictions",
@@ -30,7 +31,7 @@ export default function RootLayout({
         <header className="sticky top-0 z-50 border-b border-white/10 bg-slate-950/80 px-4 py-3 backdrop-blur-2xl">
           <div className="mx-auto flex max-w-6xl items-center justify-between">
             <Link href="/" className="font-black text-cyan-300">
-              ⚽ PredictPro
+              <BrandMark />
             </Link>
 
             <nav className="hidden gap-3 md:flex">
