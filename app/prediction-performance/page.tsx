@@ -59,6 +59,7 @@ export default async function PredictionPerformancePage() {
             <Card label="High Accuracy" value={pct(highAccuracy)} />
             <Card label="Value Accuracy" value={pct(valueAccuracy)} />
             <Card label="ROI Test" value={pct(roi)} />
+            <Card label="ROI Test" value={pct(roi)} />
           </div>
         </section>
 
