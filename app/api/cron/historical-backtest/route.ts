@@ -116,7 +116,7 @@ export async function GET() {
          "result","isCorrect","createdAt","updatedAt")
        VALUES
         (gen_random_uuid()::text,$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,
-         $15,$16,$17,$18,$19,$20,$21,$22,$23,NOW())
+         $15,$16,$17,$18,$19,$20,$21,$22,NOW(),NOW())
        ON CONFLICT DO NOTHING`,
       p.id,
       p.bestMarket,
