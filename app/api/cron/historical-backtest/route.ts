@@ -44,7 +44,7 @@ export async function GET() {
 
   const finished = allMatches
     .filter((m) => m.kickoff && m.homeGoals !== null && m.awayGoals !== null)
-    .slice(-250);
+    .slice(-40);
 
   const calibrationRows = (await prisma.$queryRawUnsafe(`
     SELECT "market","sampleSize","accuracy","roi"
@@ -107,7 +107,8 @@ export async function GET() {
       continue;
     }
 
-    await prisma.$executeRawUnsafe(
+    try {
+      await prisma.$executeRawUnsafe(
       `INSERT INTO "PredictionSnapshot"
         ("id","matchId","market","pick","probability","homeWin","draw","awayWin",
          "over25","under25","bttsYes","bttsNo","homeXg","awayXg","confidence",
@@ -141,7 +142,17 @@ export async function GET() {
       ok
     );
 
-    created++;
+      created++;
+    } catch (e: any) {
+      skipped++;
+      if (debug.length < 12) {
+        debug.push({
+          match: `${target.home} vs ${target.away}`,
+          error: e?.message || "insert failed",
+        });
+      }
+      continue;
+    }
 
     if (debug.length < 12) {
       debug.push({
