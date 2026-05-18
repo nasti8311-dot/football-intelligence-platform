@@ -2,6 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import TeamBadge from "@/components/TeamBadge";
 import { buildPredictions } from "@/lib/predictions";
+import { premiumAdjustPredictions } from "@/lib/premium-model";
 
 export const dynamic = "force-dynamic";
 
@@ -73,7 +74,15 @@ export default async function DailyPicksPage() {
     news: newsByMatch.get(m.id) || [],
   }));
 
-  const allPredictions = buildPredictions(matchesWithNews, dayStart);
+  const calibrationRows = (await prisma.$queryRawUnsafe(`
+    SELECT "market","sampleSize","accuracy","roi"
+    FROM "ModelCalibration"
+  `).catch(() => [])) as any[];
+
+  const allPredictions = premiumAdjustPredictions(
+    buildPredictions(matchesWithNews, dayStart),
+    calibrationRows
+  );
   const today = dateKey(new Date());
 
   const todayPredictions = allPredictions.filter((p) => {
@@ -130,6 +139,8 @@ export default async function DailyPicksPage() {
   const valueCount = picks.filter(
     (pick: any) => pick.edge !== null && pick.edge !== undefined && pick.edge >= 6
   ).length;
+
+  const premiumCount = picks.filter((pick: any) => pick.premiumTier === "Premium").length;
 
   return (
     <main className="min-h-screen stadium-page px-4 pb-28 pt-4 text-white md:px-6">
@@ -205,7 +216,7 @@ export default async function DailyPicksPage() {
           <div className="mt-4 grid grid-cols-3 gap-3">
             <Top label="Picks" value={String(picks.length)} />
             <Top label="Avg Prob" value={`${avgProb}%`} />
-            <Top label="Value" value={String(valueCount)} />
+            <Top label="Premium" value={String(premiumCount)} />
           </div>
         </section>
 
@@ -256,6 +267,18 @@ export default async function DailyPicksPage() {
                     </div>
 
                     <div className="flex gap-2">
+                      {p.premiumTier === "Premium" && (
+                        <span className="rounded-full bg-emerald-400/15 px-3 py-1 text-xs font-black text-emerald-300">
+                          PREMIUM PICK
+                        </span>
+                      )}
+
+                      {p.premiumTier === "Strong" && (
+                        <span className="rounded-full bg-cyan-400/15 px-3 py-1 text-xs font-black text-cyan-300">
+                          STRONG PICK
+                        </span>
+                      )}
+
                       {!isToday && (
                         <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-bold text-slate-300">
                           Next
@@ -450,7 +473,7 @@ export default async function DailyPicksPage() {
                           Prediction Quality
                         </p>
                         <p className="mt-1 text-sm font-black text-cyan-300">
-                          Score {p.valueScore}
+                          Premium {p.premiumScore ?? p.valueScore}
                         </p>
                       </div>
 

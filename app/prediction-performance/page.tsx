@@ -7,6 +7,12 @@ function pct(v: number) {
 }
 
 export default async function PredictionPerformancePage() {
+  const calibrationRows = (await prisma.$queryRawUnsafe(`
+    SELECT "market","sampleSize","accuracy","roi","profit"
+    FROM "ModelCalibration"
+    ORDER BY "market" ASC
+  `).catch(() => [])) as any[];
+
   const snapshots: any[] = await prisma.$queryRawUnsafe(`
     SELECT ps.*, m."homeTeamId", m."awayTeamId", m."homeGoals", m."awayGoals"
     FROM "PredictionSnapshot" ps
@@ -81,6 +87,29 @@ export default async function PredictionPerformancePage() {
             </p>
           </section>
         )}
+
+        <section className="glass-card rounded-[2rem] p-6">
+          <h2 className="text-2xl font-black">Model Calibration</h2>
+          <p className="mt-2 text-slate-300">
+            Markt-spezifisches Learning aus echten ausgewerteten Snapshots.
+          </p>
+
+          <div className="mt-5 grid gap-3 md:grid-cols-3">
+            {calibrationRows.map((r: any) => (
+              <div key={r.market} className="rounded-2xl bg-slate-950/60 p-4">
+                <p className="text-xs uppercase tracking-[0.2em] text-cyan-300">
+                  {r.market}
+                </p>
+                <p className="mt-2 text-2xl font-black text-white">
+                  {Math.round(Number(r.accuracy || 0))}% Acc
+                </p>
+                <p className="mt-1 text-sm text-slate-400">
+                  Sample {r.sampleSize} · ROI {Math.round(Number(r.roi || 0))}%
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
 
         <section className="grid gap-4">
           {snapshots.slice(0, 60).map((s) => (
