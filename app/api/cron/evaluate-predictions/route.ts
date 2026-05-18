@@ -17,18 +17,26 @@ function evaluate(market: string, homeGoals: number, awayGoals: number) {
 
 export async function GET() {
   const snapshots: any[] = await prisma.$queryRawUnsafe(`
-    SELECT ps.*, m."homeGoals", m."awayGoals"
+    SELECT
+      ps.id,
+      ps.market,
+      ps."isCorrect",
+      m."homeGoals",
+      m."awayGoals"
     FROM "PredictionSnapshot" ps
     JOIN "Match" m ON m.id = ps."matchId"
-    WHERE ps."isCorrect" IS NULL
+    WHERE (ps."isCorrect" IS NULL)
       AND m."homeGoals" IS NOT NULL
       AND m."awayGoals" IS NOT NULL
   `);
 
   let evaluated = 0;
+  const debug = [];
 
   for (const s of snapshots) {
-    const ok = evaluate(s.market, Number(s.homeGoals), Number(s.awayGoals));
+    const homeGoals = Number(s.homeGoals);
+    const awayGoals = Number(s.awayGoals);
+    const ok = evaluate(String(s.market), homeGoals, awayGoals);
 
     if (ok === null) continue;
 
@@ -37,17 +45,28 @@ export async function GET() {
        SET "isCorrect" = $1,
            "result" = $2,
            "updatedAt" = NOW()
-       WHERE id = $3`,
+       WHERE "id" = $3`,
       ok,
-      `${s.homeGoals}:${s.awayGoals}`,
+      `${homeGoals}:${awayGoals}`,
       s.id
     );
 
     evaluated++;
+
+    if (debug.length < 10) {
+      debug.push({
+        id: s.id,
+        market: s.market,
+        result: `${homeGoals}:${awayGoals}`,
+        correct: ok,
+      });
+    }
   }
 
   return NextResponse.json({
     ok: true,
+    found: snapshots.length,
     evaluated,
+    debug,
   });
 }
