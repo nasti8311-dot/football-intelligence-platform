@@ -3,6 +3,7 @@ import Link from "next/link";
 import BackgroundFX from "@/components/BackgroundFX";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import Footer from "@/components/Footer";
+import PlausibleProvider from "next-plausible";
 import BrandMark from "@/components/BrandMark";
 
 export const metadata = {
