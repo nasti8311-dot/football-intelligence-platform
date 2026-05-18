@@ -4,6 +4,7 @@ import TeamBadge from "@/components/TeamBadge";
 import { buildPredictions } from "@/lib/predictions";
 import { premiumAdjustPredictions } from "@/lib/premium-model";
 import { advancedTune } from "@/lib/advanced-tuning";
+import { filterElitePicks, rankElitePicks } from "@/lib/pick-quality";
 
 export const dynamic = "force-dynamic";
 
@@ -114,7 +115,9 @@ export default async function DailyPicksPage() {
     ])
   );
 
-  const picks = rawPicks.map((p) => {
+  const elitePool = rankElitePicks(filterElitePicks(rawPicks));
+
+  const picks = elitePool.map((p) => {
     const odds = oddsByMatch.get(p.id) || [];
     const bestOdds = odds
       .filter((o: any) => {
