@@ -164,6 +164,15 @@ export default async function DailyPicksPage() {
             </a>
           </div>
 
+          <div className="mt-4 rounded-2xl border border-emerald-400/10 bg-emerald-400/5 p-4">
+            <p className="text-xs font-black uppercase tracking-[0.2em] text-emerald-300">
+              Daily Tracking aktiv
+            </p>
+            <p className="mt-2 text-sm text-slate-300">
+              Diese Picks werden als Snapshot gespeichert und später automatisch mit echten Ergebnissen ausgewertet.
+            </p>
+          </div>
+
           <div className="mt-4 grid grid-cols-3 gap-3">
             <Top label="Picks" value={String(picks.length)} />
             <Top label="Avg Prob" value={`${avgProb}%`} />

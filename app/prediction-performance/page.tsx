@@ -16,7 +16,9 @@ export default async function PredictionPerformancePage() {
   `);
 
   const evaluated = snapshots.filter((s) => s.isCorrect !== null);
+  const pendingCount = snapshots.filter((s) => s.isCorrect === null).length;
   const correct = evaluated.filter((s) => s.isCorrect === true).length;
+  const wrong = evaluated.filter((s) => s.isCorrect === false).length;
   const accuracy = evaluated.length ? (correct / evaluated.length) * 100 : 0;
 
   const high = evaluated.filter((s) => s.confidence === "High");
@@ -54,7 +56,9 @@ export default async function PredictionPerformancePage() {
 
           <div className="mt-8 grid gap-4 md:grid-cols-4">
             <Card label="Gespeichert" value={String(snapshots.length)} />
-            <Card label="Ausgewertet" value={String(evaluated.length)} />
+            <Card label="Pending" value={String(pendingCount)} />
+            <Card label="Correct" value={String(correct)} />
+            <Card label="Wrong" value={String(wrong)} />
             <Card label="Accuracy" value={pct(accuracy)} />
             <Card label="High Accuracy" value={pct(highAccuracy)} />
             <Card label="Value Accuracy" value={pct(valueAccuracy)} />

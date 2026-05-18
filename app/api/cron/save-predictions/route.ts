@@ -51,6 +51,17 @@ export async function GET() {
     })
     .slice(0, 10);
 
+  const predictionIds = predictions.map((p) => p.id);
+
+  if (predictionIds.length) {
+    await prisma.$executeRawUnsafe(
+      `DELETE FROM "PredictionSnapshot"
+       WHERE "matchId" = ANY($1)
+       AND DATE("createdAt") = CURRENT_DATE`,
+      predictionIds
+    );
+  }
+
   let saved = 0;
 
   for (const p of predictions) {
