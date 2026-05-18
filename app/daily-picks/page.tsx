@@ -144,8 +144,8 @@ export default async function DailyPicksPage() {
           </h1>
 
           <p className="mt-4 max-w-2xl text-slate-300">
-            Jeden Tag die stärksten heutigen Spiele nach Value Score,
-            Form, Elo, Heim-/Auswärtsprofil und Poisson-Modell.
+            Die stärksten heutigen Picks nach Value Score, Form, Elo, Heim-/Auswärtsprofil,
+            Odds-Edge, News-Signalen und Poisson-Modell.
           </p>
 
           <div className="mt-6 flex gap-3">
