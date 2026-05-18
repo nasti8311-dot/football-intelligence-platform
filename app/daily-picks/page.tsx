@@ -120,6 +120,17 @@ export default async function DailyPicksPage() {
     };
   });
 
+  const avgProb = picks.length
+    ? Math.round(
+        picks.reduce((sum: number, pick: any) => sum + pick.bestProbability, 0) /
+          picks.length
+      )
+    : 0;
+
+  const valueCount = picks.filter(
+    (pick: any) => pick.edge !== null && pick.edge !== undefined && pick.edge >= 6
+  ).length;
+
   return (
     <main className="min-h-screen stadium-page px-4 pb-28 pt-4 text-white md:px-6">
       <div className="mx-auto max-w-5xl space-y-6">
