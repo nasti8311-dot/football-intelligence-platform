@@ -1,3 +1,4 @@
+import { analyzeNews } from "./news-intelligence";
 export type MatchInput = {
   id: string;
   kickoff: Date | null;
