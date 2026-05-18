@@ -707,7 +707,7 @@ export function buildPredictions(matches: MatchInput[], now = new Date()) {
         m.home,
         m.away,
         best.market,
-        bestProbability,
+        best.prob,
         buildTrends(
           m.home,
           m.away,
