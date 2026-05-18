@@ -201,6 +201,15 @@ export default async function NewsPage() {
                       </span>
                     </div>
 
+                    <div className="mt-4 flex gap-3">
+                      <a
+                        href={`/team-form?team=${encodeURIComponent(p.home)}`}
+                        className="rounded-2xl bg-cyan-400 px-4 py-3 text-sm font-bold text-slate-950"
+                      >
+                        Team Form
+                      </a>
+                    </div>
+
                     <div className="mt-3 flex flex-wrap gap-2">
                       {intelligence.tags.map((tag: string) => (
                         <span

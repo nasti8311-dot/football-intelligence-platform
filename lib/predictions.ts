@@ -39,6 +39,7 @@ export type Prediction = {
   trends: string[];
   injurySignals: string[];
   injuryPenalty: number;
+  summary: string;
   homeLast10: FormGame[];
   awayLast10: FormGame[];
 };
@@ -130,6 +131,44 @@ function marketProbabilities(homeXg: number, awayXg: number) {
 
 function expectedElo(a: number, b: number) {
   return 1 / (1 + Math.pow(10, (b - a) / 400));
+}
+
+
+
+function buildSummary(
+  home: string,
+  away: string,
+  market: string,
+  probability: number,
+  trends: string[],
+  injurySignals: string[],
+  edge?: number | null
+) {
+  const parts: string[] = [];
+
+  parts.push(`${home} vs ${away}:`);
+
+  if (probability >= 70) {
+    parts.push(`starkes Modellvertrauen für ${market}.`);
+  } else if (probability >= 60) {
+    parts.push(`solider Modellvorteil für ${market}.`);
+  } else {
+    parts.push(`leichter Modellvorteil für ${market}.`);
+  }
+
+  if (edge !== null && edge !== undefined && edge >= 6) {
+    parts.push(`Der Markt zeigt zusätzlich eine Value Edge von ${edge.toFixed(1)}%.`);
+  }
+
+  if (trends.length) {
+    parts.push(`Trend-Signale: ${trends.slice(0, 2).join(", ")}.`);
+  }
+
+  if (injurySignals.length) {
+    parts.push(`Squad-News: ${injurySignals.slice(0, 2).join(", ")}.`);
+  }
+
+  return parts.join(" ");
 }
 
 
@@ -664,6 +703,26 @@ export function buildPredictions(matches: MatchInput[], now = new Date()) {
       reason,
       injurySignals: injury.signals,
       injuryPenalty: injury.penalty,
+      summary: buildSummary(
+        m.home,
+        m.away,
+        best.market,
+        bestProbability,
+        buildTrends(
+          m.home,
+          m.away,
+          homeXg,
+          awayXg,
+          h.recentGf,
+          h.recentGa,
+          a.recentGf,
+          a.recentGa,
+          h.recentPoints,
+          a.recentPoints
+        ),
+        injury.signals,
+        bestEdge
+      ),
       trends: buildTrends(
         m.home,
         m.away,
