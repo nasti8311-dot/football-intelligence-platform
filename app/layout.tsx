@@ -27,33 +27,37 @@ export default function RootLayout({
   return (
     <html lang="de">
       <body className="bg-slate-950 text-white">
-        <BackgroundFX />
+        <PlausibleProvider
+          domain="football-intelligence-platform-tau.vercel.app"
+          trackOutboundLinks
+        >
+          <BackgroundFX />
 
-        <header className="sticky top-0 z-50 border-b border-white/10 bg-slate-950/80 px-4 py-3 backdrop-blur-2xl">
-          <div className="mx-auto flex max-w-6xl items-center justify-between">
-            <Link href="/" className="font-black text-cyan-300">
-              <BrandMark />
-            </Link>
+          <header className="sticky top-0 z-50 border-b border-white/10 bg-slate-950/80 px-4 py-3 backdrop-blur-2xl">
+            <div className="mx-auto flex max-w-6xl items-center justify-between">
+              <Link href="/" className="font-black text-cyan-300">
+                <BrandMark />
+              </Link>
 
-            <nav className="hidden gap-3 md:flex">
-              {nav.map(([href, label]) => (
-                <Link
-                  key={href}
-                  href={href}
-                  className="rounded-xl px-4 py-2 text-sm font-bold text-slate-300 hover:bg-white/10 hover:text-cyan-300"
-                >
-                  {label}
-                </Link>
-              ))}
-            </nav>
-          </div>
-        </header>
+              <nav className="hidden gap-3 md:flex">
+                {nav.map(([href, label]) => (
+                  <Link
+                    key={href}
+                    href={href}
+                    className="rounded-xl px-4 py-2 text-sm font-bold text-slate-300 hover:bg-white/10 hover:text-cyan-300"
+                  >
+                    {label}
+                  </Link>
+                ))}
+              </nav>
+            </div>
+          </header>
 
-        <main className="relative z-10">{children}</main>
+          <main className="relative z-10">{children}</main>
 
-        <Footer />
-        <MobileBottomNav />
-          </PlausibleProvider>
+          <Footer />
+          <MobileBottomNav />
+        </PlausibleProvider>
       </body>
     </html>
   );
