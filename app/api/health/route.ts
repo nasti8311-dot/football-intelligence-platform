@@ -5,15 +5,15 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const snapshots: any[] = await prisma.$queryRawUnsafe(`
+    const snapshots = (await prisma.$queryRawUnsafe(`
       SELECT COUNT(*)::int as count
       FROM "PredictionSnapshot"
-    `).catch(() => [{ count: 0 }]);
+    `).catch(() => [{ count: 0 }])) as any[];
 
-    const matches: any[] = await prisma.$queryRawUnsafe(`
+    const matches = (await prisma.$queryRawUnsafe(`
       SELECT COUNT(*)::int as count
       FROM "Match"
-    `).catch(() => [{ count: 0 }]);
+    `).catch(() => [{ count: 0 }])) as any[];
 
     return NextResponse.json({
       ok: true,
