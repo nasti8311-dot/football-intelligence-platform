@@ -403,6 +403,30 @@ export default async function DailyPicksPage() {
                     </p>
                     <p className="mt-2 text-sm leading-7 text-slate-200">{p.reason}</p>
 
+                    <div className="mt-4 grid grid-cols-2 gap-3">
+                      <div className="rounded-2xl bg-slate-950/60 p-3">
+                        <p className="text-[11px] uppercase tracking-[0.2em] text-slate-500">
+                          Prediction Quality
+                        </p>
+                        <p className="mt-1 text-sm font-black text-cyan-300">
+                          Score {p.valueScore}
+                        </p>
+                      </div>
+
+                      <div className="rounded-2xl bg-slate-950/60 p-3">
+                        <p className="text-[11px] uppercase tracking-[0.2em] text-slate-500">
+                          Squad Risk
+                        </p>
+                        <p className={`mt-1 text-sm font-black ${
+                          (p.injuryPenalty || 0) > 0.08
+                            ? "text-red-300"
+                            : "text-emerald-300"
+                        }`}>
+                          {(p.injuryPenalty || 0) > 0.08 ? "Elevated" : "Normal"}
+                        </p>
+                      </div>
+                    </div>
+
                     {p.oddsPrice && (
                       <div className="mt-4 rounded-2xl bg-cyan-400/10 p-3">
                         <p className="text-xs font-bold text-cyan-300">

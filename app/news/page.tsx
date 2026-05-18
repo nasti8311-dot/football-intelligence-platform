@@ -159,9 +159,15 @@ export default async function NewsPage() {
                   </div>
 
                   <div className="mt-5 rounded-2xl bg-slate-950/60 p-4">
-                    <p className="text-sm font-bold text-cyan-300">
-                      Prediction Kontext
-                    </p>
+                    <div className="mb-3 flex items-center justify-between">
+                      <p className="text-sm font-bold text-cyan-300">
+                        Prediction Kontext
+                      </p>
+
+                      <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-bold text-slate-300">
+                        {news.length} Articles Found
+                      </span>
+                    </div>
                     <p className="mt-2 text-sm text-slate-300">
                       Top Pick: {p.bestMarket} · Modellwahrscheinlichkeit {Math.round(p.bestProbability)}%
                     </p>

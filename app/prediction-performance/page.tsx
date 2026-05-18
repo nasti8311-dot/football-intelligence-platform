@@ -73,6 +73,15 @@ export default async function PredictionPerformancePage() {
           </div>
         </section>
 
+        {evaluated.length === 0 && (
+          <section className="glass-card rounded-3xl p-6 text-center">
+            <h2 className="text-2xl font-black">Noch keine ausgewerteten Picks</h2>
+            <p className="mt-2 text-slate-300">
+              Sobald gespeicherte Picks ein Endergebnis haben, berechnet diese Seite echte Accuracy, Value Accuracy und ROI.
+            </p>
+          </section>
+        )}
+
         <section className="grid gap-4">
           {snapshots.slice(0, 60).map((s) => (
             <article key={s.id} className="glass-card rounded-3xl p-5">
