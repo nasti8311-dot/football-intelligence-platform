@@ -9,17 +9,17 @@ export default async function SystemStatusPage() {
     where: { kickoff: { gt: new Date() } },
   });
 
-  const odds: any[] = await prisma.$queryRawUnsafe(`
+  const odds = (await prisma.$queryRawUnsafe(`
     SELECT COUNT(*)::int AS count FROM "BookmakerOdds"
-  `).catch(() => [{ count: 0 }]);
+  `).catch(() => [{ count: 0 }])) as any[];
 
-  const news: any[] = await prisma.$queryRawUnsafe(`
+  const news = (await prisma.$queryRawUnsafe(`
     SELECT COUNT(*)::int AS count FROM "MatchNews"
-  `).catch(() => [{ count: 0 }]);
+  `).catch(() => [{ count: 0 }])) as any[];
 
-  const snapshots: any[] = await prisma.$queryRawUnsafe(`
+  const snapshots = (await prisma.$queryRawUnsafe(`
     SELECT COUNT(*)::int AS count FROM "PredictionSnapshot"
-  `).catch(() => [{ count: 0 }]);
+  `).catch(() => [{ count: 0 }])) as any[];
 
   return (
     <main className="min-h-screen stadium-page px-4 pb-28 pt-4 text-white md:px-6">
