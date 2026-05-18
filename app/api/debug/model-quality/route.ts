@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const overview: any[] = await prisma.$queryRawUnsafe(`
+  const overview = (await prisma.$queryRawUnsafe(`
     SELECT
       COUNT(*)::int as total,
       COUNT(*) FILTER (WHERE "isCorrect" IS NOT NULL)::int as evaluated,
@@ -14,9 +14,9 @@ export async function GET() {
     total: 0,
     evaluated: 0,
     correct: 0,
-  }]);
+  }])) as any[];
 
-  const markets: any[] = await prisma.$queryRawUnsafe(`
+  const markets = (await prisma.$queryRawUnsafe(`
     SELECT
       market,
       COUNT(*)::int as total,
@@ -24,7 +24,7 @@ export async function GET() {
     FROM "PredictionSnapshot"
     GROUP BY market
     ORDER BY total DESC
-  `).catch(() => []);
+  `).catch(() => [])) as any[];
 
   return NextResponse.json({
     ok: true,
