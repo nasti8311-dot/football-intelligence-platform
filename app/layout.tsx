@@ -27,10 +27,7 @@ export default function RootLayout({
   return (
     <html lang="de">
       <body className="bg-slate-950 text-white">
-        <PlausibleProvider
-          domain="football-intelligence-platform-tau.vercel.app"
-          trackOutboundLinks
-        >
+        <PlausibleProvider trackOutboundLinks>
           <BackgroundFX />
 
           <header className="sticky top-0 z-50 border-b border-white/10 bg-slate-950/80 px-4 py-3 backdrop-blur-2xl">
