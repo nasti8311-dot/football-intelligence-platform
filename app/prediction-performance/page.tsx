@@ -118,6 +118,17 @@ export default async function PredictionPerformancePage() {
                 </div>
               </div>
 
+              {s.summary && (
+                <div className="mt-4 rounded-2xl bg-white/5 p-4">
+                  <p className="text-xs font-black uppercase tracking-[0.2em] text-cyan-300">
+                    Snapshot Summary
+                  </p>
+                  <p className="mt-2 text-sm leading-7 text-slate-300">
+                    {s.summary}
+                  </p>
+                </div>
+              )}
+
               {s.result && (
                 <p className="mt-4 text-3xl font-black text-cyan-300">
                   Ergebnis {s.result}
