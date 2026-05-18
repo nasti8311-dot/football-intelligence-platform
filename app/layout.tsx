@@ -53,6 +53,7 @@ export default function RootLayout({
 
         <Footer />
         <MobileBottomNav />
+          </PlausibleProvider>
       </body>
     </html>
   );
