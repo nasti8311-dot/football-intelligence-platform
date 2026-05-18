@@ -3,7 +3,6 @@ import Link from "next/link";
 import BackgroundFX from "@/components/BackgroundFX";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import Footer from "@/components/Footer";
-import PlausibleProvider from "next-plausible";
 import BrandMark from "@/components/BrandMark";
 
 export const metadata = {
@@ -26,9 +25,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="de">
+      <head>
+        <script
+          defer
+          data-domain="football-intelligence-platform-tau.vercel.app"
+          src="https://plausible.io/js/script.js"
+        />
+      </head>
       <body className="bg-slate-950 text-white">
-        <PlausibleProvider trackOutboundLinks>
-          <BackgroundFX />
+        <BackgroundFX />
 
           <header className="sticky top-0 z-50 border-b border-white/10 bg-slate-950/80 px-4 py-3 backdrop-blur-2xl">
             <div className="mx-auto flex max-w-6xl items-center justify-between">
@@ -52,9 +57,8 @@ export default function RootLayout({
 
           <main className="relative z-10">{children}</main>
 
-          <Footer />
-          <MobileBottomNav />
-        </PlausibleProvider>
+        <Footer />
+        <MobileBottomNav />
       </body>
     </html>
   );
