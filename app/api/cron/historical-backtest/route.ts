@@ -18,7 +18,9 @@ function evaluate(market: string, homeGoals: number, awayGoals: number) {
   return null;
 }
 
-export async function GET() {
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const limit = Math.min(Number(searchParams.get("limit") || 80), 300);
   const rows = await prisma.match.findMany({
     take: 3000,
     orderBy: { kickoff: "asc" },
@@ -44,7 +46,7 @@ export async function GET() {
 
   const finished = allMatches
     .filter((m) => m.kickoff && m.homeGoals !== null && m.awayGoals !== null)
-    .slice(-40);
+    .slice(-limit);
 
   const calibrationRows = (await prisma.$queryRawUnsafe(`
     SELECT "market","sampleSize","accuracy","roi"
