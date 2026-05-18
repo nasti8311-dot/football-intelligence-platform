@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
-const competitions = ["PL"];
+const competitions = ["PL", "PD", "FL1"];
 
 function sourceCode(code: string) {
   return code;
@@ -38,7 +38,7 @@ export async function GET() {
 
       let updated = 0;
 
-      for (const m of matches.slice(-30)) {
+      for (const m of matches.slice(-40)) {
         const sourceId = String(m.id);
         const homeGoals = m.score?.fullTime?.home;
         const awayGoals = m.score?.fullTime?.away;
