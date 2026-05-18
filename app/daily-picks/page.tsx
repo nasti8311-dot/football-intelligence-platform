@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import TeamBadge from "@/components/TeamBadge";
 import { buildPredictions } from "@/lib/predictions";
 import { premiumAdjustPredictions } from "@/lib/premium-model";
+import { advancedTune } from "@/lib/advanced-tuning";
 
 export const dynamic = "force-dynamic";
 
@@ -79,9 +80,18 @@ export default async function DailyPicksPage() {
     FROM "ModelCalibration"
   `).catch(() => [])) as any[];
 
-  const allPredictions = premiumAdjustPredictions(
-    buildPredictions(matchesWithNews, dayStart),
-    calibrationRows
+  const leagueCalibrationRows = (await prisma.$queryRawUnsafe(`
+    SELECT "league","sampleSize","accuracy","roi"
+    FROM "LeagueCalibration"
+  `).catch(() => [])) as any[];
+
+  const allPredictions = advancedTune(
+    premiumAdjustPredictions(
+      buildPredictions(matchesWithNews, dayStart),
+      calibrationRows
+    ),
+    calibrationRows,
+    leagueCalibrationRows
   );
   const today = dateKey(new Date());
 
@@ -267,6 +277,18 @@ export default async function DailyPicksPage() {
                     </div>
 
                     <div className="flex gap-2">
+                      {p.recommendation === "Elite" && (
+                        <span className="rounded-full bg-emerald-400 px-3 py-1 text-xs font-black text-slate-950">
+                          ELITE PICK
+                        </span>
+                      )}
+
+                      {p.recommendation === "Premium" && (
+                        <span className="rounded-full bg-emerald-400/15 px-3 py-1 text-xs font-black text-emerald-300">
+                          PREMIUM+
+                        </span>
+                      )}
+
                       {p.premiumTier === "Premium" && (
                         <span className="rounded-full bg-emerald-400/15 px-3 py-1 text-xs font-black text-emerald-300">
                           PREMIUM PICK
@@ -467,13 +489,39 @@ export default async function DailyPicksPage() {
                       </div>
                     )}
 
+                    {(p.marketCalibration || p.leagueCalibration) && (
+                      <div className="mt-4 grid grid-cols-2 gap-3">
+                        {p.marketCalibration && (
+                          <div className="rounded-2xl bg-slate-950/60 p-3">
+                            <p className="text-[11px] uppercase tracking-[0.2em] text-slate-500">
+                              Market Learn
+                            </p>
+                            <p className="mt-1 text-xs font-black text-cyan-300">
+                              {p.marketCalibration}
+                            </p>
+                          </div>
+                        )}
+
+                        {p.leagueCalibration && (
+                          <div className="rounded-2xl bg-slate-950/60 p-3">
+                            <p className="text-[11px] uppercase tracking-[0.2em] text-slate-500">
+                              League Learn
+                            </p>
+                            <p className="mt-1 text-xs font-black text-emerald-300">
+                              {p.leagueCalibration}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
                     <div className="mt-4 grid grid-cols-2 gap-3">
                       <div className="rounded-2xl bg-slate-950/60 p-3">
                         <p className="text-[11px] uppercase tracking-[0.2em] text-slate-500">
                           Prediction Quality
                         </p>
                         <p className="mt-1 text-sm font-black text-cyan-300">
-                          Premium {p.premiumScore ?? p.valueScore}
+                          Tuned {p.tunedScore ?? p.premiumScore ?? p.valueScore}
                         </p>
                       </div>
 

@@ -7,6 +7,12 @@ function pct(v: number) {
 }
 
 export default async function PredictionPerformancePage() {
+  const leagueCalibrationRows = (await prisma.$queryRawUnsafe(`
+    SELECT "league","sampleSize","accuracy","roi","profit"
+    FROM "LeagueCalibration"
+    ORDER BY "sampleSize" DESC
+  `).catch(() => [])) as any[];
+
   const calibrationRows = (await prisma.$queryRawUnsafe(`
     SELECT "market","sampleSize","accuracy","roi","profit"
     FROM "ModelCalibration"
@@ -99,6 +105,29 @@ export default async function PredictionPerformancePage() {
               <div key={r.market} className="rounded-2xl bg-slate-950/60 p-4">
                 <p className="text-xs uppercase tracking-[0.2em] text-cyan-300">
                   {r.market}
+                </p>
+                <p className="mt-2 text-2xl font-black text-white">
+                  {Math.round(Number(r.accuracy || 0))}% Acc
+                </p>
+                <p className="mt-1 text-sm text-slate-400">
+                  Sample {r.sampleSize} · ROI {Math.round(Number(r.roi || 0))}%
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="glass-card rounded-[2rem] p-6">
+          <h2 className="text-2xl font-black">League Calibration</h2>
+          <p className="mt-2 text-slate-300">
+            Erkennt, in welchen Ligen das Modell aktuell besser oder schwächer performt.
+          </p>
+
+          <div className="mt-5 grid gap-3 md:grid-cols-3">
+            {leagueCalibrationRows.map((r: any) => (
+              <div key={r.league} className="rounded-2xl bg-slate-950/60 p-4">
+                <p className="text-xs uppercase tracking-[0.2em] text-emerald-300">
+                  {r.league}
                 </p>
                 <p className="mt-2 text-2xl font-black text-white">
                   {Math.round(Number(r.accuracy || 0))}% Acc
