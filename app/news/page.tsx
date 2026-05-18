@@ -2,6 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { buildPredictions } from "@/lib/predictions";
 import TeamBadge from "@/components/TeamBadge";
+import { analyzeNews } from "@/lib/news-intelligence";
 
 export const dynamic = "force-dynamic";
 
@@ -137,6 +138,7 @@ export default async function NewsPage() {
           <section className="grid gap-5">
             {predictions.map((p) => {
               const news = newsMap.get(p.id) || [];
+              const intelligence = analyzeNews(news);
 
               return (
                 <article key={p.id} className="glass-card rounded-[2rem] p-5">
@@ -163,6 +165,42 @@ export default async function NewsPage() {
                     <p className="mt-2 text-sm text-slate-300">
                       Top Pick: {p.bestMarket} · Modellwahrscheinlichkeit {Math.round(p.bestProbability)}%
                     </p>
+                  </div>
+
+                  <div className="mt-4 rounded-2xl border border-emerald-400/10 bg-emerald-400/5 p-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <p className="text-xs font-black uppercase tracking-[0.2em] text-emerald-300">
+                          News Intelligence
+                        </p>
+                        <p className="mt-1 text-sm text-slate-300">
+                          Automatische Auswertung aus gespeicherten News-Artikeln.
+                        </p>
+                      </div>
+
+                      <span
+                        className={`rounded-full px-3 py-1 text-xs font-black ${
+                          intelligence.risk === "High"
+                            ? "bg-red-400/15 text-red-300"
+                            : intelligence.risk === "Medium"
+                            ? "bg-yellow-400/15 text-yellow-300"
+                            : "bg-emerald-400/15 text-emerald-300"
+                        }`}
+                      >
+                        {intelligence.risk} Risk
+                      </span>
+                    </div>
+
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {intelligence.tags.map((tag: string) => (
+                        <span
+                          key={tag}
+                          className="rounded-full bg-slate-950/70 px-3 py-2 text-xs font-bold text-slate-200"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
                   </div>
 
                   <div className="mt-5 space-y-3">

@@ -21,7 +21,7 @@ async function saveNews(matchId: string, home: string, away: string) {
     throw new Error("Missing NEWS_API_KEY");
   }
 
-  const q = `("${home}" "${away}" football) OR ("${home}" injury) OR ("${away}" injury) OR ("${home}" lineup) OR ("${away}" lineup) OR ("${home}" suspended) OR ("${away}" suspended) OR ("${home}" team news) OR ("${away}" team news)`;
+  const q = `("${home}" "${away}" football) OR ("${home}" team news) OR ("${away}" team news) OR ("${home}" injury) OR ("${away}" injury) OR ("${home}" suspended) OR ("${away}" suspended) OR ("${home}" predicted lineup) OR ("${away}" predicted lineup) OR ("${home}" unavailable) OR ("${away}" unavailable)`;
 
   const url =
     "https://newsapi.org/v2/everything?" +
