@@ -137,7 +137,23 @@ export default async function DailyPicksPage() {
             Form, Elo, Heim-/Auswärtsprofil und Poisson-Modell.
           </p>
 
-          <div className="mt-6 grid grid-cols-3 gap-3">
+          <div className="mt-6 flex gap-3">
+            <a
+              href="/news"
+              className="flex-1 rounded-2xl bg-white/10 px-5 py-4 text-center text-sm font-bold text-white"
+            >
+              News & Team Updates
+            </a>
+
+            <a
+              href="/prediction-performance"
+              className="flex-1 rounded-2xl bg-cyan-400 px-5 py-4 text-center text-sm font-bold text-slate-950"
+            >
+              Performance
+            </a>
+          </div>
+
+          <div className="mt-4 grid grid-cols-3 gap-3">
             <Top label="Picks" value={String(picks.length)} />
             <Top label="Avg Prob" value={`${avgProb}%`} />
             <Top label="Value" value={String(valueCount)} />

@@ -88,8 +88,23 @@ export default async function NewsPage() {
           </h1>
 
           <p className="mt-4 max-w-2xl text-slate-300">
-            Tägliche News, Team-Updates, Verletzungs- und Formhinweise zu den Spielen auf der Startseite.
+            Tägliche News, Team-Updates, Verletzungs- und Formhinweise zu genau den Spielen, die heute auf der Startseite als Picks erscheinen.
           </p>
+
+          <div className="mt-6 grid grid-cols-3 gap-3">
+            <div className="rounded-2xl bg-slate-950/60 p-4">
+              <p className="text-xs text-slate-500">Matches</p>
+              <p className="mt-1 text-2xl font-black text-cyan-300">{predictions.length}</p>
+            </div>
+            <div className="rounded-2xl bg-slate-950/60 p-4">
+              <p className="text-xs text-slate-500">Focus</p>
+              <p className="mt-1 text-2xl font-black text-cyan-300">Injury</p>
+            </div>
+            <div className="rounded-2xl bg-slate-950/60 p-4">
+              <p className="text-xs text-slate-500">Update</p>
+              <p className="mt-1 text-2xl font-black text-cyan-300">Daily</p>
+            </div>
+          </div>
 
           <Link
             href="/"
@@ -153,7 +168,7 @@ export default async function NewsPage() {
                   <div className="mt-5 space-y-3">
                     {news.length === 0 ? (
                       <div className="rounded-2xl bg-white/5 p-4 text-sm text-slate-400">
-                        Noch keine gespeicherten News für dieses Spiel. Der tägliche News-Sync sammelt automatisch relevante Artikel, sobald News verfügbar sind.
+                        Noch keine gespeicherten News für dieses Spiel. Der tägliche Sync sucht nach Team News, Verletzungen, Lineups und Form-Updates.
                       </div>
                     ) : (
                       news.map((n: any) => (
