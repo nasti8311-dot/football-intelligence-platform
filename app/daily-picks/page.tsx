@@ -188,6 +188,16 @@ export default async function DailyPicksPage() {
             </a>
           </div>
 
+          <div className="mt-4 rounded-2xl border border-yellow-400/10 bg-yellow-400/5 p-4">
+            <p className="text-xs font-black uppercase tracking-[0.2em] text-yellow-300">
+              Responsible Prediction Notice
+            </p>
+            <p className="mt-2 text-sm text-slate-300">
+              Predictions are data-based probabilities, not guarantees. We rank picks by model strength,
+              historical calibration, market edge and risk signals.
+            </p>
+          </div>
+
           <div className="mt-4 grid gap-3 md:grid-cols-3">
             <div className="rounded-2xl border border-cyan-400/10 bg-cyan-400/5 p-4">
               <p className="text-xs font-black uppercase tracking-[0.2em] text-cyan-300">

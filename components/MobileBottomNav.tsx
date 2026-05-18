@@ -8,7 +8,6 @@ const items = [
   ["📰", "/news", "News"],
   ["📊", "/prediction-performance", "Stats"],
   ["⭐", "/elo-ratings", "Ratings"],
-  ["⚙️", "/system-status", "System"],
 ];
 
 export default function MobileBottomNav() {
@@ -16,7 +15,7 @@ export default function MobileBottomNav() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/10 bg-slate-950/95 backdrop-blur-xl md:hidden">
-      <div className="grid grid-cols-5">
+      <div className="grid grid-cols-4">
         {items.map(([icon, href, label]) => {
           const active = pathname === href;
 

@@ -13,7 +13,6 @@ const nav = [
   ["/news", "News"],
   ["/prediction-performance", "Performance"],
   ["/elo-ratings", "Ratings"],
-  ["/system-status", "System"],
 ];
 
 export default function RootLayout({

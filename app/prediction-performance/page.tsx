@@ -67,7 +67,7 @@ export default async function PredictionPerformancePage() {
           </h1>
 
           <p className="mt-4 max-w-2xl text-slate-300">
-            Echte Trefferquote aus gespeicherten Daily-Pick-Snapshots.
+           Live performance tracking from stored prediction snapshots, including accuracy, value-pick tracking and ROI simulation.
           </p>
 
           <div className="mt-8 grid gap-4 md:grid-cols-4">
