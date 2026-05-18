@@ -63,14 +63,14 @@ export async function GET() {
   for (const target of finished) {
     if (!target.kickoff) continue;
 
-    const existing: any[] = await prisma.$queryRawUnsafe(
+    const existing = (await prisma.$queryRawUnsafe(
       `SELECT id FROM "PredictionSnapshot"
        WHERE "matchId" = $1
        AND "createdAt" < $2
        LIMIT 1`,
       target.id,
       target.kickoff
-    ).catch(() => []);
+    ).catch(() => [])) as any[];
 
     if (existing.length) {
       skipped++;
