@@ -14,36 +14,42 @@ function dateKey(date: Date) {
   }).format(date);
 }
 
-async function saveNews(matchId: string, home: string, away: string) {
-  const apiKey = process.env.NEWS_API_KEY;
+function simplifyTeam(name: string) {
+  return String(name || "")
+    .replace(/\bFC\b/g, "")
+    .replace(/\bCF\b/g, "")
+    .replace(/\bAC\b/g, "")
+    .replace(/\bSC\b/g, "")
+    .replace(/\bCalcio\b/g, "")
+    .replace(/\bBalompié\b/g, "")
+    .replace(/\b1901\b/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
 
-  if (!apiKey) {
-    throw new Error("Missing NEWS_API_KEY");
-  }
-
-  const q = `("${home}" "${away}" football) OR ("${home}" team news) OR ("${away}" team news) OR ("${home}" injury) OR ("${away}" injury) OR ("${home}" suspended) OR ("${away}" suspended) OR ("${home}" predicted lineup) OR ("${away}" predicted lineup) OR ("${home}" unavailable) OR ("${away}" unavailable)`;
-
+async function fetchNews(query: string, apiKey: string) {
   const url =
     "https://newsapi.org/v2/everything?" +
     new URLSearchParams({
-      q,
+      q: query,
       searchIn: "title,description",
       language: "en",
       sortBy: "publishedAt",
-      pageSize: "5",
+      pageSize: "4",
       apiKey,
     });
 
   const res = await fetch(url, { cache: "no-store" });
 
   if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`NewsAPI ${res.status}: ${text}`);
+    return [];
   }
 
   const data = await res.json();
-  const articles = data.articles || [];
+  return data.articles || [];
+}
 
+async function saveArticles(matchId: string, query: string, articles: any[]) {
   let saved = 0;
 
   for (const a of articles) {
@@ -70,7 +76,7 @@ async function saveNews(matchId: string, home: string, away: string) {
       a.source?.name || null,
       a.urlToImage || null,
       a.publishedAt ? new Date(a.publishedAt) : null,
-      q
+      query
     );
 
     saved++;
@@ -79,8 +85,44 @@ async function saveNews(matchId: string, home: string, away: string) {
   return saved;
 }
 
+async function saveNews(matchId: string, home: string, away: string) {
+  const apiKey = process.env.NEWS_API_KEY;
+
+  if (!apiKey) {
+    throw new Error("Missing NEWS_API_KEY");
+  }
+
+  const h = simplifyTeam(home);
+  const a = simplifyTeam(away);
+
+  const queries = [
+    `"${h}" "${a}" football`,
+    `"${h}" team news injury lineup`,
+    `"${a}" team news injury lineup`,
+    `"${h}" football`,
+    `"${a}" football`,
+  ];
+
+  let totalSaved = 0;
+  const debug = [];
+
+  for (const q of queries) {
+    const articles = await fetchNews(q, apiKey);
+    const saved = await saveArticles(matchId, q, articles);
+    totalSaved += saved;
+    debug.push({ q, found: articles.length, saved });
+
+    if (totalSaved >= 6) break;
+  }
+
+  return { saved: totalSaved, debug };
+}
+
 export async function GET() {
   const today = dateKey(new Date());
+
+  const dayStart = new Date();
+  dayStart.setHours(0, 0, 0, 0);
 
   const rows = await prisma.match.findMany({
     take: 2500,
@@ -89,6 +131,7 @@ export async function GET() {
       homeTeam: true,
       awayTeam: true,
       league: true,
+      bookmakerOdds: true,
     },
   });
 
@@ -101,10 +144,8 @@ export async function GET() {
     homeGoals: m.homeGoals,
     awayGoals: m.awayGoals,
     odds: (m as any).bookmakerOdds || [],
+    news: [],
   }));
-
-  const dayStart = new Date();
-  dayStart.setHours(0, 0, 0, 0);
 
   const picks = buildPredictions(matches, dayStart)
     .filter((p) => p.kickoff && dateKey(new Date(p.kickoff)) === today)
@@ -118,8 +159,8 @@ export async function GET() {
 
   for (const p of picks) {
     try {
-      const saved = await saveNews(p.id, p.home, p.away);
-      results.push({ match: `${p.home} vs ${p.away}`, saved });
+      const result = await saveNews(p.id, p.home, p.away);
+      results.push({ match: `${p.home} vs ${p.away}`, ...result });
     } catch (e: any) {
       results.push({
         match: `${p.home} vs ${p.away}`,
