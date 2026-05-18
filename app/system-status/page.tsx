@@ -26,7 +26,7 @@ export default async function SystemStatusPage() {
       <div className="mx-auto max-w-5xl space-y-6">
         <section className="glass-card glow rounded-[2rem] p-6 md:p-10">
           <p className="text-xs uppercase tracking-[0.3em] text-cyan-300">
-            System Status
+            Internal Operations
           </p>
           <h1 className="page-title mt-4 text-4xl font-black md:text-6xl">
             Data Health

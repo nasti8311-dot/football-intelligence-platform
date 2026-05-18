@@ -584,6 +584,34 @@ export default async function DailyPicksPage() {
             })}
           </section>
         )}
+        <section className="glass-card rounded-[2rem] p-6 md:p-8">
+          <h2 className="text-2xl font-black text-white">
+            Why trust these picks?
+          </h2>
+
+          <div className="mt-5 grid gap-4 md:grid-cols-3">
+            <div className="rounded-2xl bg-slate-950/60 p-4">
+              <p className="font-black text-cyan-300">Backtested</p>
+              <p className="mt-2 text-sm text-slate-400">
+                Historical snapshots are evaluated against real results.
+              </p>
+            </div>
+
+            <div className="rounded-2xl bg-slate-950/60 p-4">
+              <p className="font-black text-cyan-300">Calibrated</p>
+              <p className="mt-2 text-sm text-slate-400">
+                Markets and leagues are adjusted based on measured performance.
+              </p>
+            </div>
+
+            <div className="rounded-2xl bg-slate-950/60 p-4">
+              <p className="font-black text-cyan-300">Transparent</p>
+              <p className="mt-2 text-sm text-slate-400">
+                Accuracy, ROI simulation and methodology are visible.
+              </p>
+            </div>
+          </div>
+        </section>
       </div>
     </main>
   );

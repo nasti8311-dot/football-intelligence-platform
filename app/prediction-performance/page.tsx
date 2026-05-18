@@ -66,6 +66,13 @@ export default async function PredictionPerformancePage() {
             Prediction Performance
           </h1>
 
+          <a
+            href="/"
+            className="mt-6 inline-block rounded-2xl bg-cyan-400 px-5 py-3 font-bold text-slate-950"
+          >
+            Back to today&apos;s picks
+          </a>
+
           <p className="mt-4 max-w-2xl text-slate-300">
            Live performance tracking from stored prediction snapshots, including accuracy, value-pick tracking and ROI simulation.
           </p>
