@@ -2,6 +2,7 @@ import "./globals.css";
 import Link from "next/link";
 import BackgroundFX from "@/components/BackgroundFX";
 import MobileBottomNav from "@/components/MobileBottomNav";
+import Footer from "@/components/Footer";
 
 export const metadata = {
   title: "Daily Football Predictions",
@@ -48,6 +49,7 @@ export default function RootLayout({
 
         <main className="relative z-10">{children}</main>
 
+        <Footer />
         <MobileBottomNav />
       </body>
     </html>
