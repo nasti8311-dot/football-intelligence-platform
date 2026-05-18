@@ -176,6 +176,10 @@ export default async function NewsPage() {
                         <p className="mt-1 text-sm text-slate-300">
                           Automatische Auswertung aus gespeicherten News-Artikeln.
                         </p>
+
+                        <p className="mt-2 text-xs text-slate-400">
+                          Risk basiert auf Injury-, Suspension-, Lineup- und Squad-News.
+                        </p>
                       </div>
 
                       <span

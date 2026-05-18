@@ -306,6 +306,12 @@ export default async function DailyPicksPage() {
                       }`}>
                         {p.confidence}
                       </p>
+
+                      {(p.injuryPenalty || 0) > 0.08 && (
+                        <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.2em] text-red-300">
+                          Risk adjusted
+                        </p>
+                      )}
                     </div>
                     <div className="rounded-2xl bg-slate-950/60 p-3">
                       <p className="text-[11px] uppercase tracking-[0.2em] text-slate-500">

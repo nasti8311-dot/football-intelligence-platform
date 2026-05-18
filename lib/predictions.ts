@@ -518,6 +518,7 @@ export function buildPredictions(matches: MatchInput[], now = new Date()) {
     const homeDefenseWeakness = clamp(hDefenseBlend / lb.awayGoals, 0.45, 2.25);
 
     const injury = extractInjurySignals((m as any).news || []);
+    const newsIntel = analyzeNews((m as any).news || []);
 
     let homeXg = lb.homeGoals *
       Math.pow(homeAttackStrength, 0.66) *
@@ -527,7 +528,8 @@ export function buildPredictions(matches: MatchInput[], now = new Date()) {
       (1 + homeTableStrength * 0.22) *
       (1 - awayTableStrength * 0.14) *
       (1 + hScheduleAdj * 0.35 - aScheduleAdj * 0.20) *
-      (1 - injury.penalty * 0.6);
+      (1 - injury.penalty * 0.6) *
+      (1 - newsIntel.score * 0.015);
 
     let awayXg = lb.awayGoals *
       Math.pow(awayAttackStrength, 0.66) *
@@ -537,7 +539,8 @@ export function buildPredictions(matches: MatchInput[], now = new Date()) {
       (1 + awayTableStrength * 0.22) *
       (1 - homeTableStrength * 0.14) *
       (1 + aScheduleAdj * 0.35 - hScheduleAdj * 0.20) *
-      (1 - injury.penalty * 0.45);
+      (1 - injury.penalty * 0.45) *
+      (1 - newsIntel.score * 0.012);
 
     homeXg = clamp(homeXg, 0.25, 3.4);
     awayXg = clamp(awayXg, 0.20, 3.1);
