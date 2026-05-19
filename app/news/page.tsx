@@ -120,10 +120,10 @@ export default async function NewsPage() {
             Automatisch aktualisiert
           </p>
           <h2 className="mt-2 text-2xl font-black">
-            News-Kontext für deine Daily Picks
+            News-Kontext für deine Tagespicks
           </h2>
           <p className="mt-2 text-sm text-slate-300">
-            Diese Seite zeigt nur News zu den Spielen, die auch auf der Startseite als Picks erscheinen.
+            Diese Seite zeigt News zu den Spielen, die auf der Startseite als Picks erscheinen.
           </p>
         </section>
 
@@ -161,15 +161,15 @@ export default async function NewsPage() {
                   <div className="mt-5 rounded-2xl bg-slate-950/60 p-4">
                     <div className="mb-3 flex items-center justify-between">
                       <p className="text-sm font-bold text-cyan-300">
-                        Prediction Kontext
+                        Prognose-Kontext
                       </p>
 
                       <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-bold text-slate-300">
-                        {news.length} Articles Found
+                        {news.length} Artikel gefunden
                       </span>
                     </div>
                     <p className="mt-2 text-sm text-slate-300">
-                      Top Pick: {p.bestMarket} · Modellwahrscheinlichkeit {Math.round(p.bestProbability)}%
+                      Top-Pick: {p.bestMarket} · Modell-Wahrscheinlichkeit {Math.round(p.bestProbability)}%
                     </p>
                   </div>
 
@@ -177,14 +177,14 @@ export default async function NewsPage() {
                     <div className="flex items-center justify-between gap-3">
                       <div>
                         <p className="text-xs font-black uppercase tracking-[0.2em] text-emerald-300">
-                          News Intelligence
+                          News-Auswertung
                         </p>
                         <p className="mt-1 text-sm text-slate-300">
                           Automatische Auswertung aus gespeicherten News-Artikeln.
                         </p>
 
                         <p className="mt-2 text-xs text-slate-400">
-                          Risk basiert auf Injury-, Suspension-, Lineup- und Squad-News.
+                          Risiko basiert auf Verletzungen, Sperren, Aufstellungen und Team-News.
                         </p>
                       </div>
 

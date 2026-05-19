@@ -44,7 +44,7 @@ export default async function MatchDetailPage({
       <main className="min-h-screen stadium-page px-4 py-10 text-white">
         <div className="mx-auto max-w-4xl">
           <section className="glass-card rounded-[2rem] p-8">
-            <h1 className="text-3xl font-black">Match not found</h1>
+            <h1 className="text-3xl font-black">Spiel nicht gefunden</h1>
             <Link href="/" className="mt-5 inline-block text-cyan-300">
               Back to picks
             </Link>
@@ -138,7 +138,7 @@ export default async function MatchDetailPage({
       <div className="mx-auto max-w-6xl space-y-6">
         <section className="glass-card glow rounded-[2rem] p-6 md:p-10">
           <Link href="/" className="text-sm font-bold text-cyan-300">
-            ← Back to daily picks
+            ← Zurück zu den Tagespicks
           </Link>
 
           <div className="mt-8 grid items-center gap-6 md:grid-cols-[1fr_auto_1fr]">
@@ -170,9 +170,9 @@ export default async function MatchDetailPage({
 
         {p && (
           <section className="grid gap-4 md:grid-cols-4">
-            <Metric label="Top Pick" value={p.bestMarket} />
-            <Metric label="Probability" value={pct(p.bestProbability)} />
-            <Metric label="xG Projection" value={`${p.homeXg.toFixed(1)} : ${p.awayXg.toFixed(1)}`} />
+            <Metric label="Top-Pick" value={p.bestMarket} />
+            <Metric label="Wahrscheinlichkeit" value={pct(p.bestWahrscheinlichkeit)} />
+            <Metric label="xG-Projektion" value={`${p.homeXg.toFixed(1)} : ${p.awayXg.toFixed(1)}`} />
             <Metric label="Tuned Score" value={String(p.tunedScore ?? p.valueScore)} />
           </section>
         )}
@@ -180,7 +180,7 @@ export default async function MatchDetailPage({
         {p && (
           <section className="glass-card rounded-[2rem] p-6">
             <p className="text-xs uppercase tracking-[0.25em] text-cyan-300">
-              AI Match Analysis
+              KI-Spielanalyse
             </p>
             <h2 className="mt-2 text-3xl font-black">
               {p.recommendation || p.premiumTier || "Model Pick"} · {p.bestMarket}
@@ -212,15 +212,15 @@ export default async function MatchDetailPage({
         </section>
 
         <section className="glass-card rounded-[2rem] p-6">
-          <h2 className="text-2xl font-black">News Intelligence</h2>
+          <h2 className="text-2xl font-black">News-Auswertung</h2>
           <p className="mt-2 text-sm text-slate-400">
-            Risk level: {newsIntel.risk} · {newsRows.length} articles found
+            Risiko-Level: {newsIntel.risk} · {newsRows.length} Artikel gefunden
           </p>
 
           <div className="mt-5 grid gap-3">
             {newsRows.length === 0 ? (
               <div className="rounded-2xl bg-yellow-400/10 p-4 text-sm text-yellow-200">
-                No stored news yet for this match. Run the news sync to collect articles.
+                Noch keine gespeicherten News für dieses Spiel. Starte den News-Sync, um Artikel zu sammeln.
               </div>
             ) : (
               newsRows.map((n: any) => (
@@ -261,7 +261,7 @@ function FormPanel({ title, rows, team }: { title: string; rows: any[]; team: st
 
       <div className="mt-5 space-y-3">
         {rows.length === 0 ? (
-          <p className="text-sm text-slate-400">No recent results available.</p>
+          <p className="text-sm text-slate-400">Keine aktuellen Ergebnisse verfügbar.</p>
         ) : (
           rows.map((m) => {
             const home = m.homeTeam?.name || m.homeTeamId;

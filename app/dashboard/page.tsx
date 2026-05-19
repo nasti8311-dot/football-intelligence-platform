@@ -50,13 +50,13 @@ export default async function DashboardPage() {
     LIMIT 200
   `).catch(() => [])) as any[];
 
-  const evaluated = snapshots.filter((s) => s.isCorrect !== null);
-  const correct = evaluated.filter((s) => s.isCorrect === true).length;
+  const evaluated = snapshots.filter((s) => s.isRichtig !== null);
+  const correct = evaluated.filter((s) => s.isRichtig === true).length;
   const accuracy = evaluated.length ? (correct / evaluated.length) * 100 : 0;
 
   const value = evaluated.filter((s) => Number(s.edge || 0) >= 6);
-  const valueCorrect = value.filter((s) => s.isCorrect === true).length;
-  const valueAccuracy = value.length ? (valueCorrect / value.length) * 100 : 0;
+  const valueRichtig = value.filter((s) => s.isRichtig === true).length;
+  const valueTrefferquote = value.length ? (valueRichtig / value.length) * 100 : 0;
 
   const premium = snapshots.filter((s) => Number(s.valueScore || 0) >= 25);
 
@@ -72,9 +72,9 @@ export default async function DashboardPage() {
     SELECT
       "market",
       COUNT(*)::int as total,
-      COUNT(*) FILTER (WHERE "isCorrect" = true)::int as correct
+      COUNT(*) FILTER (WHERE "isRichtig" = true)::int as correct
     FROM "PredictionSnapshot"
-    WHERE "isCorrect" IS NOT NULL
+    WHERE "isRichtig" IS NOT NULL
     GROUP BY "market"
     ORDER BY total DESC
     LIMIT 5
@@ -85,23 +85,22 @@ export default async function DashboardPage() {
       <div className="mx-auto max-w-6xl space-y-6">
         <section className="glass-card glow rounded-[2rem] p-6 md:p-10">
           <p className="text-xs uppercase tracking-[0.3em] text-cyan-300">
-            Member Dashboard
+            Mitglieder-Dashboard
           </p>
 
           <h1 className="page-title mt-4 text-4xl font-black md:text-6xl">
-            Welcome, {session.user.name || "Member"}
+            Willkommen, {session.user.name || "Member"}
           </h1>
 
           <p className="mt-4 max-w-2xl text-slate-300">
-            Your personal command center for premium picks, model performance and
-            prediction intelligence.
+            Deine persönliche Übersicht für Premium-Picks, Modell-Performance und Prognose-Intelligence.
           </p>
 
           <div className="mt-7 grid grid-cols-2 gap-3 md:grid-cols-4">
-            <Card label="Tracked Picks" value={String(snapshots.length)} />
-            <Card label="Evaluated" value={String(evaluated.length)} />
-            <Card label="Accuracy" value={pct(accuracy)} />
-            <Card label="Value Accuracy" value={pct(valueAccuracy)} />
+            <Card label="Getrackte Picks" value={String(snapshots.length)} />
+            <Card label="Ausgewertet" value={String(evaluated.length)} />
+            <Card label="Trefferquote" value={pct(accuracy)} />
+            <Card label="Value Trefferquote" value={pct(valueTrefferquote)} />
           </div>
 
           <div className="mt-6 flex flex-wrap gap-3">
@@ -109,30 +108,30 @@ export default async function DashboardPage() {
               href="/"
               className="rounded-2xl bg-cyan-400 px-5 py-3 font-bold text-slate-950"
             >
-              Today&apos;s Picks
+              Heutige Picks
             </Link>
 
             <Link
               href="/prediction-performance"
               className="rounded-2xl bg-white/10 px-5 py-3 font-bold text-white"
             >
-              Full Performance
+              Gesamte Bilanz
             </Link>
 
             <Link
               href="/news"
               className="rounded-2xl bg-white/10 px-5 py-3 font-bold text-white"
             >
-              Match News
+              Spiel-News
             </Link>
           </div>
         </section>
 
         <section className="grid gap-4 md:grid-cols-2">
           <div className="glass-card rounded-[2rem] p-6">
-            <h2 className="text-2xl font-black">Best Markets</h2>
+            <h2 className="text-2xl font-black">Beste Märkte</h2>
             <p className="mt-2 text-sm text-slate-400">
-              Accuracy by evaluated prediction market.
+              Trefferquote by evaluated prediction market.
             </p>
 
             <div className="mt-5 space-y-3">
@@ -155,42 +154,42 @@ export default async function DashboardPage() {
           </div>
 
           <div className="glass-card rounded-[2rem] p-6">
-            <h2 className="text-2xl font-black">Member Status</h2>
+            <h2 className="text-2xl font-black">Mitgliedsstatus</h2>
             <p className="mt-2 text-sm text-slate-400">
-              Free beta access is active.
+              Kostenloser Beta-Zugang ist aktiv.
             </p>
 
             <div className="mt-5 rounded-3xl border border-emerald-400/10 bg-emerald-400/5 p-5">
               <p className="text-xs uppercase tracking-[0.25em] text-emerald-300">
-                Access Level
+                Zugriffslevel
               </p>
-              <p className="mt-2 text-3xl font-black text-white">Beta Member</p>
+              <p className="mt-2 text-3xl font-black text-white">Beta-Mitglied</p>
               <p className="mt-2 text-sm text-slate-300">
-                Premium picks, news intelligence and performance tracking included.
+                Premium-Picks, News-Auswertung und Performance-Tracking inklusive.
               </p>
             </div>
 
             <div className="mt-4 rounded-3xl bg-slate-950/60 p-5">
               <p className="text-xs uppercase tracking-[0.25em] text-cyan-300">
-                Premium Signals
+                Premium-Signale
               </p>
               <p className="mt-2 text-3xl font-black text-white">
                 {premium.length}
               </p>
               <p className="mt-2 text-sm text-slate-400">
-                High-value model signals currently tracked.
+                Aktuell getrackte hochwertige Modell-Signale.
               </p>
             </div>
           </div>
         </section>
 
         <section className="glass-card rounded-[2rem] p-6">
-          <h2 className="text-2xl font-black">Saved Picks</h2>
+          <h2 className="text-2xl font-black">Gespeicherte Picks</h2>
 
           <div className="mt-5 grid gap-3">
             {savedPicks.length === 0 ? (
               <p className="text-sm text-slate-400">
-                No saved picks yet. Save picks from the daily picks page.
+                Noch keine gespeicherten Picks. Speichere Picks auf der Tagespicks-Seite.
               </p>
             ) : (
               savedPicks.map((s: any) => (
@@ -212,7 +211,7 @@ export default async function DashboardPage() {
         </section>
 
         <section className="glass-card rounded-[2rem] p-6">
-          <h2 className="text-2xl font-black">Latest Prediction Snapshots</h2>
+          <h2 className="text-2xl font-black">Neueste Prognose-Snapshots</h2>
 
           <div className="mt-5 grid gap-3">
             {snapshots.slice(0, 10).map((s) => (
@@ -229,18 +228,18 @@ export default async function DashboardPage() {
 
                   <span
                     className={`rounded-full px-3 py-1 text-xs font-black ${
-                      s.isCorrect === true
+                      s.isRichtig === true
                         ? "bg-emerald-400/15 text-emerald-300"
-                        : s.isCorrect === false
+                        : s.isRichtig === false
                         ? "bg-red-400/15 text-red-300"
                         : "bg-white/10 text-slate-300"
                     }`}
                   >
-                    {s.isCorrect === true
-                      ? "Correct"
-                      : s.isCorrect === false
-                      ? "Wrong"
-                      : "Pending"}
+                    {s.isRichtig === true
+                      ? "Richtig"
+                      : s.isRichtig === false
+                      ? "Falsch"
+                      : "Offen"}
                   </span>
                 </div>
               </div>
