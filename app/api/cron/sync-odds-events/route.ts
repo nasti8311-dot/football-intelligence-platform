@@ -90,13 +90,14 @@ export async function GET() {
 
         await prisma.$executeRawUnsafe(
           `INSERT INTO "League"
-            ("id","name","code")
+            ("id","name","code","createdAt","updatedAt")
            VALUES
-            ($1,$2,$3)
+            ($1,$2,$3,NOW(),NOW())
            ON CONFLICT ("id")
            DO UPDATE SET
             "name" = EXCLUDED."name",
-            "code" = EXCLUDED."code"`,
+            "code" = EXCLUDED."code",
+            "updatedAt" = NOW()`,
           leagueId,
           leagueName,
           sport
