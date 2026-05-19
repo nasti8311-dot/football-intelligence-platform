@@ -107,7 +107,7 @@ export async function GET() {
           `INSERT INTO "Match"
             ("id","source","sourceId","kickoff","homeTeamId","awayTeamId","leagueId","status","season")
            VALUES
-            (gen_random_uuid()::text,$1,$2,$3,$4,$5,$6,$7,$8)
+            (gen_random_uuid()::text,$1,$2,$3,$4,$5,$6,$7::"MatchStatus",$8)
            ON CONFLICT ("source","sourceId")
            DO UPDATE SET
             "kickoff" = EXCLUDED."kickoff",
