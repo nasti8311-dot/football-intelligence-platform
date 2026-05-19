@@ -84,7 +84,11 @@ export async function GET() {
         await prisma.league.upsert({
           where: { id: leagueId },
           update: { name: sport.replaceAll("_", " ") },
-          create: { id: leagueId, name: sport.replaceAll("_", " ") },
+          create: {
+            id: leagueId,
+            name: sport.replaceAll("_", " "),
+            code: sport,
+          },
         });
 
         await prisma.match.upsert({
