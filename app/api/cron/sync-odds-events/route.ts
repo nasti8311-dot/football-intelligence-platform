@@ -59,6 +59,9 @@ export async function GET() {
             attack: 50,
             defense: 50,
             elo: 1500,
+            form: 50,
+            xgFor: 1.3,
+            xgAgainst: 1.3,
           },
         });
 
@@ -72,6 +75,9 @@ export async function GET() {
             attack: 50,
             defense: 50,
             elo: 1500,
+            form: 50,
+            xgFor: 1.3,
+            xgAgainst: 1.3,
           },
         });
 
