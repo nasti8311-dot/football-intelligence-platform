@@ -4,6 +4,7 @@ import BackgroundFX from "@/components/BackgroundFX";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import Footer from "@/components/Footer";
 import BrandMark from "@/components/BrandMark";
+import AuthButton from "@/components/AuthButton";
 
 export const metadata = {
   title: "Daily Football Predictions",
@@ -52,6 +53,8 @@ export default function RootLayout({
                   </Link>
                 ))}
               </nav>
+
+              <AuthButton />
             </div>
           </header>
 
