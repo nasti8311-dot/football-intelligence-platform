@@ -116,7 +116,20 @@ export default async function DailyPicksPage() {
   );
 
   const elitePool = rankElitePicks(filterElitePicks(rawPicks));
-  const finalPool = elitePool.length > 0 ? elitePool : rawPicks.slice(0, 10);
+
+  const todayPool = elitePool.length > 0 ? elitePool : rawPicks;
+
+  const fallbackPool = allPredictions
+    .filter((p: any) => !todayPool.some((x: any) => x.id === p.id))
+    .sort((a: any, b: any) => {
+      if ((b.tunedScore ?? 0) !== (a.tunedScore ?? 0)) {
+        return (b.tunedScore ?? 0) - (a.tunedScore ?? 0);
+      }
+      return b.bestProbability - a.bestProbability;
+    });
+
+  const finalPool = [...todayPool, ...fallbackPool]
+    .slice(0, Math.max(5, Math.min(10, todayPool.length + fallbackPool.length)));
 
   const picks = finalPool.map((p) => {
     const odds = oddsByMatch.get(p.id) || [];
