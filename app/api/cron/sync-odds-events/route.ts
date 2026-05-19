@@ -62,9 +62,9 @@ export async function GET() {
 
         await prisma.$executeRawUnsafe(
           `INSERT INTO "Team"
-            ("id","name","shortName","attack","defense","elo","form","xgFor","xgAgainst")
+            ("id","name","shortName","country","attack","defense","elo","form","xgFor","xgAgainst")
            VALUES
-            ($1,$2,$3,50,50,1500,50,1.3,1.3)
+            ($1,$2,$3,'Unknown',50,50,1500,50,1.3,1.3)
            ON CONFLICT ("id")
            DO UPDATE SET
             "name" = EXCLUDED."name",
@@ -76,9 +76,9 @@ export async function GET() {
 
         await prisma.$executeRawUnsafe(
           `INSERT INTO "Team"
-            ("id","name","shortName","attack","defense","elo","form","xgFor","xgAgainst")
+            ("id","name","shortName","country","attack","defense","elo","form","xgFor","xgAgainst")
            VALUES
-            ($1,$2,$3,50,50,1500,50,1.3,1.3)
+            ($1,$2,$3,'Unknown',50,50,1500,50,1.3,1.3)
            ON CONFLICT ("id")
            DO UPDATE SET
             "name" = EXCLUDED."name",
