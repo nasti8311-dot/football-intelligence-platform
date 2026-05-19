@@ -175,17 +175,41 @@ export default async function DailyPicksPage() {
       return b.bestProbability - a.bestProbability;
     });
 
-  const todayStrictPool = todayPool.filter((p: any) => {
+  const now = new Date();
+  const horizon = new Date(Date.now() + 1000 * 60 * 60 * 24 * 14);
+
+  const upcomingPool = [...todayPool, ...fallbackPool]
+    .filter((p: any) => {
+      if (!p.kickoff) return false;
+      const k = new Date(p.kickoff);
+      return k >= now && k <= horizon;
+    })
+    .sort((a: any, b: any) => {
+      const ad = new Date(a.kickoff).getTime();
+      const bd = new Date(b.kickoff).getTime();
+
+      const aToday = dateKey(new Date(a.kickoff)) === today ? 1 : 0;
+      const bToday = dateKey(new Date(b.kickoff)) === today ? 1 : 0;
+
+      if (bToday !== aToday) return bToday - aToday;
+
+      if ((b.tunedScore ?? 0) !== (a.tunedScore ?? 0)) {
+        return (b.tunedScore ?? 0) - (a.tunedScore ?? 0);
+      }
+
+      if (b.bestProbability !== a.bestProbability) {
+        return b.bestProbability - a.bestProbability;
+      }
+
+      return ad - bd;
+    });
+
+  const finalPool = upcomingPool.slice(0, 10);
+
+  const todayStrictPool = finalPool.filter((p: any) => {
     if (!p.kickoff) return false;
     return dateKey(new Date(p.kickoff)) === today;
   });
-
-  const nextDaysPool = fallbackPool.filter((p: any) => {
-    if (!p.kickoff) return false;
-    return dateKey(new Date(p.kickoff)) !== today;
-  });
-
-  const finalPool = [...todayStrictPool, ...nextDaysPool].slice(0, 10);
 
   const hasEnoughToday = todayStrictPool.length >= 5;
 
@@ -232,7 +256,7 @@ export default async function DailyPicksPage() {
       <div className="mx-auto max-w-5xl space-y-6">
         <section className="glass-card glow rounded-[2rem] p-6 md:p-10">
           <p className="text-xs uppercase tracking-[0.3em] text-cyan-300">
-            Daily Tagespicks
+            Daily Picks
           </p>
 
           <h1 className="page-title mt-4 text-4xl font-black leading-tight md:text-6xl">
@@ -305,8 +329,8 @@ export default async function DailyPicksPage() {
                 Heute weniger als 5 Spiele verfügbar
               </p>
               <p className="mt-2 text-sm text-slate-300">
-                Wir zeigen zuerst alle tagesaktuellen Picks. Wenn heute weniger als 5 Spiele verfügbar sind,
-                ergänzen wir die Liste mit den stärksten kommenden Spielen.
+                Wir zeigen zuerst heutige Spiele. Wenn heute nicht genug hochwertige Spiele verfügbar sind,
+                ergänzen wir transparent mit den stärksten kommenden Spielen der nächsten Tage.
               </p>
             </div>
           )}
