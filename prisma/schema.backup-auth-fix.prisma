@@ -38,8 +38,6 @@ model User {
   organization   Organization? @relation(fields: [organizationId], references: [id])
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
-  accounts       Account[]
-  sessions       Session[]
 }
 
 model League {
@@ -326,6 +324,7 @@ model PredictionSnapshot {
   @@index([market])
 }
 
+
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -352,6 +351,18 @@ model Session {
   expires      DateTime
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }
 
 model VerificationToken {
