@@ -14,11 +14,20 @@ function slug(s: string) {
     .replace(/^-|-$/g, "");
 }
 
+function seasonFromDate(date: Date) {
+  const year = date.getUTCFullYear();
+  const month = date.getUTCMonth() + 1;
+  return month >= 7 ? `${year}/${year + 1}` : `${year - 1}/${year}`;
+}
+
 export async function GET() {
   const apiKey = process.env.ODDS_API_KEY;
 
   if (!apiKey) {
-    return NextResponse.json({ ok: false, error: "Missing ODDS_API_KEY" }, { status: 500 });
+    return NextResponse.json(
+      { ok: false, error: "Missing ODDS_API_KEY" },
+      { status: 500 }
+    );
   }
 
   const results = [];
@@ -48,73 +57,73 @@ export async function GET() {
         const homeId = slug(home);
         const awayId = slug(away);
         const leagueId = slug(sport);
+        const leagueName = sport.replaceAll("_", " ");
+        const season = seasonFromDate(kickoff);
 
-        await prisma.team.upsert({
-          where: { id: homeId },
-          update: { name: home },
-          create: {
-            id: homeId,
-            name: home,
-            shortName: home,
-            attack: 50,
-            defense: 50,
-            elo: 1500,
-            form: 50,
-            xgFor: 1.3,
-            xgAgainst: 1.3,
-          },
-        });
+        await prisma.$executeRawUnsafe(
+          `INSERT INTO "Team"
+            ("id","name","shortName","attack","defense","elo","form","xgFor","xgAgainst")
+           VALUES
+            ($1,$2,$3,50,50,1500,50,1.3,1.3)
+           ON CONFLICT ("id")
+           DO UPDATE SET
+            "name" = EXCLUDED."name",
+            "shortName" = EXCLUDED."shortName"`,
+          homeId,
+          home,
+          home
+        );
 
-        await prisma.team.upsert({
-          where: { id: awayId },
-          update: { name: away },
-          create: {
-            id: awayId,
-            name: away,
-            shortName: away,
-            attack: 50,
-            defense: 50,
-            elo: 1500,
-            form: 50,
-            xgFor: 1.3,
-            xgAgainst: 1.3,
-          },
-        });
+        await prisma.$executeRawUnsafe(
+          `INSERT INTO "Team"
+            ("id","name","shortName","attack","defense","elo","form","xgFor","xgAgainst")
+           VALUES
+            ($1,$2,$3,50,50,1500,50,1.3,1.3)
+           ON CONFLICT ("id")
+           DO UPDATE SET
+            "name" = EXCLUDED."name",
+            "shortName" = EXCLUDED."shortName"`,
+          awayId,
+          away,
+          away
+        );
 
-        await prisma.league.upsert({
-          where: { id: leagueId },
-          update: { name: sport.replaceAll("_", " ") },
-          create: {
-            id: leagueId,
-            name: sport.replaceAll("_", " "),
-            code: sport,
-          },
-        });
+        await prisma.$executeRawUnsafe(
+          `INSERT INTO "League"
+            ("id","name","code")
+           VALUES
+            ($1,$2,$3)
+           ON CONFLICT ("id")
+           DO UPDATE SET
+            "name" = EXCLUDED."name",
+            "code" = EXCLUDED."code"`,
+          leagueId,
+          leagueName,
+          sport
+        );
 
-        await prisma.match.upsert({
-          where: {
-            source_sourceId: {
-              source: "odds-api-events",
-              sourceId: String(e.id),
-            },
-          },
-          update: {
-            kickoff,
-            homeTeamId: homeId,
-            awayTeamId: awayId,
-            leagueId,
-            status: "SCHEDULED",
-          },
-          create: {
-            source: "odds-api-events",
-            sourceId: String(e.id),
-            kickoff,
-            homeTeamId: homeId,
-            awayTeamId: awayId,
-            leagueId,
-            status: "SCHEDULED",
-          },
-        });
+        await prisma.$executeRawUnsafe(
+          `INSERT INTO "Match"
+            ("id","source","sourceId","kickoff","homeTeamId","awayTeamId","leagueId","status","season")
+           VALUES
+            (gen_random_uuid()::text,$1,$2,$3,$4,$5,$6,$7,$8)
+           ON CONFLICT ("source","sourceId")
+           DO UPDATE SET
+            "kickoff" = EXCLUDED."kickoff",
+            "homeTeamId" = EXCLUDED."homeTeamId",
+            "awayTeamId" = EXCLUDED."awayTeamId",
+            "leagueId" = EXCLUDED."leagueId",
+            "status" = EXCLUDED."status",
+            "season" = EXCLUDED."season"`,
+          "odds-api-events",
+          String(e.id),
+          kickoff,
+          homeId,
+          awayId,
+          leagueId,
+          "SCHEDULED",
+          season
+        );
 
         saved++;
       }
