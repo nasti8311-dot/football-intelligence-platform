@@ -16,7 +16,6 @@ export const FOOTBALL_DATA_COMPETITIONS = [
 
 export const ODDS_SPORT_KEYS = [
   "soccer_epl",
-  "soccer_england_championship",
   "soccer_spain_la_liga",
   "soccer_france_ligue_one",
   "soccer_italy_serie_a",
