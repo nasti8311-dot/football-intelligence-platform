@@ -3,6 +3,7 @@ import { auth, signIn } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import TeamBadge from "@/components/TeamBadge";
 import PremiumPickCard from "@/components/picks/PremiumPickCard";
+import SavePickButton from "@/components/picks/SavePickButton";
 import { buildPredictions } from "@/lib/predictions";
 import { premiumAdjustPredictions } from "@/lib/premium-model";
 import { advancedTune } from "@/lib/advanced-tuning";
@@ -639,6 +640,13 @@ export default async function DailyPicksPage() {
                       </div>
                     )}
                     <div className="mt-4 flex gap-3">
+                      <SavePickButton
+                        matchId={p.id}
+                        market={p.bestMarket}
+                        pick={p.bestPick}
+                        probability={Math.round(p.bestProbability)}
+                      />
+
                       <a
                         href={`/matches/${p.id}`}
                         className="flex-1 rounded-2xl bg-cyan-400 px-4 py-3 text-center text-sm font-bold text-slate-950"

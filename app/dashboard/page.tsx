@@ -60,6 +60,14 @@ export default async function DashboardPage() {
 
   const premium = snapshots.filter((s) => Number(s.valueScore || 0) >= 25);
 
+  const savedPicks = (await prisma.$queryRawUnsafe(
+    `SELECT * FROM "SavedPick"
+     WHERE "email" = $1
+     ORDER BY "createdAt" DESC
+     LIMIT 20`,
+    session.user.email
+  ).catch(() => [])) as any[];
+
   const markets = (await prisma.$queryRawUnsafe(`
     SELECT
       "market",
@@ -173,6 +181,33 @@ export default async function DashboardPage() {
                 High-value model signals currently tracked.
               </p>
             </div>
+          </div>
+        </section>
+
+        <section className="glass-card rounded-[2rem] p-6">
+          <h2 className="text-2xl font-black">Saved Picks</h2>
+
+          <div className="mt-5 grid gap-3">
+            {savedPicks.length === 0 ? (
+              <p className="text-sm text-slate-400">
+                No saved picks yet. Save picks from the daily picks page.
+              </p>
+            ) : (
+              savedPicks.map((s: any) => (
+                <a
+                  key={s.id}
+                  href={`/matches/${s.matchId}`}
+                  className="rounded-2xl bg-slate-950/60 p-4 hover:bg-slate-900"
+                >
+                  <p className="text-xs uppercase tracking-[0.2em] text-cyan-300">
+                    {s.market}
+                  </p>
+                  <p className="mt-1 font-black text-white">
+                    {s.pick} · {Math.round(Number(s.probability || 0))}%
+                  </p>
+                </a>
+              ))
+            )}
           </div>
         </section>
 
