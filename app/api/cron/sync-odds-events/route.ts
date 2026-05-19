@@ -52,13 +52,31 @@ export async function GET() {
         await prisma.team.upsert({
           where: { id: homeId },
           update: { name: home },
-          create: { id: homeId, name: home },
+          create: {
+            id: homeId,
+            name: home,
+            shortName: home,
+            tla: homeId.slice(0, 3).toUpperCase(),
+            crestUrl: null,
+            attack: 50,
+            defense: 50,
+            elo: 1500,
+          },
         });
 
         await prisma.team.upsert({
           where: { id: awayId },
           update: { name: away },
-          create: { id: awayId, name: away },
+          create: {
+            id: awayId,
+            name: away,
+            shortName: away,
+            tla: awayId.slice(0, 3).toUpperCase(),
+            crestUrl: null,
+            attack: 50,
+            defense: 50,
+            elo: 1500,
+          },
         });
 
         await prisma.league.upsert({
