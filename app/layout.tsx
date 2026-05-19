@@ -5,6 +5,7 @@ import MobileBottomNav from "@/components/MobileBottomNav";
 import Footer from "@/components/Footer";
 import BrandMark from "@/components/BrandMark";
 import AuthButton from "@/components/AuthButton";
+import UserActivityTracker from "@/components/UserActivityTracker";
 
 export const metadata = {
   title: "Daily Football Predictions",
@@ -59,7 +60,8 @@ export default function RootLayout({
             </div>
           </header>
 
-          <main className="relative z-10">{children}</main>
+          <UserActivityTracker />
+        <main className="relative z-10">{children}</main>
 
         <Footer />
         <MobileBottomNav />
