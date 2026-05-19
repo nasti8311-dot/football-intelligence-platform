@@ -13,11 +13,11 @@ export const metadata = {
 };
 
 const nav = [
-  ["/", "Top 10"],
+  ["/", "Tagespicks"],
   ["/news", "News"],
   ["/dashboard", "Dashboard"],
-  ["/methodology", "Method"],
-  ["/prediction-performance", "Performance"],
+  ["/methodology", "Methode"],
+  ["/prediction-performance", "Bilanz"],
   ["/elo-ratings", "Ratings"],
 ];
 

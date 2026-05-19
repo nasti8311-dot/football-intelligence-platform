@@ -33,16 +33,15 @@ export default async function DailyPicksPage() {
         <div className="mx-auto max-w-4xl">
           <section className="glass-card glow rounded-[2rem] p-8 text-center md:p-12">
             <p className="text-xs uppercase tracking-[0.3em] text-cyan-300">
-              Members Only
+              Nur für Mitglieder
             </p>
 
             <h1 className="page-title mt-4 text-4xl font-black md:text-6xl">
-              Login to view today&apos;s premium picks
+              Einloggen, um heutige Premium-Picks zu sehen
             </h1>
 
             <p className="mx-auto mt-5 max-w-2xl text-slate-300">
-              Create a free account to access calibrated football predictions,
-              market edge signals, news intelligence and performance tracking.
+              Erstelle kostenlos ein Konto und erhalte Zugriff auf kalibrierte Fußball-Prognosen, Marktwert-Signale, News-Intelligence und Performance-Tracking.
             </p>
 
             <form
@@ -53,12 +52,12 @@ export default async function DailyPicksPage() {
               className="mt-8"
             >
               <button className="rounded-2xl bg-cyan-400 px-8 py-4 text-lg font-black text-slate-950 shadow-lg shadow-cyan-400/20">
-                Continue with Google
+                Mit Google fortfahren
               </button>
             </form>
 
             <p className="mt-5 text-xs text-slate-500">
-              Free access during beta. Predictions are probabilities, not guarantees.
+              Kostenloser Zugang während der Beta. Prognosen sind Wahrscheinlichkeiten, keine Garantien.
             </p>
           </section>
         </div>
@@ -171,8 +170,19 @@ export default async function DailyPicksPage() {
       return b.bestProbability - a.bestProbability;
     });
 
-  const finalPool = [...todayPool, ...fallbackPool]
-    .slice(0, Math.max(5, Math.min(10, todayPool.length + fallbackPool.length)));
+  const todayStrictPool = todayPool.filter((p: any) => {
+    if (!p.kickoff) return false;
+    return dateKey(new Date(p.kickoff)) === today;
+  });
+
+  const nextDaysPool = fallbackPool.filter((p: any) => {
+    if (!p.kickoff) return false;
+    return dateKey(new Date(p.kickoff)) !== today;
+  });
+
+  const finalPool = [...todayStrictPool, ...nextDaysPool].slice(0, 10);
+
+  const hasEnoughToday = todayStrictPool.length >= 5;
 
   const picks = finalPool.map((p) => {
     const odds = oddsByMatch.get(p.id) || [];
@@ -217,7 +227,7 @@ export default async function DailyPicksPage() {
       <div className="mx-auto max-w-5xl space-y-6">
         <section className="glass-card glow rounded-[2rem] p-6 md:p-10">
           <p className="text-xs uppercase tracking-[0.3em] text-cyan-300">
-            Daily Top 10
+            Daily Tagespicks
           </p>
 
           <h1 className="page-title mt-4 text-4xl font-black leading-tight md:text-6xl">
@@ -241,13 +251,13 @@ export default async function DailyPicksPage() {
               href="/prediction-performance"
               className="flex-1 rounded-2xl bg-cyan-400 px-5 py-4 text-center text-sm font-bold text-slate-950"
             >
-              Performance
+              Bilanz
             </a>
           </div>
 
           <div className="mt-4 rounded-2xl border border-yellow-400/10 bg-yellow-400/5 p-4">
             <p className="text-xs font-black uppercase tracking-[0.2em] text-yellow-300">
-              Responsible Prediction Notice
+              Hinweis zu verantwortungsvollen Prognosen
             </p>
             <p className="mt-2 text-sm text-slate-300">
               Predictions are data-based probabilities, not guarantees. We rank picks by model strength,
@@ -258,44 +268,56 @@ export default async function DailyPicksPage() {
           <div className="mt-4 grid gap-3 md:grid-cols-3">
             <div className="rounded-2xl border border-cyan-400/10 bg-cyan-400/5 p-4">
               <p className="text-xs font-black uppercase tracking-[0.2em] text-cyan-300">
-                Data Confidence
+                Datenvertrauen
               </p>
               <p className="mt-2 text-sm text-slate-300">
-                Picks nutzen Form, Elo, Odds, News und Trends.
+                Die Picks nutzen Form, Elo, Quoten, News und Trends.
               </p>
             </div>
 
             <a href="/news" className="rounded-2xl border border-white/10 bg-white/5 p-4">
               <p className="text-xs font-black uppercase tracking-[0.2em] text-white/70">
-                Match News
+                Spiel-News
               </p>
               <p className="mt-2 text-sm text-slate-300">
-                Team-News, Verletzungen und Lineups prüfen.
+                Team-News, Verletzungen und mögliche Aufstellungen prüfen.
               </p>
             </a>
 
             <a href="/prediction-performance" className="rounded-2xl border border-emerald-400/10 bg-emerald-400/5 p-4">
               <p className="text-xs font-black uppercase tracking-[0.2em] text-emerald-300">
-                Performance
+                Bilanz
               </p>
               <p className="mt-2 text-sm text-slate-300">
-                Trefferquote und ROI live verfolgen.
+                Trefferquote und ROI-Simulation verfolgen.
               </p>
             </a>
           </div>
 
+          {!hasEnoughToday && (
+            <div className="mt-4 rounded-2xl border border-yellow-400/10 bg-yellow-400/5 p-4">
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-yellow-300">
+                Heute weniger als 5 Spiele verfügbar
+              </p>
+              <p className="mt-2 text-sm text-slate-300">
+                Wir zeigen zuerst alle tagesaktuellen Picks. Wenn heute weniger als 5 Spiele verfügbar sind,
+                ergänzen wir die Liste mit den stärksten kommenden Spielen.
+              </p>
+            </div>
+          )}
+
           <div className="mt-4 rounded-2xl border border-emerald-400/10 bg-emerald-400/5 p-4">
             <p className="text-xs font-black uppercase tracking-[0.2em] text-emerald-300">
-              Daily Tracking aktiv
+              Tägliches Tracking aktiv
             </p>
             <p className="mt-2 text-sm text-slate-300">
-              Diese Picks werden als Snapshot gespeichert und später automatisch mit echten Ergebnissen ausgewertet.
+              Diese Picks werden gespeichert und später automatisch mit echten Ergebnissen ausgewertet.
             </p>
           </div>
 
           <div className="mt-4 grid grid-cols-3 gap-3">
             <Top label="Picks" value={String(picks.length)} />
-            <Top label="Avg Prob" value={`${avgProb}%`} />
+            <Top label="Ø Wahrscheinlichkeit" value={`${avgProb}%`} />
             <Top label="Premium" value={String(premiumCount)} />
           </div>
         </section>
@@ -651,7 +673,7 @@ export default async function DailyPicksPage() {
                         href={`/matches/${p.id}`}
                         className="flex-1 rounded-2xl bg-cyan-400 px-4 py-3 text-center text-sm font-bold text-slate-950"
                       >
-                        Match Detail
+                        Spielanalyse
                       </a>
 
                       <a
@@ -677,28 +699,28 @@ export default async function DailyPicksPage() {
         )}
         <section className="glass-card rounded-[2rem] p-6 md:p-8">
           <h2 className="text-2xl font-black text-white">
-            Why trust these picks?
+            Warum diesen Picks vertrauen?
           </h2>
 
           <div className="mt-5 grid gap-4 md:grid-cols-3">
             <div className="rounded-2xl bg-slate-950/60 p-4">
               <p className="font-black text-cyan-300">Backtested</p>
               <p className="mt-2 text-sm text-slate-400">
-                Historical snapshots are evaluated against real results.
+                Historische Snapshots werden gegen echte Ergebnisse ausgewertet.
               </p>
             </div>
 
             <div className="rounded-2xl bg-slate-950/60 p-4">
-              <p className="font-black text-cyan-300">Calibrated</p>
+              <p className="font-black text-cyan-300">Kalibriert</p>
               <p className="mt-2 text-sm text-slate-400">
-                Markets and leagues are adjusted based on measured performance.
+                Märkte und Ligen werden anhand gemessener Performance angepasst.
               </p>
             </div>
 
             <div className="rounded-2xl bg-slate-950/60 p-4">
               <p className="font-black text-cyan-300">Transparent</p>
               <p className="mt-2 text-sm text-slate-400">
-                Accuracy, ROI simulation and methodology are visible.
+                Trefferquote, ROI-Simulation und Methodik sind sichtbar.
               </p>
             </div>
           </div>

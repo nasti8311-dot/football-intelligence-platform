@@ -19,7 +19,7 @@ function getGlow(prob: number) {
 
 function getLabel(prob: number) {
   if (prob >= 80) return "ELITE EDGE";
-  if (prob >= 70) return "STRONG";
+  if (prob >= 70) return "STARKER PICK";
   return "WATCHLIST";
 }
 
@@ -37,8 +37,9 @@ export default function PremiumPickCard({
       className={`glass-card relative overflow-hidden rounded-[2rem] border p-6 shadow-2xl ${getGlow(probability)}`}
     >
       <div className="absolute right-0 top-0 h-40 w-40 rounded-full bg-cyan-400/10 blur-3xl" />
+      <div className="absolute -bottom-16 -left-16 h-44 w-44 rounded-full bg-emerald-400/10 blur-3xl" />
 
-      <div className="flex items-start justify-between gap-4">
+      <div className="relative flex items-start justify-between gap-4">
         <div>
           <p className="text-xs font-black uppercase tracking-[0.25em] text-cyan-300">
             {league || "Football Intelligence"}
@@ -49,7 +50,7 @@ export default function PremiumPickCard({
           </h2>
 
           <p className="mt-2 text-sm text-slate-400">
-            {market}
+            Empfohlener Markt: <span className="font-bold text-white">{market}</span>
           </p>
         </div>
 
@@ -66,43 +67,43 @@ export default function PremiumPickCard({
         </div>
       </div>
 
-      <div className="mt-5 grid grid-cols-3 gap-3">
+      <div className="relative mt-5 grid grid-cols-3 gap-3">
         <div className="rounded-2xl bg-slate-950/60 p-3">
           <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
-            Edge
+            Value
           </p>
           <p className="mt-1 text-lg font-black text-emerald-300">
-            {edge ?? 0}%
+            +{edge ?? 0}%
           </p>
         </div>
 
         <div className="rounded-2xl bg-slate-950/60 p-3">
           <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
-            Risk
+            Risiko
           </p>
           <p className="mt-1 text-lg font-black text-yellow-300">
-            Low
+            Modelliert
           </p>
         </div>
 
         <div className="rounded-2xl bg-slate-950/60 p-3">
           <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
-            Updated
+            Status
           </p>
           <p className="mt-1 text-lg font-black text-cyan-300">
-            Live
+            Aktiv
           </p>
         </div>
       </div>
 
       {reasoning?.length ? (
-        <div className="mt-5 rounded-2xl border border-white/10 bg-slate-950/50 p-4">
+        <div className="relative mt-5 rounded-2xl border border-white/10 bg-slate-950/50 p-4">
           <p className="text-xs font-black uppercase tracking-[0.2em] text-cyan-300">
-            AI Reasoning
+            Modell-Begründung
           </p>
 
           <ul className="mt-3 space-y-2 text-sm text-slate-300">
-            {reasoning.map((r) => (
+            {reasoning.slice(0, 3).map((r) => (
               <li key={r}>• {r}</li>
             ))}
           </ul>
@@ -110,8 +111,8 @@ export default function PremiumPickCard({
       ) : null}
 
       {kickoff ? (
-        <p className="mt-5 text-xs uppercase tracking-[0.2em] text-slate-500">
-          Kickoff · {new Date(kickoff).toLocaleString("de-DE")}
+        <p className="relative mt-5 text-xs uppercase tracking-[0.2em] text-slate-500">
+          Anstoß · {new Date(kickoff).toLocaleString("de-DE")}
         </p>
       ) : null}
     </article>

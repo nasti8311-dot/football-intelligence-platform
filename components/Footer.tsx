@@ -9,8 +9,8 @@ export default function Footer() {
         </p>
 
         <div className="flex flex-wrap gap-4">
-          <Link href="/methodology" className="hover:text-cyan-300">Methodology</Link>
-          <Link href="/prediction-performance" className="hover:text-cyan-300">Performance</Link>
+          <Link href="/methodology" className="hover:text-cyan-300">Methodeology</Link>
+          <Link href="/prediction-performance" className="hover:text-cyan-300">Bilanz</Link>
           <Link href="/privacy" className="hover:text-cyan-300">Privacy</Link>
           <Link href="/terms" className="hover:text-cyan-300">Terms</Link>
         </div>
