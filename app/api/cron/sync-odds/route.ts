@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { ODDS_SPORT_KEYS } from "@/lib/competitions";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
 
-const sports = ["soccer_epl"];
+const sports = ODDS_SPORT_KEYS;
 
 function key(name: string) {
   return String(name || "")

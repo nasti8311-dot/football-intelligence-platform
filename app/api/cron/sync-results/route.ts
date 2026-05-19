@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { FOOTBALL_DATA_COMPETITIONS } from "@/lib/competitions";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
-const competitions = ["PL", "PD", "FL1"];
+const competitions = FOOTBALL_DATA_COMPETITIONS;
 
 function sourceCode(code: string) {
   return code;

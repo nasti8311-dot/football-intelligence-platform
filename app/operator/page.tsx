@@ -140,6 +140,9 @@ export default async function OperatorPage() {
             <Action href="/api/cron/evaluate-predictions" label="Picks auswerten" />
             <Action href="/api/cron/calibrate-model" label="Märkte kalibrieren" />
             <Action href="/api/cron/calibrate-leagues" label="Ligen kalibrieren" />
+            <Action href="/api/cron/historical-backfill?code=DED" label="Eredivisie Backfill" />
+            <Action href="/api/cron/historical-backfill?code=PPL" label="Portugal Backfill" />
+            <Action href="/api/cron/historical-backfill?code=CL" label="Champions League Backfill" />
           </div>
         </section>
 
