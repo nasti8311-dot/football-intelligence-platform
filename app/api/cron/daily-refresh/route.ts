@@ -32,6 +32,7 @@ async function call(path: string) {
 export async function GET() {
   const routes = [
     "/api/cron/sync-fixtures",
+    "/api/cron/sync-odds-events",
     "/api/cron/sync-odds",
     "/api/cron/sync-news",
     "/api/cron/save-predictions",

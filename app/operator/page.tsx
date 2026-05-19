@@ -134,6 +134,7 @@ export default async function OperatorPage() {
           <div className="mt-5 grid gap-3 md:grid-cols-4">
             <Action href="/api/cron/sync-fixtures" label="Spiele syncen" />
             <Action href="/api/cron/sync-odds" label="Quoten syncen" />
+            <Action href="/api/cron/sync-odds-events" label="Odds Events syncen" />
             <Action href="/api/cron/sync-news" label="News syncen" />
             <Action href="/api/cron/daily-refresh" label="Daily Refresh" />
             <Action href="/api/debug/fixture-coverage" label="Fixture Coverage" />
