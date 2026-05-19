@@ -136,6 +136,7 @@ export default async function OperatorPage() {
             <Action href="/api/cron/sync-odds" label="Quoten syncen" />
             <Action href="/api/cron/sync-news" label="News syncen" />
             <Action href="/api/cron/daily-refresh" label="Daily Refresh" />
+            <Action href="/api/debug/fixture-coverage" label="Fixture Coverage" />
             <Action href="/api/cron/sync-results" label="Ergebnisse syncen" />
             <Action href="/api/cron/evaluate-predictions" label="Picks auswerten" />
             <Action href="/api/cron/calibrate-model" label="Märkte kalibrieren" />

@@ -19,7 +19,12 @@ export default async function NewsPage() {
   const today = dateKey(new Date());
 
   const rows = await prisma.match.findMany({
-    take: 2500,
+    where: {
+      kickoff: {
+        gte: new Date(Date.now() - 1000 * 60 * 60 * 24),
+      },
+    },
+    take: 2000,
     orderBy: { kickoff: "asc" },
     include: {
       homeTeam: true,
