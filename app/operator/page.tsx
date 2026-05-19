@@ -143,6 +143,9 @@ export default async function OperatorPage() {
             <Action href="/api/cron/historical-backfill?code=DED" label="Eredivisie Backfill" />
             <Action href="/api/cron/historical-backfill?code=PPL" label="Portugal Backfill" />
             <Action href="/api/cron/historical-backfill?code=CL" label="Champions League Backfill" />
+            <Action href="/api/cron/historical-backfill?code=EL" label="Europa League Backfill" />
+            <Action href="/api/cron/historical-backfill?code=ECL" label="Conference League Backfill" />
+            <Action href="/api/cron/historical-backfill?code=ELC" label="Championship Backfill" />
           </div>
         </section>
 
