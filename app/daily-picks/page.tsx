@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { auth, signIn } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import TeamBadge from "@/components/TeamBadge";
 import PremiumPickCard from "@/components/picks/PremiumPickCard";
@@ -23,6 +24,46 @@ function dateKey(date: Date) {
 }
 
 export default async function DailyPicksPage() {
+  const session = await auth();
+
+  if (!session?.user) {
+    return (
+      <main className="min-h-screen stadium-page px-4 pb-28 pt-6 text-white md:px-6">
+        <div className="mx-auto max-w-4xl">
+          <section className="glass-card glow rounded-[2rem] p-8 text-center md:p-12">
+            <p className="text-xs uppercase tracking-[0.3em] text-cyan-300">
+              Members Only
+            </p>
+
+            <h1 className="page-title mt-4 text-4xl font-black md:text-6xl">
+              Login to view today&apos;s premium picks
+            </h1>
+
+            <p className="mx-auto mt-5 max-w-2xl text-slate-300">
+              Create a free account to access calibrated football predictions,
+              market edge signals, news intelligence and performance tracking.
+            </p>
+
+            <form
+              action={async () => {
+                "use server";
+                await signIn("google");
+              }}
+              className="mt-8"
+            >
+              <button className="rounded-2xl bg-cyan-400 px-8 py-4 text-lg font-black text-slate-950 shadow-lg shadow-cyan-400/20">
+                Continue with Google
+              </button>
+            </form>
+
+            <p className="mt-5 text-xs text-slate-500">
+              Free access during beta. Predictions are probabilities, not guarantees.
+            </p>
+          </section>
+        </div>
+      </main>
+    );
+  }
   const rows = await prisma.match.findMany({
     take: 2500,
     orderBy: { kickoff: "asc" },
