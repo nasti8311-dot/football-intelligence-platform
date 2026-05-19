@@ -3,7 +3,6 @@ import { prisma } from "@/lib/prisma";
 import { ODDS_SPORT_KEYS } from "@/lib/competitions";
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 60;
 
 function slug(s: string) {
   return String(s || "")
@@ -15,19 +14,18 @@ function slug(s: string) {
 }
 
 function seasonFromDate(date: Date) {
-  const year = date.getUTCFullYear();
-  const month = date.getUTCMonth() + 1;
-  return month >= 7 ? `${year}/${year + 1}` : `${year - 1}/${year}`;
+  const y = date.getUTCFullYear();
+  return `${y-1}/${y}`;
 }
 
 export async function GET() {
   const apiKey = process.env.ODDS_API_KEY;
 
   if (!apiKey) {
-    return NextResponse.json(
-      { ok: false, error: "Missing ODDS_API_KEY" },
-      { status: 500 }
-    );
+    return NextResponse.json({
+      ok: false,
+      error: "Missing ODDS_API_KEY",
+    });
   }
 
   const results = [];
@@ -40,7 +38,10 @@ export async function GET() {
       );
 
       if (!res.ok) {
-        results.push({ sport, error: `${res.status} ${await res.text()}` });
+        results.push({
+          sport,
+          error: `${res.status} ${await res.text()}`,
+        });
         continue;
       }
 
@@ -48,126 +49,153 @@ export async function GET() {
       let saved = 0;
 
       for (const e of events || []) {
-        const home = e.home_team;
-        const away = e.away_team;
-        const kickoff = e.commence_time ? new Date(e.commence_time) : null;
+        const kickoff = new Date(e.commence_time);
 
-        if (!home || !away || !kickoff) continue;
-
-        const homeId = slug(home);
-        const awayId = slug(away);
+        const homeId = slug(e.home_team);
+        const awayId = slug(e.away_team);
         const leagueId = slug(sport);
-        const leagueName = sport.replaceAll("_", " ");
+
         const season = seasonFromDate(kickoff);
 
-        await prisma.$executeRawUnsafe(
-          `INSERT INTO "Team"
-            ("id","name","shortName","attack","defense","elo","form","xgFor","xgAgainst","createdAt","updatedAt")
-           VALUES
-            ($1,$2,$3,50,50,1500,50,1.3,1.3,NOW(),NOW())
-           ON CONFLICT ("id")
-           DO UPDATE SET
-            "name" = EXCLUDED."name",
-            "shortName" = EXCLUDED."shortName"`,
-          homeId,
-          home,
-          home
-        );
+        await prisma.$executeRawUnsafe(`
+          INSERT INTO "Team"
+          (
+            "id",
+            "name",
+            "shortName",
+            "attack",
+            "defense",
+            "elo",
+            "form",
+            "xgFor",
+            "xgAgainst",
+            "createdAt",
+            "updatedAt"
+          )
+          VALUES
+          (
+            '${homeId}',
+            '${e.home_team.replace(/'/g, "''")}',
+            '${e.home_team.replace(/'/g, "''")}',
+            50,
+            50,
+            1500,
+            50,
+            1.3,
+            1.3,
+            NOW(),
+            NOW()
+          )
+          ON CONFLICT ("id")
+          DO NOTHING
+        `);
 
-        await prisma.$executeRawUnsafe(
-  `INSERT INTO "Match"
-    (
-      "id",
-      "leagueId",
-      "season",
-      "matchday",
-      "kickoff",
-      "status",
-      "homeTeamId",
-      "awayTeamId",
-      "homeGoals",
-      "awayGoals",
-      "source",
-      "sourceId",
-      "createdAt",
-      "updatedAt"
-    )
-   VALUES
-    (
-      gen_random_uuid()::text,
-      $1,
-      $2,
-      0,
-      $3,
-      $4::"MatchStatus",
-      $5,
-      $6,
-      0,
-      0,
-      $7,
-      $8,
-      NOW(),
-      NOW()
-    )
-   ON CONFLICT ("source","sourceId")
-   DO UPDATE SET
-    "kickoff" = EXCLUDED."kickoff",
-    "status" = EXCLUDED."status",
-    "updatedAt" = NOW()`,
-  leagueId,
-  season,
-  kickoff,
-  "SCHEDULED",
-  homeId,
-  awayId,
-  "odds-api-events",
-  String(e.id)
-);
+        await prisma.$executeRawUnsafe(`
+          INSERT INTO "Team"
+          (
+            "id",
+            "name",
+            "shortName",
+            "attack",
+            "defense",
+            "elo",
+            "form",
+            "xgFor",
+            "xgAgainst",
+            "createdAt",
+            "updatedAt"
+          )
+          VALUES
+          (
+            '${awayId}',
+            '${e.away_team.replace(/'/g, "''")}',
+            '${e.away_team.replace(/'/g, "''")}',
+            50,
+            50,
+            1500,
+            50,
+            1.3,
+            1.3,
+            NOW(),
+            NOW()
+          )
+          ON CONFLICT ("id")
+          DO NOTHING
+        `);
 
-        await prisma.$executeRawUnsafe(
-          `INSERT INTO "League"
-            ("id","name","code","createdAt","updatedAt")
-           VALUES
-            ($1,$2,$3,NOW(),NOW())
-           ON CONFLICT ("id")
-           DO UPDATE SET
-            "name" = EXCLUDED."name",
-            "code" = EXCLUDED."code",
-            "updatedAt" = NOW()`,
-          leagueId,
-          leagueName,
-          sport
-        );
+        await prisma.$executeRawUnsafe(`
+          INSERT INTO "League"
+          (
+            "id",
+            "code",
+            "name",
+            "createdAt",
+            "updatedAt"
+          )
+          VALUES
+          (
+            '${leagueId}',
+            '${sport}',
+            '${sport.replaceAll("_", " ")}',
+            NOW(),
+            NOW()
+          )
+          ON CONFLICT ("id")
+          DO NOTHING
+        `);
 
-        await prisma.$executeRawUnsafe(
-          `INSERT INTO "Match"
-            ("id","source","sourceId","kickoff","homeTeamId","awayTeamId","leagueId","status","season")
-           VALUES
-            (gen_random_uuid()::text,$1,$2,$3,$4,$5,$6,$7::"MatchStatus",$8)
-           ON CONFLICT ("source","sourceId")
-           DO UPDATE SET
-            "kickoff" = EXCLUDED."kickoff",
-            "homeTeamId" = EXCLUDED."homeTeamId",
-            "awayTeamId" = EXCLUDED."awayTeamId",
-            "leagueId" = EXCLUDED."leagueId",
-            "status" = EXCLUDED."status",
-            "season" = EXCLUDED."season"`,
-          "odds-api-events",
-          String(e.id),
-          kickoff,
-          homeId,
-          awayId,
-          leagueId,
-          "SCHEDULED",
-          season
-        );
+        await prisma.$executeRawUnsafe(`
+          INSERT INTO "Match"
+          (
+            "id",
+            "leagueId",
+            "season",
+            "matchday",
+            "kickoff",
+            "status",
+            "homeTeamId",
+            "awayTeamId",
+            "homeGoals",
+            "awayGoals",
+            "source",
+            "sourceId",
+            "createdAt",
+            "updatedAt"
+          )
+          VALUES
+          (
+            gen_random_uuid()::text,
+            '${leagueId}',
+            '${season}',
+            0,
+            '${kickoff.toISOString()}',
+            'SCHEDULED',
+            '${homeId}',
+            '${awayId}',
+            0,
+            0,
+            'odds-api-events',
+            '${e.id}',
+            NOW(),
+            NOW()
+          )
+          ON CONFLICT ("source","sourceId")
+          DO NOTHING
+        `);
 
         saved++;
       }
 
-      results.push({ sport, apiEvents: events?.length || 0, saved });
+      results.push({
+        sport,
+        apiEvents: events.length,
+        saved,
+      });
     } catch (e: any) {
-      results.push({ sport, error: e?.message || "Unknown error" });
+      results.push({
+        sport,
+        error: e?.message || "Unknown error",
+      });
     }
   }
 
