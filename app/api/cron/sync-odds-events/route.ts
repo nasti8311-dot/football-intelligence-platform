@@ -75,18 +75,54 @@ export async function GET() {
         );
 
         await prisma.$executeRawUnsafe(
-          `INSERT INTO "Team"
-            ("id","name","shortName","attack","defense","elo","form","xgFor","xgAgainst","createdAt","updatedAt")
-           VALUES
-            ($1,$2,$3,50,50,1500,50,1.3,1.3,NOW(),NOW())
-           ON CONFLICT ("id")
-           DO UPDATE SET
-            "name" = EXCLUDED."name",
-            "shortName" = EXCLUDED."shortName"`,
-          awayId,
-          away,
-          away
-        );
+  `INSERT INTO "Match"
+    (
+      "id",
+      "leagueId",
+      "season",
+      "matchday",
+      "kickoff",
+      "status",
+      "homeTeamId",
+      "awayTeamId",
+      "homeScore",
+      "awayScore",
+      "source",
+      "sourceId",
+      "createdAt",
+      "updatedAt"
+    )
+   VALUES
+    (
+      gen_random_uuid()::text,
+      $1,
+      $2,
+      0,
+      $3,
+      $4::"MatchStatus",
+      $5,
+      $6,
+      0,
+      0,
+      $7,
+      $8,
+      NOW(),
+      NOW()
+    )
+   ON CONFLICT ("source","sourceId")
+   DO UPDATE SET
+    "kickoff" = EXCLUDED."kickoff",
+    "status" = EXCLUDED."status",
+    "updatedAt" = NOW()`,
+  leagueId,
+  season,
+  kickoff,
+  "SCHEDULED",
+  homeId,
+  awayId,
+  "odds-api-events",
+  String(e.id)
+);
 
         await prisma.$executeRawUnsafe(
           `INSERT INTO "League"
