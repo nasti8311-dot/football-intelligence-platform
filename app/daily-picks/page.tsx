@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import TeamBadge from "@/components/TeamBadge";
+import PremiumPickCard from "@/components/picks/PremiumPickCard";
 import { buildPredictions } from "@/lib/predictions";
 import { premiumAdjustPredictions } from "@/lib/premium-model";
 import { advancedTune } from "@/lib/advanced-tuning";
@@ -290,7 +291,26 @@ export default async function DailyPicksPage() {
               const isToday = p.kickoff && dateKey(new Date(p.kickoff)) === today;
 
               return (
-                <article key={p.id} className="glass-card rounded-[2rem] p-5">
+                <div key={p.id} className="space-y-4">
+                  {/* Premium visual card */}
+                  <PremiumPickCard
+                    match={`${p.home} vs ${p.away}`}
+                    league={p.league}
+                    market={p.bestMarket}
+                    probability={Math.round(p.bestProbability)}
+                    edge={p.edge ? Number(p.edge.toFixed(1)) : 0}
+                    confidence={p.confidence}
+                    kickoff={p.kickoff}
+                    home={p.home}
+                    away={p.away}
+                    reasoning={[
+                      `Model score: ${p.tunedScore ?? p.premiumScore ?? p.valueScore}`,
+                      `Expected goals: ${p.homeXg.toFixed(1)} : ${p.awayXg.toFixed(1)}`,
+                      p.summary || p.reason,
+                    ].filter(Boolean)}
+                  />
+
+                  <article className="glass-card rounded-[2rem] p-5">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-xs uppercase tracking-[0.2em] text-cyan-300">
@@ -593,7 +613,8 @@ export default async function DailyPicksPage() {
                       </a>
                     </div>
                   </div>
-                </article>
+                  </article>
+                </div>
               );
             })}
           </section>
