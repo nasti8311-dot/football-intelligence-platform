@@ -116,8 +116,9 @@ export default async function DailyPicksPage() {
   );
 
   const elitePool = rankElitePicks(filterElitePicks(rawPicks));
+  const finalPool = elitePool.length > 0 ? elitePool : rawPicks.slice(0, 10);
 
-  const picks = elitePool.map((p) => {
+  const picks = finalPool.map((p) => {
     const odds = oddsByMatch.get(p.id) || [];
     const bestOdds = odds
       .filter((o: any) => {
