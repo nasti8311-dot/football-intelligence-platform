@@ -93,9 +93,7 @@ export default async function OperatorPage() {
     LIMIT 10
   `).catch(() => [])) as any[];
 
-  const evaluated = Number(snapshots[0~cd ~/predv2
-
-cat >> app/operator/page.tsx <<'EOF'
+  const evaluated = Number(snapshots[0]?.evaluated || 0);
   const correct = Number(snapshots[0]?.correct || 0);
   const accuracy = evaluated ? (correct / evaluated) * 100 : 0;
 
@@ -150,7 +148,9 @@ cat >> app/operator/page.tsx <<'EOF'
 
           <div className="mt-5 grid gap-3">
             {recentActivity.length === 0 ? (
-              <p className="text-sm text-slate-400">Noch keine Nutzeraktivität gespeichert.</p>
+              <p className="text-sm text-slate-400">
+                Noch keine Nutzeraktivität gespeichert.
+              </p>
             ) : (
               recentActivity.map((a: any, index: number) => (
                 <div key={index} className="rounded-2xl bg-slate-950/60 p-4">
@@ -174,9 +174,7 @@ cat >> app/operator/page.tsx <<'EOF'
         </section>
 
         <section className="glass-card rounded-[2rem] border border-yellow-400/10 bg-yellow-400/5 p-6">
-          <h2 className="text-2xl font-black text-yellow-300">
-            Hinweis
-          </h2>
+          <h2 className="text-2xl font-black text-yellow-300">Hinweis</h2>
           <p className="mt-3 text-sm text-slate-300">
             Diese Seite ist intern gedacht. Später sollten wir sie auf deine Admin-E-Mail beschränken.
           </p>
