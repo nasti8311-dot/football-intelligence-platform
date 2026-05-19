@@ -640,10 +640,17 @@ export default async function DailyPicksPage() {
                     )}
                     <div className="mt-4 flex gap-3">
                       <a
+                        href={`/matches/${p.id}`}
+                        className="flex-1 rounded-2xl bg-cyan-400 px-4 py-3 text-center text-sm font-bold text-slate-950"
+                      >
+                        Match Detail
+                      </a>
+
+                      <a
                         href={`/news`}
                         className="flex-1 rounded-2xl bg-white/10 px-4 py-3 text-center text-sm font-bold text-white"
                       >
-                        News zum Spiel
+                        News
                       </a>
 
                       <a
