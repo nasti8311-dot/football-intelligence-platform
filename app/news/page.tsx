@@ -1,4 +1,5 @@
 import Link from "next/link";
+import EmptyNewsState from "@/components/EmptyNewsState";
 import { prisma } from "@/lib/prisma";
 import { buildPredictions } from "@/lib/predictions";
 import TeamBadge from "@/components/TeamBadge";

@@ -5,6 +5,7 @@ import TeamBadge from "@/components/TeamBadge";
 import PremiumPickCard from "@/components/picks/PremiumPickCard";
 import SavePickButton from "@/components/picks/SavePickButton";
 import PremiumHero from "@/components/PremiumHero";
+import GrowthCTA from "@/components/GrowthCTA";
 import { buildPredictions } from "@/lib/predictions";
 import { premiumAdjustPredictions } from "@/lib/premium-model";
 import { advancedTune } from "@/lib/advanced-tuning";
@@ -727,6 +728,8 @@ export default async function DailyPicksPage() {
             })}
           </section>
         )}
+        <GrowthCTA />
+
         <section className="glass-card rounded-[2rem] p-6 md:p-8">
           <h2 className="text-2xl font-black text-white">
             Warum diesen Picks vertrauen?

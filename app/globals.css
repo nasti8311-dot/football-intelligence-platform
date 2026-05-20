@@ -171,3 +171,23 @@ html {
     radial-gradient(circle at bottom right, rgba(16,185,129,.08), transparent 35%);
   pointer-events: none;
 }
+
+@media (max-width: 768px) {
+  .glass-card {
+    border-radius: 1.5rem;
+  }
+
+  .page-title {
+    line-height: 0.98;
+    letter-spacing: -0.04em;
+  }
+
+  main {
+    overflow-x: hidden;
+  }
+}
+
+::selection {
+  background: rgba(34, 211, 238, 0.35);
+  color: white;
+}
