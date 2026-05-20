@@ -1,5 +1,6 @@
 import ProbabilityRing from "./ProbabilityRing";
 import { calculateFootballProbabilities } from "@/lib/probability-engine";
+import { selectBestPick } from "@/lib/pick-selector";
 
 export default function CleanMatchCard({ p, ratings }: any) {
   const match = p.match;
@@ -7,7 +8,7 @@ export default function CleanMatchCard({ p, ratings }: any) {
 
   const confidence = Math.round(p.confidence || p.safeScore || 72);
 
-  const bestPick = getBestPick(probs);
+  const bestPick = selectBestPick(probs);
 
   return (
     <article className="group overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.04] shadow-2xl shadow-black/20 backdrop-blur transition duration-300 hover:-translate-y-1 hover:border-emerald-400/30 hover:bg-white/[0.06]">
@@ -95,7 +96,7 @@ export default function CleanMatchCard({ p, ratings }: any) {
                 Chance
               </p>
               <p className="text-sm font-black text-emerald-300">
-                {bestPick.value}%
+                {bestPick.probability}%
               </p>
             </div>
           </div>
@@ -104,9 +105,22 @@ export default function CleanMatchCard({ p, ratings }: any) {
             <div
               className="h-full rounded-full bg-emerald-500 transition-all duration-500"
               style={{
-                width: `${Math.min(100, Math.max(8, bestPick.value))}%`,
+                width: `${Math.min(100, Math.max(8, bestPick.probability))}%`,
               }}
             />
+          </div>
+          <div className="mt-3 rounded-2xl border border-white/10 bg-white/[0.03] p-3">
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-[10px] font-black uppercase tracking-[0.18em] text-neutral-500">
+                Risiko
+              </span>
+              <span className="text-xs font-black text-emerald-300">
+                {bestPick.risk}
+              </span>
+            </div>
+            <p className="mt-2 text-xs leading-5 text-neutral-400">
+              {bestPick.reason}
+            </p>
           </div>
         </div>
       </div>
@@ -156,17 +170,3 @@ function TeamRow({
   );
 }
 
-function getBestPick(probs: any) {
-  const options = [
-    { label: "Heimsieg", value: probs.homeWin },
-    { label: "Remis", value: probs.draw },
-    { label: "Auswärtssieg", value: probs.awayWin },
-    { label: "Beide Teams treffen", value: probs.btts },
-    { label: "Über 1,5 Tore", value: probs.over15 },
-    { label: "Über 2,5 Tore", value: probs.over25 },
-    { label: "Unter 2,5 Tore", value: probs.under25 },
-    { label: "Unter 3,5 Tore", value: probs.under35 },
-  ];
-
-  return options.sort((a, b) => b.value - a.value)[0];
-}
