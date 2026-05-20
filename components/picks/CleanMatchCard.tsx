@@ -8,19 +8,20 @@ import { getDataQualityLabel, getRatingLabel } from "@/lib/data-quality";
 export default function CleanMatchCard({ p, ratings }: any) {
   const match = p.match;
   const probs = calculateFootballProbabilities(match, ratings);
-
+  const isLowData = probs.dataQuality === "LOW";
   const hasOdds = Array.isArray(match?.odds) && match.odds.length > 0;
 
-  const isLowData = probs.dataQuality === "LOW";
   const bestPick = isLowData
     ? {
         label: "Keine seriöse Prognose",
         probability: 0,
         risk: "HOCH" as const,
         score: 0,
-        reason: "Für dieses Spiel fehlen aktuell ausreichende Quoten- oder Formdaten.",
+        reason:
+          "Für dieses Spiel fehlen aktuell ausreichende Quoten- oder Formdaten.",
       }
     : selectBestPick(probs);
+
   const confidence = calculateTrustScore({
     probs,
     pick: bestPick,
@@ -28,7 +29,12 @@ export default function CleanMatchCard({ p, ratings }: any) {
     away: ratings?.away,
     hasOdds,
   });
-  const explanation = explainPrediction({ probs, home: ratings?.home, away: ratings?.away });
+
+  const explanation = explainPrediction({
+    probs,
+    home: ratings?.home,
+    away: ratings?.away,
+  });
 
   return (
     <article className="group overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.04] shadow-2xl shadow-black/20 backdrop-blur transition duration-300 hover:-translate-y-1 hover:border-emerald-400/30 hover:bg-white/[0.06]">
@@ -52,7 +58,7 @@ export default function CleanMatchCard({ p, ratings }: any) {
         </div>
 
         <div className="rounded-full border border-emerald-400/20 bg-emerald-500/10 px-3 py-1 text-[10px] font-black tracking-wide text-emerald-300">
-          {p.riskLevel || "SAFE"}
+          {p.riskLevel || probs.dataQuality}
         </div>
       </header>
 
@@ -86,7 +92,8 @@ export default function CleanMatchCard({ p, ratings }: any) {
 
           {isLowData ? (
             <div className="rounded-3xl border border-yellow-400/20 bg-yellow-500/10 p-4 text-sm text-yellow-100">
-              Keine belastbaren Prognosen verfügbar. Es fehlen Quoten oder genügend historische Teamdaten.
+              Keine belastbaren Prognosen verfügbar. Es fehlen Quoten oder
+              genügend historische Teamdaten.
             </div>
           ) : (
             <div className="grid grid-cols-3 gap-3">
@@ -94,23 +101,25 @@ export default function CleanMatchCard({ p, ratings }: any) {
               <ProbabilityRing label="X" value={probs.draw} color="neutral" />
               <ProbabilityRing label="2" value={probs.awayWin} color="blue" />
             </div>
-          )
+          )}
         </div>
 
-        <div>
-          <p className="mb-3 text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500">
-            Tore & Beide Treffen
-          </p>
+        {!isLowData && (
+          <div>
+            <p className="mb-3 text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500">
+              Tore & Beide Treffen
+            </p>
 
-          <div className="grid grid-cols-2 gap-3">
-            <ProbabilityRing label="BTTS" value={probs.btts} color="emerald" />
-            <ProbabilityRing label="Ü1.5" value={probs.over15} color="blue" />
-            <ProbabilityRing label="Ü2.5" value={probs.over25} color="blue" />
-            <ProbabilityRing label="U2.5" value={probs.under25} color="neutral" />
-            <ProbabilityRing label="U3.5" value={probs.under35} color="neutral" />
-            <ProbabilityRing label="Trust" value={confidence} color="emerald" />
+            <div className="grid grid-cols-2 gap-3">
+              <ProbabilityRing label="BTTS" value={probs.btts} color="emerald" />
+              <ProbabilityRing label="Ü1.5" value={probs.over15} color="blue" />
+              <ProbabilityRing label="Ü2.5" value={probs.over25} color="blue" />
+              <ProbabilityRing label="U2.5" value={probs.under25} color="neutral" />
+              <ProbabilityRing label="U3.5" value={probs.under35} color="neutral" />
+              <ProbabilityRing label="Trust" value={confidence} color="emerald" />
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="rounded-3xl border border-white/10 bg-black/30 p-4">
           <div className="flex items-start justify-between gap-4">
@@ -141,6 +150,7 @@ export default function CleanMatchCard({ p, ratings }: any) {
               }}
             />
           </div>
+
           <div className="mt-3 rounded-2xl border border-white/10 bg-white/[0.03] p-3">
             <div className="flex items-center justify-between gap-3">
               <span className="text-[10px] font-black uppercase tracking-[0.18em] text-neutral-500">
@@ -225,9 +235,8 @@ function TeamRow({
       </div>
 
       <div className="shrink-0 rounded-xl bg-black/30 px-2.5 py-1 text-xs font-black text-neutral-200">
-        {probability}%
+        {probability > 0 ? `${probability}%` : "—"}
       </div>
     </div>
   );
 }
-
