@@ -1,13 +1,35 @@
 import { NextResponse } from "next/server";
-import { teams } from "@/data/teams";
-import { listTeamsFromDb } from "@/lib/db/repositories/team-repository";
+import { prisma } from "@/lib/prisma";
+
+export const dynamic = "force-dynamic";
 
 export async function GET() {
-  try {
-    if (!process.env.DATABASE_URL) return NextResponse.json({ source: "static-fallback", teams });
-    return NextResponse.json({ source: "database", teams: await listTeamsFromDb() });
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown database error.";
-    return NextResponse.json({ source: "static-fallback", warning: message, teams });
-  }
+  const teams = await prisma.team.findMany({
+    select: {
+      id: true,
+      name: true,
+      shortName: true,
+      attack: true,
+      defense: true,
+      elo: true,
+      form: true,
+      xgFor: true,
+      xgAgainst: true,
+      league: {
+        select: {
+          name: true,
+          country: true,
+        },
+      },
+    },
+    orderBy: {
+      name: "asc",
+    },
+    take: 500,
+  });
+
+  return NextResponse.json({
+    count: teams.length,
+    teams,
+  });
 }
