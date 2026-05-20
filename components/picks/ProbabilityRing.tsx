@@ -13,16 +13,17 @@ export default function ProbabilityRing({
   return (
     <div className="flex flex-col items-center gap-2">
       <div
-        className="flex h-20 w-20 items-center justify-center rounded-full"
+        className="flex h-14 w-14 items-center justify-center rounded-full md:h-16 md:w-16"
         style={{
           background: `conic-gradient(${color} ${deg}deg, rgba(255,255,255,0.08) 0deg)`,
         }}
       >
-        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-slate-950">
-          <span className="text-sm font-black text-white">{v}%</span>
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#07111f] md:h-12 md:w-12">
+          <span className="text-xs font-black text-white">{v}%</span>
         </div>
       </div>
-      <p className="text-center text-[11px] font-black uppercase tracking-[0.12em] text-slate-400">
+
+      <p className="text-center text-[10px] font-black uppercase tracking-[0.12em] text-slate-500">
         {label}
       </p>
     </div>

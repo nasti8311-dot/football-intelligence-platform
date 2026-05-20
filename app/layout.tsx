@@ -18,7 +18,6 @@ const nav = [
   ["/dashboard", "Dashboard"],
   ["/methodology", "Methode"],
   ["/prediction-performance", "Bilanz"],
-  ["/elo-ratings", "Ratings"],
 ];
 
 export default function RootLayout({
@@ -38,7 +37,7 @@ export default function RootLayout({
       <body className="bg-slate-950 text-white">
         <BackgroundFX />
 
-          <header className="sticky top-0 z-50 border-b border-white/10 bg-slate-950/75 px-4 py-3 shadow-2xl shadow-cyan-950/20 backdrop-blur-2xl">
+          <header className="sticky top-0 z-50 border-b border-white/10 bg-[#050b16]/90 px-4 py-2 shadow-2xl shadow-black/30 backdrop-blur-2xl">
             <div className="mx-auto flex max-w-6xl items-center justify-between">
               <Link href="/" className="font-black text-cyan-300">
                 <BrandMark />
@@ -49,7 +48,7 @@ export default function RootLayout({
                   <Link
                     key={href}
                     href={href}
-                    className="rounded-xl px-4 py-2 text-sm font-bold text-slate-300 transition hover:bg-white/10 hover:text-cyan-300"
+                    className="rounded-full px-4 py-2 text-sm font-black text-slate-400 transition hover:bg-white/10 hover:text-white"
                   >
                     {label}
                   </Link>
