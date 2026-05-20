@@ -3,6 +3,7 @@ import { calculateFootballProbabilities } from "@/lib/probability-engine";
 import { selectBestPick } from "@/lib/pick-selector";
 import { explainPrediction } from "@/lib/prediction-explainer";
 import { calculateTrustScore } from "@/lib/trust-score";
+import { getDataQualityLabel, getRatingLabel } from "@/lib/data-quality";
 
 export default function CleanMatchCard({ p, ratings }: any) {
   const match = p.match;
@@ -70,6 +71,12 @@ export default function CleanMatchCard({ p, ratings }: any) {
             side="AUSW"
             probability={probs.awayWin}
           />
+        </div>
+
+        <div className="grid grid-cols-3 gap-2">
+          <DataMetric label="Daten" value={getDataQualityLabel(probs.dataQuality)} />
+          <DataMetric label="Heim Angriff" value={getRatingLabel(ratings?.home?.attack)} />
+          <DataMetric label="Ausw. Angriff" value={getRatingLabel(ratings?.away?.attack)} />
         </div>
 
         <div>
@@ -166,6 +173,19 @@ export default function CleanMatchCard({ p, ratings }: any) {
         </div>
       </div>
     </article>
+  );
+}
+
+function DataMetric({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-black/25 px-2 py-2 text-center">
+      <p className="text-[9px] font-black uppercase tracking-[0.12em] text-neutral-500">
+        {label}
+      </p>
+      <p className="mt-1 truncate text-[11px] font-black text-white">
+        {value}
+      </p>
+    </div>
   );
 }
 
