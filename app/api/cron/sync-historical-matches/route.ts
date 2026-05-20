@@ -26,32 +26,37 @@ function slug(value: string) {
 }
 
 async function upsertTeam(name: string, leagueId?: string | null) {
+  const id = slug(name);
+
   return prisma.team.upsert({
-    where: {
-      id: slug(name),
-    },
+    where: { id },
     update: {
       name,
       ...(leagueId
         ? {
             league: {
-              connect: {
-                id: leagueId,
-              },
+              connect: { id: leagueId },
             },
           }
         : {}),
     },
     create: {
-      id: slug(name),
+      id,
       name,
       shortName: name.slice(0, 24),
+      attack: 1,
+      defense: 1,
+      elo: 1500,
+      form: 0,
+      xgFor: 1.35,
+      xgAgainst: 1.35,
+      possession: 50,
+      pressing: 50,
+      tempo: 50,
       ...(leagueId
         ? {
             league: {
-              connect: {
-                id: leagueId,
-              },
+              connect: { id: leagueId },
             },
           }
         : {}),
@@ -118,10 +123,12 @@ export async function GET() {
         const awayTeam = await upsertTeam(event.away_team, league.id);
 
         const homeScore =
-          event.scores?.find((s: any) => s.name === event.home_team)?.score ?? null;
+          event.scores?.find((s: any) => s.name === event.home_team)?.score ??
+          null;
 
         const awayScore =
-          event.scores?.find((s: any) => s.name === event.away_team)?.score ?? null;
+          event.scores?.find((s: any) => s.name === event.away_team)?.score ??
+          null;
 
         if (homeScore == null || awayScore == null) continue;
 
