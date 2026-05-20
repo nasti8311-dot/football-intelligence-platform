@@ -17,8 +17,7 @@ export default function CleanMatchCard({ p, ratings }: any) {
         probability: 0,
         risk: "HOCH" as const,
         score: 0,
-        reason:
-          "Für dieses Spiel fehlen aktuell ausreichende Quoten- oder Formdaten.",
+        reason: "Für dieses Spiel fehlen aktuell ausreichende Quoten- oder Formdaten.",
       }
     : selectBestPick(probs);
 
@@ -37,7 +36,7 @@ export default function CleanMatchCard({ p, ratings }: any) {
   });
 
   return (
-    <article className="group overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.04] shadow-2xl shadow-black/20 backdrop-blur transition duration-300 hover:-translate-y-1 hover:border-emerald-400/30 hover:bg-white/[0.06]">
+    <article className="overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.04] shadow-2xl shadow-black/20 backdrop-blur">
       <header className="flex items-center justify-between border-b border-white/5 px-5 py-4">
         <div className="min-w-0">
           <p className="truncate text-[10px] font-black uppercase tracking-[0.22em] text-emerald-400">
@@ -64,19 +63,8 @@ export default function CleanMatchCard({ p, ratings }: any) {
 
       <div className="space-y-5 p-5">
         <div className="space-y-3">
-          <TeamRow
-            name={match?.homeTeam?.name}
-            logo={match?.homeTeam?.crestUrl}
-            side="HEIM"
-            probability={probs.homeWin}
-          />
-
-          <TeamRow
-            name={match?.awayTeam?.name}
-            logo={match?.awayTeam?.crestUrl}
-            side="AUSW"
-            probability={probs.awayWin}
-          />
+          <TeamRow name={match?.homeTeam?.name} logo={match?.homeTeam?.crestUrl} side="HEIM" probability={probs.homeWin} />
+          <TeamRow name={match?.awayTeam?.name} logo={match?.awayTeam?.crestUrl} side="AUSW" probability={probs.awayWin} />
         </div>
 
         <div className="grid grid-cols-3 gap-2">
@@ -92,8 +80,7 @@ export default function CleanMatchCard({ p, ratings }: any) {
 
           {isLowData ? (
             <div className="rounded-3xl border border-yellow-400/20 bg-yellow-500/10 p-4 text-sm text-yellow-100">
-              Keine belastbaren Prognosen verfügbar. Es fehlen Quoten oder
-              genügend historische Teamdaten.
+              Keine belastbaren Prognosen verfügbar. Es fehlen Quoten oder genügend historische Teamdaten.
             </div>
           ) : (
             <div className="grid grid-cols-3 gap-3">
@@ -104,7 +91,7 @@ export default function CleanMatchCard({ p, ratings }: any) {
           )}
         </div>
 
-        {!isLowData && (
+        {!isLowData ? (
           <div>
             <p className="mb-3 text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500">
               Tore & Beide Treffen
@@ -119,7 +106,7 @@ export default function CleanMatchCard({ p, ratings }: any) {
               <ProbabilityRing label="Trust" value={confidence} color="emerald" />
             </div>
           </div>
-        )}
+        ) : null}
 
         <div className="rounded-3xl border border-white/10 bg-black/30 p-4">
           <div className="flex items-start justify-between gap-4">
@@ -137,18 +124,9 @@ export default function CleanMatchCard({ p, ratings }: any) {
                 Chance
               </p>
               <p className="text-sm font-black text-emerald-300">
-                {bestPick.probability}%
+                {bestPick.probability > 0 ? `${bestPick.probability}%` : "—"}
               </p>
             </div>
-          </div>
-
-          <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/5">
-            <div
-              className="h-full rounded-full bg-emerald-500 transition-all duration-500"
-              style={{
-                width: `${Math.min(100, Math.max(8, bestPick.probability))}%`,
-              }}
-            />
           </div>
 
           <div className="mt-3 rounded-2xl border border-white/10 bg-white/[0.03] p-3">
@@ -167,10 +145,7 @@ export default function CleanMatchCard({ p, ratings }: any) {
 
             <div className="mt-3 flex flex-wrap gap-2">
               {explanation.factors.map((factor: string) => (
-                <span
-                  key={factor}
-                  className="rounded-full border border-white/10 bg-black/30 px-2.5 py-1 text-[10px] font-bold text-neutral-300"
-                >
+                <span key={factor} className="rounded-full border border-white/10 bg-black/30 px-2.5 py-1 text-[10px] font-bold text-neutral-300">
                   {factor}
                 </span>
               ))}
@@ -215,7 +190,6 @@ function TeamRow({
       <div className="flex min-w-0 items-center gap-3">
         <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-white/10 ring-1 ring-white/10">
           {logo ? (
-            // eslint-disable-next-line @next/next/no-img-element
             <img src={logo} alt="" className="h-8 w-8 object-contain" />
           ) : (
             <span className="text-xs font-black text-white">
