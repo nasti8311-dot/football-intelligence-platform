@@ -16,6 +16,7 @@ export default async function DailyPicksPage() {
     where: {
       kickoff: {
         gte: new Date(),
+        lte: new Date(Date.now() + 1000 * 60 * 60 * 24 * 14),
       },
     },
     include: {
@@ -30,7 +31,17 @@ export default async function DailyPicksPage() {
     take: 80,
   });
 
-  const picks = filterRiskControlledPicks(matches).slice(0, 18);
+  const filteredPicks = filterRiskControlledPicks(matches);
+
+  const picks =
+    filteredPicks.length > 0
+      ? filteredPicks.slice(0, 18)
+      : matches.slice(0, 18).map((match: any) => ({
+          match,
+          riskLevel: "INFO",
+          confidence: 68,
+        }));
+
   const safePicks = picks.filter((p: any) => p.riskLevel === "SAFE").length;
   const avgConfidence =
     picks.length > 0
