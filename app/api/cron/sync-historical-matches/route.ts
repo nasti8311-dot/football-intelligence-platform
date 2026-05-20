@@ -32,13 +32,29 @@ async function upsertTeam(name: string, leagueId?: string | null) {
     },
     update: {
       name,
-      leagueId,
+      ...(leagueId
+        ? {
+            league: {
+              connect: {
+                id: leagueId,
+              },
+            },
+          }
+        : {}),
     },
     create: {
       id: slug(name),
       name,
       shortName: name.slice(0, 24),
-      leagueId,
+      ...(leagueId
+        ? {
+            league: {
+              connect: {
+                id: leagueId,
+              },
+            },
+          }
+        : {}),
     },
   });
 }
