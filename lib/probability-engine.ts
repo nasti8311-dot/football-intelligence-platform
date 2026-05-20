@@ -69,7 +69,10 @@ function normalizeOdds(odds?: OddsLike[]) {
   if (valid.length === 0) return null;
 
   const avg = valid.reduce(
-    (acc, o) => ({
+    (
+      acc: { homeOdds: number; drawOdds: number; awayOdds: number },
+      o
+    ) => ({
       homeOdds: acc.homeOdds + Number(o.homeOdds),
       drawOdds: acc.drawOdds + Number(o.drawOdds),
       awayOdds: acc.awayOdds + Number(o.awayOdds),
