@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import CleanMatchCard from "@/components/picks/CleanMatchCard";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import { filterRiskControlledPicks } from "@/lib/risk-control";
+import { buildTeamRatings, getTeamRating } from "@/lib/team-rating-engine";
 
 export const dynamic = "force-dynamic";
 
@@ -31,6 +32,23 @@ export default async function DailyPicksPage() {
     },
     take: 100,
   });
+
+  const historicalMatches = await prisma.match.findMany({
+    where: {
+      homeGoals: {
+        not: null,
+      },
+      awayGoals: {
+        not: null,
+      },
+    },
+    orderBy: {
+      kickoff: "desc",
+    },
+    take: 1200,
+  });
+
+  const teamRatings = buildTeamRatings(historicalMatches);
 
   const filteredPicks = filterRiskControlledPicks(matches);
 
@@ -139,7 +157,14 @@ export default async function DailyPicksPage() {
           ) : (
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               {picks.map((pick: any) => (
-                <CleanMatchCard key={pick.match.id} p={pick} />
+                <CleanMatchCard
+                  key={pick.match.id}
+                  p={pick}
+                  ratings={{
+                    home: getTeamRating(teamRatings, pick.match.homeTeamId),
+                    away: getTeamRating(teamRatings, pick.match.awayTeamId),
+                  }}
+                />
               ))}
             </div>
           )}

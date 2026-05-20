@@ -1,9 +1,9 @@
 import ProbabilityRing from "./ProbabilityRing";
 import { calculateFootballProbabilities } from "@/lib/probability-engine";
 
-export default function CleanMatchCard({ p }: any) {
+export default function CleanMatchCard({ p, ratings }: any) {
   const match = p.match;
-  const probs = calculateFootballProbabilities(match);
+  const probs = calculateFootballProbabilities(match, ratings);
 
   const confidence = Math.round(p.confidence || p.safeScore || 72);
 

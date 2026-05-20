@@ -1,3 +1,5 @@
+import type { TeamRating } from "@/lib/team-rating-engine";
+
 type OddsLike = {
   homeOdds?: number | null;
   drawOdds?: number | null;
@@ -19,7 +21,7 @@ function clamp(value: number, min = 1, max = 99) {
   return Math.min(max, Math.max(min, value));
 }
 
-function roundPct(value: number) {
+function pct(value: number) {
   return clamp(Math.round(value * 100));
 }
 
@@ -31,52 +33,6 @@ function factorial(n: number) {
 
 function poisson(lambda: number, goals: number) {
   return (Math.exp(-lambda) * Math.pow(lambda, goals)) / factorial(goals);
-}
-
-function hashNumber(input: string) {
-  let hash = 2166136261;
-  for (let i = 0; i < input.length; i++) {
-    hash ^= input.charCodeAt(i);
-    hash +=
-      (hash << 1) +
-      (hash << 4) +
-      (hash << 7) +
-      (hash << 8) +
-      (hash << 24);
-  }
-  return Math.abs(hash >>> 0);
-}
-
-function teamRating(name?: string | null) {
-  const n = name || "team";
-  const h = hashNumber(n);
-
-  let rating = 1.0 + ((h % 100) - 50) / 260;
-
-  const eliteHints = [
-    "city",
-    "real",
-    "barcelona",
-    "bayern",
-    "psg",
-    "liverpool",
-    "arsenal",
-    "inter",
-    "milan",
-    "juventus",
-    "dortmund",
-    "leverkusen",
-    "chelsea",
-    "atlético",
-    "atletico",
-    "napoli",
-  ];
-
-  if (eliteHints.some((x) => n.toLowerCase().includes(x))) {
-    rating += 0.18;
-  }
-
-  return Math.min(1.45, Math.max(0.65, rating));
 }
 
 function leagueProfile(name?: string | null) {
@@ -105,7 +61,7 @@ function normalizeOdds(odds?: OddsLike[]) {
         Number(o.awayOdds) > 1
     ) || [];
 
-  if (valid.length === 0) return null;
+  if (!valid.length) return null;
 
   const avg = valid.reduce(
     (
@@ -126,12 +82,12 @@ function normalizeOdds(odds?: OddsLike[]) {
   const h = 1 / avg.homeOdds;
   const d = 1 / avg.drawOdds;
   const a = 1 / avg.awayOdds;
-  const overround = h + d + a;
+  const total = h + d + a;
 
   return {
-    home: h / overround,
-    draw: d / overround,
-    away: a / overround,
+    home: h / total,
+    draw: d / total,
+    away: a / total,
   };
 }
 
@@ -142,7 +98,6 @@ function scoreMatrix(homeXg: number, awayXg: number) {
   let btts = 0;
   let over15 = 0;
   let over25 = 0;
-  let under25 = 0;
   let under35 = 0;
 
   for (let h = 0; h <= 10; h++) {
@@ -157,99 +112,95 @@ function scoreMatrix(homeXg: number, awayXg: number) {
       if (h > 0 && a > 0) btts += p;
       if (goals >= 2) over15 += p;
       if (goals >= 3) over25 += p;
-      if (goals <= 2) under25 += p;
       if (goals <= 3) under35 += p;
     }
   }
 
-  return { homeWin, draw, awayWin, btts, over15, over25, under25, under35 };
+  return { homeWin, draw, awayWin, btts, over15, over25, under35 };
 }
 
-export function calculateFootballProbabilities(match: any): FootballProbabilities {
+export function calculateFootballProbabilities(
+  match: any,
+  ratings?: {
+    home?: TeamRating;
+    away?: TeamRating;
+  }
+): FootballProbabilities {
   const odds = normalizeOdds(match?.odds);
+  const profile = leagueProfile(match?.league?.name);
 
-  const homeName = match?.homeTeam?.name || "home";
-  const awayName = match?.awayTeam?.name || "away";
-  const leagueName = match?.league?.name || "league";
+  const homeRating = ratings?.home || {
+    attack: 1,
+    defense: 1,
+    form: 0,
+    homeAdvantage: 1.08,
+    sampleSize: 0,
+  };
 
-  const profile = leagueProfile(leagueName);
-  const homeRating = teamRating(homeName) * 1.08;
-  const awayRating = teamRating(awayName);
+  const awayRating = ratings?.away || {
+    attack: 1,
+    defense: 1,
+    form: 0,
+    homeAdvantage: 1.08,
+    sampleSize: 0,
+  };
 
-  const totalRating = homeRating + awayRating;
-  const ratingHomeShare = homeRating / totalRating;
-  const ratingAwayShare = awayRating / totalRating;
+  const dataConfidence = Math.min(
+    1,
+    (homeRating.sampleSize + awayRating.sampleSize) / 20
+  );
 
-  const marketHome = odds?.home ?? ratingHomeShare * (1 - profile.draw);
-  const marketDraw =
-    odds?.draw ??
-    profile.draw + Math.max(0, 0.04 - Math.abs(ratingHomeShare - ratingAwayShare) * 0.12);
-  const marketAway = odds?.away ?? ratingAwayShare * (1 - profile.draw);
+  let homeXg =
+    (profile.goals / 2) *
+    homeRating.attack *
+    (1 / Math.max(0.7, awayRating.defense)) *
+    homeRating.homeAdvantage *
+    (1 + homeRating.form * 0.18);
 
-  const marketTotal = marketHome + marketDraw + marketAway;
+  let awayXg =
+    (profile.goals / 2) *
+    awayRating.attack *
+    (1 / Math.max(0.7, homeRating.defense)) *
+    0.94 *
+    (1 + awayRating.form * 0.16);
 
-  const baseHome = marketHome / marketTotal;
-  const baseDraw = marketDraw / marketTotal;
-  const baseAway = marketAway / marketTotal;
+  homeXg = Math.min(3.8, Math.max(0.35, homeXg));
+  awayXg = Math.min(3.4, Math.max(0.25, awayXg));
 
-  const strengthEdge = baseHome - baseAway;
+  const model = scoreMatrix(homeXg, awayXg);
 
-  const seed = hashNumber(`${homeName}|${awayName}|${leagueName}`);
-  const tempoAdj = ((seed % 31) - 15) / 100;
-  const homeAdj = (((seed >> 4) % 25) - 12) / 100;
-  const awayAdj = (((seed >> 8) % 25) - 12) / 100;
+  const modelTotal = model.homeWin + model.draw + model.awayWin;
+  let homeWin = model.homeWin / modelTotal;
+  let draw = model.draw / modelTotal;
+  let awayWin = model.awayWin / modelTotal;
 
-  let totalGoals = profile.goals + tempoAdj;
+  if (odds) {
+    const oddsWeight = 0.55 + dataConfidence * 0.2;
 
-  if (Math.abs(strengthEdge) > 0.22) totalGoals += 0.12;
-  if (Math.abs(strengthEdge) < 0.08) totalGoals -= 0.08;
+    homeWin = homeWin * (1 - oddsWeight) + odds.home * oddsWeight;
+    draw = draw * (1 - oddsWeight) + odds.draw * oddsWeight;
+    awayWin = awayWin * (1 - oddsWeight) + odds.away * oddsWeight;
+  } else {
+    draw = draw * 0.82 + profile.draw * 0.18;
+  }
 
-  const homeGoalShare = clamp(
-    50 + strengthEdge * 46 + homeAdj * 20,
-    36,
-    68
-  ) / 100;
+  const total1x2 = homeWin + draw + awayWin;
 
-  let homeXg = totalGoals * homeGoalShare;
-  let awayXg = totalGoals * (1 - homeGoalShare);
+  homeWin /= total1x2;
+  draw /= total1x2;
+  awayWin /= total1x2;
 
-  homeXg += Number(match?.stats?.homeXgProxy || 0) * 0.03;
-  awayXg += Number(match?.stats?.awayXgProxy || 0) * 0.03;
-
-  homeXg = Math.min(3.6, Math.max(0.35, homeXg));
-  awayXg = Math.min(3.4, Math.max(0.25, awayXg + awayAdj));
-
-  let model = scoreMatrix(homeXg, awayXg);
-
-  const marketWeight = odds ? 0.72 : 0.22;
-
-  model.homeWin = model.homeWin * (1 - marketWeight) + baseHome * marketWeight;
-  model.draw = model.draw * (1 - marketWeight) + baseDraw * marketWeight;
-  model.awayWin = model.awayWin * (1 - marketWeight) + baseAway * marketWeight;
-
-  const total1x2 = model.homeWin + model.draw + model.awayWin;
-
-  const homeWin = model.homeWin / total1x2;
-  const draw = model.draw / total1x2;
-  const awayWin = model.awayWin / total1x2;
-
-  const bttsCorrection =
-    1 - Math.min(0.12, Math.abs(homeXg - awayXg) * 0.055);
-
-  const btts = clamp(Math.round(model.btts * bttsCorrection * 100));
-  const over15 = roundPct(model.over15);
-  const over25 = roundPct(model.over25);
-  const under25 = clamp(100 - over25);
-  const under35 = roundPct(model.under35);
+  const over25 = model.over25;
+  const under25 = 1 - over25;
 
   return {
-    homeWin: roundPct(homeWin),
-    draw: roundPct(draw),
-    awayWin: roundPct(awayWin),
-    btts,
-    over15,
-    over25,
-    under25,
-    under35,
+    homeWin: pct(homeWin),
+    draw: pct(draw),
+    awayWin: pct(awayWin),
+    btts: pct(model.btts),
+    over15: pct(model.over15),
+    over25: pct(over25),
+    under25: pct(under25),
+    under35: pct(model.under35),
   };
 }
