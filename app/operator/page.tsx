@@ -4,6 +4,10 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
+const ADMIN_EMAILS = [
+  "boomwash.hagen@gmail.com",
+];
+
 function pct(v: number) {
   return `${Math.round(v)}%`;
 }
@@ -37,6 +41,26 @@ export default async function OperatorPage() {
                 Mit Google fortfahren
               </button>
             </form>
+          </section>
+        </div>
+      </main>
+    );
+  }
+
+  if (!session.user.email || !ADMIN_EMAILS.includes(session.user.email)) {
+    return (
+      <main className="min-h-screen stadium-page px-4 pb-28 pt-6 text-white md:px-6">
+        <div className="mx-auto max-w-4xl">
+          <section className="glass-card glow rounded-[2rem] p-8 text-center md:p-12">
+            <p className="text-xs uppercase tracking-[0.3em] text-red-300">
+              Kein Admin-Zugriff
+            </p>
+            <h1 className="page-title mt-4 text-4xl font-black md:text-6xl">
+              Dieser Bereich ist intern.
+            </h1>
+            <p className="mx-auto mt-5 max-w-2xl text-slate-300">
+              Du bist eingeloggt, aber nicht als Operator freigeschaltet.
+            </p>
           </section>
         </div>
       </main>

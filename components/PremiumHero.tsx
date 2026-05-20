@@ -1,5 +1,6 @@
 import Link from "next/link";
 import TrustStrip from "@/components/TrustStrip";
+import TrustBadge from "@/components/TrustBadge";
 
 export default function PremiumHero() {
   return (
@@ -9,7 +10,9 @@ export default function PremiumHero() {
 
       <div className="relative grid gap-8 md:grid-cols-[1.3fr_0.7fr] md:items-center">
         <div>
-          <p className="text-xs font-black uppercase tracking-[0.35em] text-cyan-300">
+          <TrustBadge />
+
+          <p className="mt-5 text-xs font-black uppercase tracking-[0.35em] text-cyan-300">
             Football Intelligence Beta
           </p>
 
