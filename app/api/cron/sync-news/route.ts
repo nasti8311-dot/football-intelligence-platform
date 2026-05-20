@@ -66,19 +66,20 @@ export async function GET() {
 
       for (const article of articles) {
         try {
-          await prisma.newsArticle.create({
-            data: {
-              matchId: match.id,
-              title: article.title || "Ohne Titel",
-              description: article.description || "",
-              url: article.url,
-              imageUrl: article.urlToImage,
-              source: article.source?.name || "News",
-              publishedAt: article.publishedAt
-                ? new Date(article.publishedAt)
-                : new Date(),
-            },
-          });
+          await prisma.$executeRawUnsafe(
+            `INSERT INTO "MatchNews"
+              ("id","matchId","title","description","url","imageUrl","source","publishedAt","createdAt","updatedAt")
+             VALUES
+              (gen_random_uuid()::text,$1,$2,$3,$4,$5,$6,$7,NOW(),NOW())
+             ON CONFLICT ("url") DO NOTHING`,
+            match.id,
+            article.title || "Ohne Titel",
+            article.description || "",
+            article.url,
+            article.urlToImage || null,
+            article.source?.name || "News",
+            article.publishedAt ? new Date(article.publishedAt) : new Date()
+          );
 
           saved++;
         } catch {}
