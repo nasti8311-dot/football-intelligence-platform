@@ -1,8 +1,16 @@
 {
   "crons": [
     {
-      "path": "/api/cron/daily-refresh",
-      "schedule": "0 5 * * *"
+      "path": "/api/cron/sync-historical-matches",
+      "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/cron/sync-odds-events",
+      "schedule": "0 */6 * * *"
+    },
+    {
+      "path": "/api/cron/sync-news",
+      "schedule": "30 6 * * *"
     }
   ]
 }
