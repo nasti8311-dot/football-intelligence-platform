@@ -77,7 +77,6 @@ async function upsertLeague(key: string) {
       code: key,
       name: key.replaceAll("_", " "),
       country: "international",
-      season: "2025/26",
     },
   });
 }
