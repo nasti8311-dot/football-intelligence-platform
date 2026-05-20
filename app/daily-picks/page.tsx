@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import TeamBadge from "@/components/TeamBadge";
 import PremiumPickCard from "@/components/picks/PremiumPickCard";
 import SavePickButton from "@/components/picks/SavePickButton";
+import PremiumHero from "@/components/PremiumHero";
 import { buildPredictions } from "@/lib/predictions";
 import { premiumAdjustPredictions } from "@/lib/premium-model";
 import { advancedTune } from "@/lib/advanced-tuning";

@@ -12,19 +12,18 @@ export default function MethodologyPage() {
           </p>
 
           <h1 className="page-title mt-4 text-4xl font-black md:text-6xl">
-            How our predictions work
+            So funktionieren unsere Prognosen
           </h1>
 
           <p className="mt-5 text-slate-300">
-            Our football predictions combine statistical modelling, historical
-            backtesting, market calibration and match-context signals.
+            Unsere Fußball-Prognosen kombinieren statistische Modelle, historisches Backtesting, Markt-Kalibrierung und Spielkontext-Signale.
           </p>
 
           <Link
             href="/"
             className="mt-6 inline-block rounded-2xl bg-cyan-400 px-5 py-3 font-bold text-slate-950"
           >
-            View today&apos;s picks
+            Picks ansehen
           </Link>
         </section>
 
@@ -45,11 +44,10 @@ export default function MethodologyPage() {
 
         <section className="glass-card rounded-3xl border border-yellow-400/10 bg-yellow-400/5 p-6">
           <h2 className="text-2xl font-black text-yellow-300">
-            Important notice
+            Wichtiger Hinweis
           </h2>
           <p className="mt-3 text-slate-300">
-            Predictions are probabilities, not guarantees. The platform is built
-            for analysis and education. Always use responsible judgement.
+            Prognosen sind Wahrscheinlichkeiten, keine Garantien. Die Plattform dient Analyse und Information. Nutze die Daten verantwortungsvoll.
           </p>
         </section>
       </div>
