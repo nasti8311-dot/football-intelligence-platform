@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import TeamBadge from "@/components/TeamBadge";
 import PremiumPickCard from "@/components/picks/PremiumPickCard";
 import ModernMatchCard from "@/components/picks/ModernMatchCard";
+import CleanMatchCard from "@/components/picks/CleanMatchCard";
 import SavePickButton from "@/components/picks/SavePickButton";
 import PremiumHero from "@/components/PremiumHero";
 import GrowthCTA from "@/components/GrowthCTA";
@@ -299,6 +300,8 @@ export default async function DailyPicksPage() {
               return (
                 <div key={p.id} className="space-y-4">
                   {/* Premium visual card */}
+                  <CleanMatchCard p={p} />
+                  <div className="hidden">
                   <ModernMatchCard
                     match={`${p.home} vs ${p.away}`}
                     league={p.league}
@@ -316,6 +319,7 @@ export default async function DailyPicksPage() {
                       p.summary || p.reason,
                     ].filter(Boolean)}
                   />
+                  </div>
 
                   <article className="glass-card rounded-[2rem] p-5">
                   <div className="flex items-center justify-between">
