@@ -10,7 +10,16 @@ export default function CleanMatchCard({ p, ratings }: any) {
 
   const hasOdds = Array.isArray(match?.odds) && match.odds.length > 0;
 
-  const bestPick = selectBestPick(probs);
+  const isLowData = probs.dataQuality === "LOW";
+  const bestPick = isLowData
+    ? {
+        label: "Keine seriöse Prognose",
+        probability: 0,
+        risk: "HOCH" as const,
+        score: 0,
+        reason: "Für dieses Spiel fehlen aktuell ausreichende Quoten- oder Formdaten.",
+      }
+    : selectBestPick(probs);
   const confidence = calculateTrustScore({
     probs,
     pick: bestPick,
@@ -68,11 +77,17 @@ export default function CleanMatchCard({ p, ratings }: any) {
             1X2 Wahrscheinlichkeiten
           </p>
 
-          <div className="grid grid-cols-3 gap-3">
-            <ProbabilityRing label="1" value={probs.homeWin} color="emerald" />
-            <ProbabilityRing label="X" value={probs.draw} color="neutral" />
-            <ProbabilityRing label="2" value={probs.awayWin} color="blue" />
-          </div>
+          {isLowData ? (
+            <div className="rounded-3xl border border-yellow-400/20 bg-yellow-500/10 p-4 text-sm text-yellow-100">
+              Keine belastbaren Prognosen verfügbar. Es fehlen Quoten oder genügend historische Teamdaten.
+            </div>
+          ) : (
+            <div className="grid grid-cols-3 gap-3">
+              <ProbabilityRing label="1" value={probs.homeWin} color="emerald" />
+              <ProbabilityRing label="X" value={probs.draw} color="neutral" />
+              <ProbabilityRing label="2" value={probs.awayWin} color="blue" />
+            </div>
+          )
         </div>
 
         <div>

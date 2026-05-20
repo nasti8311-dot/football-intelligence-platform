@@ -15,6 +15,7 @@ export type FootballProbabilities = {
   over25: number;
   under25: number;
   under35: number;
+  dataQuality: "LOW" | "MEDIUM" | "HIGH";
 };
 
 function clamp(value: number, min = 1, max = 99) {
@@ -33,21 +34,6 @@ function factorial(n: number) {
 
 function poisson(lambda: number, goals: number) {
   return (Math.exp(-lambda) * Math.pow(lambda, goals)) / factorial(goals);
-}
-
-function leagueProfile(name?: string | null) {
-  const n = (name || "").toLowerCase();
-
-  if (n.includes("eredivisie")) return { goals: 3.1, draw: 0.22 };
-  if (n.includes("bundesliga")) return { goals: 2.95, draw: 0.24 };
-  if (n.includes("champions")) return { goals: 2.85, draw: 0.24 };
-  if (n.includes("mls")) return { goals: 2.9, draw: 0.24 };
-  if (n.includes("premier") || n.includes("epl")) return { goals: 2.75, draw: 0.25 };
-  if (n.includes("liga")) return { goals: 2.55, draw: 0.27 };
-  if (n.includes("serie")) return { goals: 2.45, draw: 0.27 };
-  if (n.includes("ligue")) return { goals: 2.5, draw: 0.28 };
-
-  return { goals: 2.65, draw: 0.26 };
 }
 
 function normalizeOdds(odds?: OddsLike[]) {
@@ -127,66 +113,70 @@ export function calculateFootballProbabilities(
   }
 ): FootballProbabilities {
   const odds = normalizeOdds(match?.odds);
-  const profile = leagueProfile(match?.league?.name);
 
-  const home = ratings?.home || {
-    attack: 1,
-    defense: 1,
-    form: 0,
-    homeAdvantage: 1.08,
-    sampleSize: 0,
-  };
+  const home = ratings?.home;
+  const away = ratings?.away;
 
-  const away = ratings?.away || {
-    attack: 1,
-    defense: 1,
-    form: 0,
-    homeAdvantage: 1.08,
-    sampleSize: 0,
-  };
+  const hasEnoughFormData =
+    Boolean(home && away) &&
+    (home?.sampleSize || 0) >= 5 &&
+    (away?.sampleSize || 0) >= 5;
 
-  const homePower =
-    home.attack * (1 / Math.max(0.75, away.defense)) * home.homeAdvantage * (1 + home.form * 0.12);
+  const hasOdds = Boolean(odds);
 
-  const awayPower =
-    away.attack * (1 / Math.max(0.75, home.defense)) * 0.96 * (1 + away.form * 0.1);
+  if (!hasOdds && !hasEnoughFormData) {
+    return {
+      homeWin: 0,
+      draw: 0,
+      awayWin: 0,
+      btts: 0,
+      over15: 0,
+      over25: 0,
+      under25: 0,
+      under35: 0,
+      dataQuality: "LOW",
+    };
+  }
 
-  const totalPower = homePower + awayPower;
-  const homeShare = homePower / Math.max(0.01, totalPower);
+  const dataQuality =
+    hasOdds && hasEnoughFormData ? "HIGH" : hasOdds ? "MEDIUM" : "MEDIUM";
 
-  let totalGoals = profile.goals;
+  let homeXg = 1.35;
+  let awayXg = 1.1;
 
-  const mismatch = Math.abs(homeShare - 0.5);
-  if (mismatch > 0.16) totalGoals += 0.15;
-  if (mismatch < 0.06) totalGoals -= 0.08;
+  if (hasEnoughFormData && home && away) {
+    homeXg =
+      1.35 *
+      home.attack *
+      (1 / Math.max(0.75, away.defense)) *
+      home.homeAdvantage *
+      (1 + home.form * 0.1);
 
-  let homeXg = totalGoals * homeShare;
-  let awayXg = totalGoals * (1 - homeShare);
+    awayXg =
+      1.1 *
+      away.attack *
+      (1 / Math.max(0.75, home.defense)) *
+      (1 + away.form * 0.08);
+  }
 
-  homeXg = Math.min(3.2, Math.max(0.7, homeXg));
-  awayXg = Math.min(3.0, Math.max(0.55, awayXg));
+  homeXg = Math.min(3.2, Math.max(0.55, homeXg));
+  awayXg = Math.min(3.0, Math.max(0.45, awayXg));
 
   const model = scoreMatrix(homeXg, awayXg);
 
-  const modelTotal = model.homeWin + model.draw + model.awayWin;
+  const totalModel = model.homeWin + model.draw + model.awayWin;
 
-  let homeWin = model.homeWin / modelTotal;
-  let draw = model.draw / modelTotal;
-  let awayWin = model.awayWin / modelTotal;
+  let homeWin = model.homeWin / totalModel;
+  let draw = model.draw / totalModel;
+  let awayWin = model.awayWin / totalModel;
 
   if (odds) {
-    const oddsWeight = 0.68;
+    const oddsWeight = hasEnoughFormData ? 0.7 : 0.9;
+
     homeWin = homeWin * (1 - oddsWeight) + odds.home * oddsWeight;
     draw = draw * (1 - oddsWeight) + odds.draw * oddsWeight;
     awayWin = awayWin * (1 - oddsWeight) + odds.away * oddsWeight;
   }
-
-  const drawCap =
-    mismatch > 0.18 ? 0.25 :
-    mismatch > 0.1 ? 0.29 :
-    0.34;
-
-  draw = Math.min(draw, drawCap);
 
   const total1x2 = homeWin + draw + awayWin;
 
@@ -194,20 +184,15 @@ export function calculateFootballProbabilities(
   draw /= total1x2;
   awayWin /= total1x2;
 
-  const over15 = pct(model.over15, 35, 92);
-  const over25 = pct(model.over25, 18, 78);
-  const under25 = clamp(100 - over25, 22, 82);
-  const under35 = pct(model.under35, 42, 88);
-  const btts = pct(model.btts, 28, 76);
-
   return {
-    homeWin: pct(homeWin, 8, 78),
-    draw: pct(draw, 12, 34),
-    awayWin: pct(awayWin, 6, 72),
-    btts,
-    over15,
-    over25,
-    under25,
-    under35,
+    homeWin: pct(homeWin, 3, 85),
+    draw: pct(draw, 8, 38),
+    awayWin: pct(awayWin, 3, 85),
+    btts: pct(model.btts, 20, 80),
+    over15: pct(model.over15, 25, 92),
+    over25: pct(model.over25, 15, 82),
+    under25: pct(model.under25, 18, 85),
+    under35: pct(model.under35, 30, 92),
+    dataQuality,
   };
 }
