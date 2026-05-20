@@ -208,3 +208,26 @@ body {
 .page-title {
   letter-spacing: -0.06em;
 }
+
+html {
+  background: #070707;
+}
+
+body {
+  min-height: 100vh;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+::selection {
+  background: rgba(16, 185, 129, 0.35);
+  color: white;
+}
+
+@media (max-width: 767px) {
+  main {
+    padding-bottom: 96px;
+  }
+}
