@@ -1,6 +1,7 @@
 import ProbabilityRing from "./ProbabilityRing";
 import { calculateFootballProbabilities } from "@/lib/probability-engine";
 import { selectBestPick } from "@/lib/pick-selector";
+import { explainPrediction } from "@/lib/prediction-explainer";
 
 export default function CleanMatchCard({ p, ratings }: any) {
   const match = p.match;
@@ -9,6 +10,7 @@ export default function CleanMatchCard({ p, ratings }: any) {
   const confidence = Math.round(p.confidence || p.safeScore || 72);
 
   const bestPick = selectBestPick(probs);
+  const explanation = explainPrediction({ probs, home: ratings?.home, away: ratings?.away });
 
   return (
     <article className="group overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.04] shadow-2xl shadow-black/20 backdrop-blur transition duration-300 hover:-translate-y-1 hover:border-emerald-400/30 hover:bg-white/[0.06]">
@@ -112,13 +114,29 @@ export default function CleanMatchCard({ p, ratings }: any) {
           <div className="mt-3 rounded-2xl border border-white/10 bg-white/[0.03] p-3">
             <div className="flex items-center justify-between gap-3">
               <span className="text-[10px] font-black uppercase tracking-[0.18em] text-neutral-500">
-                Risiko
+                Warum?
               </span>
               <span className="text-xs font-black text-emerald-300">
                 {bestPick.risk}
               </span>
             </div>
-            <p className="mt-2 text-xs leading-5 text-neutral-400">
+
+            <p className="mt-2 text-xs font-bold text-white">
+              {explanation.headline}
+            </p>
+
+            <div className="mt-3 flex flex-wrap gap-2">
+              {explanation.factors.map((factor: string) => (
+                <span
+                  key={factor}
+                  className="rounded-full border border-white/10 bg-black/30 px-2.5 py-1 text-[10px] font-bold text-neutral-300"
+                >
+                  {factor}
+                </span>
+              ))}
+            </div>
+
+            <p className="mt-3 text-xs leading-5 text-neutral-500">
               {bestPick.reason}
             </p>
           </div>
