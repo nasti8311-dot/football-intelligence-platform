@@ -3,7 +3,6 @@ import { auth, signIn } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import TeamBadge from "@/components/TeamBadge";
 import PremiumPickCard from "@/components/picks/PremiumPickCard";
-import ModernMatchCard from "@/components/picks/ModernMatchCard";
 import CleanMatchCard from "@/components/picks/CleanMatchCard";
 import SavePickButton from "@/components/picks/SavePickButton";
 import PremiumHero from "@/components/PremiumHero";
@@ -301,25 +300,6 @@ export default async function DailyPicksPage() {
                 <div key={p.id} className="space-y-4">
                   {/* Premium visual card */}
                   <CleanMatchCard p={p} />
-                  <div className="hidden">
-                  <ModernMatchCard
-                    match={`${p.home} vs ${p.away}`}
-                    league={p.league}
-                    market={p.bestMarket}
-                    probability={Math.round(p.bestProbability)}
-                    edge={p.edge ? Number(p.edge.toFixed(1)) : 0}
-                    confidence={p.riskTier || p.confidence}
-                    kickoff={p.kickoff}
-                    home={p.home}
-                    away={p.away}
-                    reasoning={[
-                      `Risikostufe: ${p.riskTier || "BALANCED"} · Risiko-Score: ${p.riskScore ?? 0}/100`,
-                      `Safe Score: ${p.safeScore ?? p.tunedScore ?? p.premiumScore ?? p.valueScore}`,
-                      `Expected goals: ${p.homeXg.toFixed(1)} : ${p.awayXg.toFixed(1)}`,
-                      p.summary || p.reason,
-                    ].filter(Boolean)}
-                  />
-                  </div>
 
                   <article className="glass-card rounded-[2rem] p-5">
                   <div className="flex items-center justify-between">
