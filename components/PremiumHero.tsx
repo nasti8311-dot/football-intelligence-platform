@@ -1,40 +1,52 @@
+import BrandMark from "./BrandMark";
+
 export default function PremiumHero() {
   return (
-    <section className="rounded-[2.2rem] border border-white/10 bg-[#07111f]/90 p-6 shadow-2xl shadow-black/30 md:p-8">
-      <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
-        <div>
-          <p className="text-xs font-black uppercase tracking-[0.28em] text-cyan-300">
-            Heute im Modell
-          </p>
+    <section className="overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.04] shadow-2xl shadow-black/30 backdrop-blur">
+      <div className="relative p-5 sm:p-6">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.18),transparent_35%)]" />
 
-          <h1 className="mt-3 text-4xl font-black tracking-[-0.06em] text-white md:text-6xl">
-            Starke Picks.
-            <br />
-            Klar visualisiert.
-          </h1>
+        <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+          <div className="space-y-5">
+            <BrandMark />
 
-          <p className="mt-4 max-w-2xl text-base text-slate-400">
-            Wahrscheinlichkeiten, Risiko und Top-Pick auf einen Blick.
-          </p>
-        </div>
+            <div>
+              <div className="mb-3 inline-flex rounded-full border border-emerald-400/20 bg-emerald-500/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-emerald-300">
+                Daily Picks · Risk Control · Value Engine
+              </div>
 
-        <div className="grid grid-cols-3 gap-2 rounded-3xl border border-white/10 bg-white/[0.04] p-3">
-          <MiniStat value="5–10" label="Picks" />
-          <MiniStat value="Live" label="Sync" />
-          <MiniStat value="Risk" label="Filter" />
+              <h2 className="max-w-3xl text-3xl font-black tracking-tight text-white sm:text-5xl">
+                Smartere Fußball-Picks.
+                <span className="block text-neutral-500">
+                  Weniger Risiko. Mehr Struktur.
+                </span>
+              </h2>
+
+              <p className="mt-4 max-w-2xl text-sm leading-6 text-neutral-400">
+                Football IQ kombiniert Wahrscheinlichkeiten, Quoten, Risiko-Filter
+                und moderne Match Cards zu einer klaren täglichen Entscheidungsansicht.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-2 lg:min-w-[360px]">
+            <HeroMetric label="Märkte" value="1X2" />
+            <HeroMetric label="Engine" value="SAFE" />
+            <HeroMetric label="Sync" value="LIVE" />
+          </div>
         </div>
       </div>
     </section>
   );
 }
 
-function MiniStat({ value, label }: { value: string; label: string }) {
+function HeroMetric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl bg-slate-950/60 px-4 py-3 text-center">
-      <p className="text-lg font-black text-cyan-300">{value}</p>
-      <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-500">
+    <div className="rounded-3xl border border-white/10 bg-black/25 p-4 text-center">
+      <p className="text-[10px] font-black uppercase tracking-[0.18em] text-neutral-500">
         {label}
       </p>
+      <p className="mt-2 text-xl font-black text-white">{value}</p>
     </div>
   );
 }
