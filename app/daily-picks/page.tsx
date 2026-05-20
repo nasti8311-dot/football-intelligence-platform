@@ -3,6 +3,7 @@ import { auth, signIn } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import TeamBadge from "@/components/TeamBadge";
 import PremiumPickCard from "@/components/picks/PremiumPickCard";
+import ModernMatchCard from "@/components/picks/ModernMatchCard";
 import SavePickButton from "@/components/picks/SavePickButton";
 import PremiumHero from "@/components/PremiumHero";
 import GrowthCTA from "@/components/GrowthCTA";
@@ -261,102 +262,7 @@ export default async function DailyPicksPage() {
   return (
     <main className="min-h-screen stadium-page px-4 pb-28 pt-4 text-white md:px-6">
       <div className="mx-auto max-w-5xl space-y-6">
-        <section className="glass-card glow rounded-[2rem] p-6 md:p-10">
-          <p className="text-xs uppercase tracking-[0.3em] text-cyan-300">
-            Daily Picks
-          </p>
-
-          <h1 className="page-title mt-4 text-4xl font-black leading-tight md:text-6xl">
-            10 beste Football Picks
-          </h1>
-
-          <p className="mt-4 max-w-2xl text-slate-300">
-            Die stärksten heutigen Picks nach Value Score, Form, Elo, Heim-/Auswärtsprofil,
-            Odds-Edge, News-Signalen und Poisson-Modell.
-          </p>
-
-          <div className="mt-6 flex gap-3">
-            <a
-              href="/news"
-              className="flex-1 rounded-2xl bg-white/10 px-5 py-4 text-center text-sm font-bold text-white"
-            >
-              News & Team Updates
-            </a>
-
-            <a
-              href="/prediction-performance"
-              className="flex-1 rounded-2xl bg-cyan-400 px-5 py-4 text-center text-sm font-bold text-slate-950"
-            >
-              Bilanz
-            </a>
-          </div>
-
-          <div className="mt-4 rounded-2xl border border-yellow-400/10 bg-yellow-400/5 p-4">
-            <p className="text-xs font-black uppercase tracking-[0.2em] text-yellow-300">
-              Hinweis zu verantwortungsvollen Prognosen
-            </p>
-            <p className="mt-2 text-sm text-slate-300">
-              Predictions are data-based probabilities, not guarantees. We rank picks by model strength,
-              historical calibration, market edge and risk signals.
-            </p>
-          </div>
-
-          <div className="mt-4 grid gap-3 md:grid-cols-3">
-            <div className="rounded-2xl border border-cyan-400/10 bg-cyan-400/5 p-4">
-              <p className="text-xs font-black uppercase tracking-[0.2em] text-cyan-300">
-                Datenvertrauen
-              </p>
-              <p className="mt-2 text-sm text-slate-300">
-                Die Picks nutzen Form, Elo, Quoten, News und Trends.
-              </p>
-            </div>
-
-            <a href="/news" className="rounded-2xl border border-white/10 bg-white/5 p-4">
-              <p className="text-xs font-black uppercase tracking-[0.2em] text-white/70">
-                Spiel-News
-              </p>
-              <p className="mt-2 text-sm text-slate-300">
-                Team-News, Verletzungen und mögliche Aufstellungen prüfen.
-              </p>
-            </a>
-
-            <a href="/prediction-performance" className="rounded-2xl border border-emerald-400/10 bg-emerald-400/5 p-4">
-              <p className="text-xs font-black uppercase tracking-[0.2em] text-emerald-300">
-                Bilanz
-              </p>
-              <p className="mt-2 text-sm text-slate-300">
-                Trefferquote und ROI-Simulation verfolgen.
-              </p>
-            </a>
-          </div>
-
-          {!hasEnoughToday && (
-            <div className="mt-4 rounded-2xl border border-yellow-400/10 bg-yellow-400/5 p-4">
-              <p className="text-xs font-black uppercase tracking-[0.2em] text-yellow-300">
-                Heute weniger als 5 Spiele verfügbar
-              </p>
-              <p className="mt-2 text-sm text-slate-300">
-                Wir zeigen zuerst heutige Spiele. Wenn heute nicht genug hochwertige Spiele verfügbar sind,
-                ergänzen wir transparent mit den stärksten kommenden Spielen der nächsten Tage.
-              </p>
-            </div>
-          )}
-
-          <div className="mt-4 rounded-2xl border border-emerald-400/10 bg-emerald-400/5 p-4">
-            <p className="text-xs font-black uppercase tracking-[0.2em] text-emerald-300">
-              Tägliches Tracking aktiv
-            </p>
-            <p className="mt-2 text-sm text-slate-300">
-              Diese Picks werden gespeichert und später automatisch mit echten Ergebnissen ausgewertet.
-            </p>
-          </div>
-
-          <div className="mt-4 grid grid-cols-3 gap-3">
-            <Top label="Picks" value={String(picks.length)} />
-            <Top label="Ø Wahrscheinlichkeit" value={`${avgProb}%`} />
-            <Top label="Premium" value={String(premiumCount)} />
-          </div>
-        </section>
+        
 
         <section className="glass-card rounded-[2rem] border border-cyan-400/20 bg-gradient-to-r from-cyan-400/10 to-emerald-400/10 p-5">
           <div className="flex items-center gap-4">
@@ -393,7 +299,7 @@ export default async function DailyPicksPage() {
               return (
                 <div key={p.id} className="space-y-4">
                   {/* Premium visual card */}
-                  <PremiumPickCard
+                  <ModernMatchCard
                     match={`${p.home} vs ${p.away}`}
                     league={p.league}
                     market={p.bestMarket}

@@ -191,3 +191,20 @@ html {
   background: rgba(34, 211, 238, 0.35);
   color: white;
 }
+
+body {
+  background:
+    radial-gradient(circle at top, rgba(34,211,238,0.08), transparent 30%),
+    #020817;
+}
+
+.glass-card {
+  background: rgba(7, 17, 31, 0.92);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.35);
+}
+
+.page-title {
+  letter-spacing: -0.06em;
+}
