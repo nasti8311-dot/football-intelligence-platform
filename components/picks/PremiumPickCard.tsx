@@ -18,9 +18,9 @@ function getGlow(prob: number) {
 }
 
 function getLabel(prob: number) {
-  if (prob >= 80) return "ELITE EDGE";
-  if (prob >= 70) return "STARKER PICK";
-  return "WATCHLIST";
+  if (prob >= 80) return "SEHR STARK";
+  if (prob >= 70) return "STARK";
+  return "SOLIDE";
 }
 
 export default function PremiumPickCard({
@@ -82,7 +82,7 @@ export default function PremiumPickCard({
             Risiko
           </p>
           <p className="mt-1 text-lg font-black text-yellow-300">
-            Modelliert
+            Kontrolliert
           </p>
         </div>
 

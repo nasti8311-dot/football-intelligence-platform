@@ -6,6 +6,7 @@ import PremiumPickCard from "@/components/picks/PremiumPickCard";
 import SavePickButton from "@/components/picks/SavePickButton";
 import PremiumHero from "@/components/PremiumHero";
 import GrowthCTA from "@/components/GrowthCTA";
+import { filterRiskControlledPicks } from "@/lib/risk-control";
 import { buildPredictions } from "@/lib/predictions";
 import { premiumAdjustPredictions } from "@/lib/premium-model";
 import { advancedTune } from "@/lib/advanced-tuning";
@@ -164,9 +165,13 @@ export default async function DailyPicksPage() {
     ])
   );
 
-  const elitePool = rankElitePicks(filterElitePicks(rawPicks));
+  const elitePool = filterRiskControlledPicks(
+    rankElitePicks(filterElitePicks(rawPicks))
+  );
 
-  const todayPool = elitePool.length > 0 ? elitePool : rawPicks;
+  const controlledRawPool = filterRiskControlledPicks(rawPicks);
+
+  const todayPool = elitePool.length > 0 ? elitePool : controlledRawPool;
 
   const fallbackPool = allPredictions
     .filter((p: any) => !todayPool.some((x: any) => x.id === p.id))
@@ -195,8 +200,8 @@ export default async function DailyPicksPage() {
 
       if (bToday !== aToday) return bToday - aToday;
 
-      if ((b.tunedScore ?? 0) !== (a.tunedScore ?? 0)) {
-        return (b.tunedScore ?? 0) - (a.tunedScore ?? 0);
+      if ((b.safeScore ?? 0) !== (a.safeScore ?? 0)) {
+        return (b.safeScore ?? 0) - (a.safeScore ?? 0);
       }
 
       if (b.bestProbability !== a.bestProbability) {
@@ -394,12 +399,13 @@ export default async function DailyPicksPage() {
                     market={p.bestMarket}
                     probability={Math.round(p.bestProbability)}
                     edge={p.edge ? Number(p.edge.toFixed(1)) : 0}
-                    confidence={p.confidence}
+                    confidence={p.riskTier || p.confidence}
                     kickoff={p.kickoff}
                     home={p.home}
                     away={p.away}
                     reasoning={[
-                      `Model score: ${p.tunedScore ?? p.premiumScore ?? p.valueScore}`,
+                      `Risikostufe: ${p.riskTier || "BALANCED"} · Risiko-Score: ${p.riskScore ?? 0}/100`,
+                      `Safe Score: ${p.safeScore ?? p.tunedScore ?? p.premiumScore ?? p.valueScore}`,
                       `Expected goals: ${p.homeXg.toFixed(1)} : ${p.awayXg.toFixed(1)}`,
                       p.summary || p.reason,
                     ].filter(Boolean)}

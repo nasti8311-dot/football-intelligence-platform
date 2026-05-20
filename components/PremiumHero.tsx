@@ -22,7 +22,7 @@ export default function PremiumHero() {
 
           <p className="mt-5 max-w-2xl text-base leading-8 text-slate-300 md:text-lg">
             Wir kombinieren Form, Elo, Torerwartung, Quoten, News-Signale,
-            Backtesting und Kalibrierung zu klaren Picks für die nächsten Spiele.
+            Backtesting, Kalibrierung und Risiko-Kontrolle zu klaren Picks für die nächsten Spiele.
           </p>
 
           <div className="mt-7 flex flex-wrap gap-3">
@@ -58,7 +58,7 @@ export default function PremiumHero() {
             {[
               ["Marktwert", "Quoten vs. Modellwahrscheinlichkeit"],
               ["Kalibrierung", "Ligen und Märkte nach Performance"],
-              ["Risiko", "News, Verletzungen und Datenqualität"],
+              ["Risiko-Kontrolle", "Underdogs, volatile Märkte und Datenqualität"],
               ["Transparenz", "Trefferquote und Snapshot-Bilanz"],
             ].map(([a, b]) => (
               <div key={a} className="rounded-2xl bg-white/[0.045] p-4">
