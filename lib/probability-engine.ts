@@ -19,29 +19,71 @@ function clamp(value: number, min = 1, max = 99) {
   return Math.min(max, Math.max(min, value));
 }
 
+function factorial(n: number) {
+  let r = 1;
+  for (let i = 2; i <= n; i++) r *= i;
+  return r;
+}
+
 function poisson(lambda: number, goals: number) {
   return (Math.exp(-lambda) * Math.pow(lambda, goals)) / factorial(goals);
 }
 
-function factorial(n: number) {
-  if (n <= 1) return 1;
-  let result = 1;
-  for (let i = 2; i <= n; i++) result *= i;
-  return result;
+function hashNumber(input: string) {
+  let hash = 2166136261;
+  for (let i = 0; i < input.length; i++) {
+    hash ^= input.charCodeAt(i);
+    hash +=
+      (hash << 1) +
+      (hash << 4) +
+      (hash << 7) +
+      (hash << 8) +
+      (hash << 24);
+  }
+  return Math.abs(hash >>> 0);
+}
+
+function teamStrength(name?: string | null) {
+  const h = hashNumber(name || "team");
+  return 0.75 + (h % 70) / 100;
+}
+
+function leagueGoalFactor(name?: string | null) {
+  const n = (name || "").toLowerCase();
+
+  if (n.includes("eredivisie")) return 1.18;
+  if (n.includes("bundesliga")) return 1.12;
+  if (n.includes("champions")) return 1.08;
+  if (n.includes("mls")) return 1.1;
+  if (n.includes("belg")) return 1.08;
+  if (n.includes("serie")) return 0.94;
+  if (n.includes("ligue")) return 0.96;
+  if (n.includes("greece") || n.includes("griechen")) return 0.9;
+
+  return 1;
 }
 
 function normalizeOdds(odds?: OddsLike[]) {
-  const first = odds?.find(
-    (o) => o.homeOdds && o.drawOdds && o.awayOdds
+  const valid = odds?.filter((o) => o.homeOdds && o.drawOdds && o.awayOdds) || [];
+
+  if (valid.length === 0) return null;
+
+  const avg = valid.reduce(
+    (acc, o) => ({
+      homeOdds: acc.homeOdds + Number(o.homeOdds),
+      drawOdds: acc.drawOdds + Number(o.drawOdds),
+      awayOdds: acc.awayOdds + Number(o.awayOdds),
+    }),
+    { homeOdds: 0, drawOdds: 0, awayOdds: 0 }
   );
 
-  if (!first?.homeOdds || !first?.drawOdds || !first?.awayOdds) {
-    return null;
-  }
+  avg.homeOdds /= valid.length;
+  avg.drawOdds /= valid.length;
+  avg.awayOdds /= valid.length;
 
-  const h = 1 / first.homeOdds;
-  const d = 1 / first.drawOdds;
-  const a = 1 / first.awayOdds;
+  const h = 1 / avg.homeOdds;
+  const d = 1 / avg.drawOdds;
+  const a = 1 / avg.awayOdds;
   const total = h + d + a;
 
   return {
@@ -54,24 +96,58 @@ function normalizeOdds(odds?: OddsLike[]) {
 export function calculateFootballProbabilities(match: any): FootballProbabilities {
   const oddsProb = normalizeOdds(match?.odds);
 
-  const baseHome = oddsProb?.home ?? 0.45;
-  const baseDraw = oddsProb?.draw ?? 0.27;
-  const baseAway = oddsProb?.away ?? 0.28;
+  const homeName = match?.homeTeam?.name || "home";
+  const awayName = match?.awayTeam?.name || "away";
+  const leagueName = match?.league?.name || "league";
+
+  const homeStrength = teamStrength(homeName);
+  const awayStrength = teamStrength(awayName);
+  const leagueFactor = leagueGoalFactor(leagueName);
+
+  const rawHome =
+    oddsProb?.home ??
+    (homeStrength * 1.12) / (homeStrength * 1.12 + awayStrength + 0.72);
+
+  const rawDraw =
+    oddsProb?.draw ??
+    0.22 + Math.max(0, 0.12 - Math.abs(homeStrength - awayStrength) * 0.06);
+
+  const rawAway =
+    oddsProb?.away ??
+    awayStrength / (homeStrength * 1.12 + awayStrength + 0.72);
+
+  const totalRaw = rawHome + rawDraw + rawAway;
+
+  const baseHome = rawHome / totalRaw;
+  const baseDraw = rawDraw / totalRaw;
+  const baseAway = rawAway / totalRaw;
 
   const strengthDiff = baseHome - baseAway;
+  const matchHash = hashNumber(`${homeName}-${awayName}-${leagueName}`);
+
+  const tempoNoise = ((matchHash % 21) - 10) / 100;
+  const homeNoise = (((matchHash >> 3) % 17) - 8) / 100;
+  const awayNoise = (((matchHash >> 6) % 17) - 8) / 100;
 
   let homeXg =
-    1.35 +
-    strengthDiff * 1.15 +
-    (match?.stats?.homeXgProxy ?? 0) * 0.08;
+    (1.38 +
+      strengthDiff * 1.2 +
+      homeNoise +
+      (match?.stats?.homeXgProxy ?? 0) * 0.05) *
+    leagueFactor;
 
   let awayXg =
-    1.05 -
-    strengthDiff * 0.95 +
-    (match?.stats?.awayXgProxy ?? 0) * 0.08;
+    (1.08 -
+      strengthDiff * 0.95 +
+      awayNoise +
+      (match?.stats?.awayXgProxy ?? 0) * 0.05) *
+    leagueFactor;
 
-  homeXg = Math.min(3.2, Math.max(0.35, homeXg));
-  awayXg = Math.min(3.0, Math.max(0.25, awayXg));
+  homeXg = Math.min(3.4, Math.max(0.35, homeXg));
+  awayXg = Math.min(3.2, Math.max(0.25, awayXg));
+
+  homeXg += tempoNoise;
+  awayXg += tempoNoise * 0.75;
 
   let homeWin = 0;
   let draw = 0;
@@ -82,28 +158,28 @@ export function calculateFootballProbabilities(match: any): FootballProbabilitie
   let under25 = 0;
   let under35 = 0;
 
-  for (let h = 0; h <= 8; h++) {
-    for (let a = 0; a <= 8; a++) {
+  for (let h = 0; h <= 10; h++) {
+    for (let a = 0; a <= 10; a++) {
       const p = poisson(homeXg, h) * poisson(awayXg, a);
-      const totalGoals = h + a;
+      const goals = h + a;
 
       if (h > a) homeWin += p;
-      if (h === a) draw += p;
-      if (a > h) awayWin += p;
+      else if (h === a) draw += p;
+      else awayWin += p;
 
       if (h > 0 && a > 0) btts += p;
-      if (totalGoals >= 2) over15 += p;
-      if (totalGoals >= 3) over25 += p;
-      if (totalGoals <= 2) under25 += p;
-      if (totalGoals <= 3) under35 += p;
+      if (goals >= 2) over15 += p;
+      if (goals >= 3) over25 += p;
+      if (goals <= 2) under25 += p;
+      if (goals <= 3) under35 += p;
     }
   }
 
-  const modelWeight = oddsProb ? 0.7 : 0;
+  const oddsWeight = oddsProb ? 0.65 : 0.15;
 
-  homeWin = homeWin * (1 - modelWeight) + baseHome * modelWeight;
-  draw = draw * (1 - modelWeight) + baseDraw * modelWeight;
-  awayWin = awayWin * (1 - modelWeight) + baseAway * modelWeight;
+  homeWin = homeWin * (1 - oddsWeight) + baseHome * oddsWeight;
+  draw = draw * (1 - oddsWeight) + baseDraw * oddsWeight;
+  awayWin = awayWin * (1 - oddsWeight) + baseAway * oddsWeight;
 
   const total1x2 = homeWin + draw + awayWin;
 
