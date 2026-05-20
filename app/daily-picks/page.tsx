@@ -58,7 +58,7 @@ export default async function DailyPicksPage() {
       : matches.slice(0, 24).map((match: any) => ({
           match,
           riskLevel: "INFO",
-          confidence: 68,
+          confidence: undefined,
         }));
 
   const avgConfidence =

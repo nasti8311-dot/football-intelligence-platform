@@ -2,14 +2,22 @@ import ProbabilityRing from "./ProbabilityRing";
 import { calculateFootballProbabilities } from "@/lib/probability-engine";
 import { selectBestPick } from "@/lib/pick-selector";
 import { explainPrediction } from "@/lib/prediction-explainer";
+import { calculateTrustScore } from "@/lib/trust-score";
 
 export default function CleanMatchCard({ p, ratings }: any) {
   const match = p.match;
   const probs = calculateFootballProbabilities(match, ratings);
 
-  const confidence = Math.round(p.confidence || p.safeScore || 72);
+  const hasOdds = Array.isArray(match?.odds) && match.odds.length > 0;
 
   const bestPick = selectBestPick(probs);
+  const confidence = calculateTrustScore({
+    probs,
+    pick: bestPick,
+    home: ratings?.home,
+    away: ratings?.away,
+    hasOdds,
+  });
   const explanation = explainPrediction({ probs, home: ratings?.home, away: ratings?.away });
 
   return (
