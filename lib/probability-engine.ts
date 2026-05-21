@@ -130,6 +130,10 @@ export async function calculateFootballProbabilities(
   elo?: {
     home?: EloTeamRating;
     away?: EloTeamRating;
+  },
+  advancedForm?: {
+    home?: any;
+    away?: any;
   }
 ): Promise<FootballProbabilities> {
   const odds = normalize1x2(match);
