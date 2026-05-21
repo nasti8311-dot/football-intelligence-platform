@@ -81,3 +81,49 @@ export function buildTeamRating(matches: any[], teamId: string): TeamRating {
     sampleSize: played.length,
   };
 }
+
+export function buildTeamRatings(matches: any[]) {
+  const byTeam = new Map<string, any[]>();
+  const ratings = new Map<string, TeamRating>();
+
+  for (const match of matches) {
+    if (!match.homeTeamId || !match.awayTeamId) continue;
+
+    if (!byTeam.has(match.homeTeamId)) byTeam.set(match.homeTeamId, []);
+    if (!byTeam.has(match.awayTeamId)) byTeam.set(match.awayTeamId, []);
+
+    byTeam.get(match.homeTeamId)?.push(match);
+    byTeam.get(match.awayTeamId)?.push(match);
+  }
+
+  for (const [teamId, teamMatches] of byTeam.entries()) {
+    ratings.set(teamId, buildTeamRating(teamMatches, teamId));
+  }
+
+  return ratings;
+}
+
+export function getTeamRating(
+  ratings: Map<string, TeamRating>,
+  teamId?: string | null
+): TeamRating {
+  if (!teamId) {
+    return {
+      attack: 1,
+      defense: 1,
+      form: 0,
+      homeAdvantage: 1,
+      sampleSize: 0,
+    };
+  }
+
+  return (
+    ratings.get(teamId) || {
+      attack: 1,
+      defense: 1,
+      form: 0,
+      homeAdvantage: 1,
+      sampleSize: 0,
+    }
+  );
+}
