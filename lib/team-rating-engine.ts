@@ -6,105 +6,78 @@ export type TeamRating = {
   sampleSize: number;
 };
 
-const DEFAULT_RATING: TeamRating = {
-  attack: 1,
-  defense: 1,
-  form: 0,
-  homeAdvantage: 1.08,
-  sampleSize: 0,
-};
-
-function clamp(value: number, min: number, max: number) {
-  return Math.min(max, Math.max(min, value));
+function avg(arr: number[]) {
+  if (!arr.length) return 0;
+  return arr.reduce((a, b) => a + b, 0) / arr.length;
 }
 
-export function buildTeamRatings(matches: any[]) {
-  const table = new Map<string, any>();
+export function buildTeamRating(matches: any[], teamId: string): TeamRating {
+  const played = matches
+    .filter((m) => m.status === "FINISHED")
+    .slice(0, 12);
 
-  for (const match of matches) {
-    if (
-      !match.homeTeamId ||
-      !match.awayTeamId ||
-      match.homeGoals == null ||
-      match.awayGoals == null
-    ) {
-      continue;
-    }
+  if (!played.length) {
+    return {
+      attack: 1,
+      defense: 1,
+      form: 0,
+      homeAdvantage: 1,
+      sampleSize: 0,
+    };
+  }
 
-    if (!table.has(match.homeTeamId)) {
-      table.set(match.homeTeamId, {
-        goalsFor: 0,
-        goalsAgainst: 0,
-        matches: 0,
-        points: 0,
-        homeMatches: 0,
-        homeGoalsFor: 0,
-      });
-    }
+  const goalsFor: number[] = [];
+  const goalsAgainst: number[] = [];
 
-    if (!table.has(match.awayTeamId)) {
-      table.set(match.awayTeamId, {
-        goalsFor: 0,
-        goalsAgainst: 0,
-        matches: 0,
-        points: 0,
-        homeMatches: 0,
-        homeGoalsFor: 0,
-      });
-    }
+  const homeGoals: number[] = [];
+  const awayGoals: number[] = [];
 
-    const home = table.get(match.homeTeamId);
-    const away = table.get(match.awayTeamId);
+  let points = 0;
 
-    home.goalsFor += match.homeGoals;
-    home.goalsAgainst += match.awayGoals;
-    home.matches += 1;
-    home.homeMatches += 1;
-    home.homeGoalsFor += match.homeGoals;
+  for (const m of played) {
+    const isHome = m.homeTeamId === teamId;
 
-    away.goalsFor += match.awayGoals;
-    away.goalsAgainst += match.homeGoals;
-    away.matches += 1;
+    const gf = isHome ? m.homeGoals : m.awayGoals;
+    const ga = isHome ? m.awayGoals : m.homeGoals;
 
-    if (match.homeGoals > match.awayGoals) {
-      home.points += 3;
-    } else if (match.homeGoals < match.awayGoals) {
-      away.points += 3;
+    goalsFor.push(gf);
+    goalsAgainst.push(ga);
+
+    if (isHome) {
+      homeGoals.push(gf);
     } else {
-      home.points += 1;
-      away.points += 1;
+      awayGoals.push(gf);
     }
+
+    if (gf > ga) points += 3;
+    else if (gf === ga) points += 1;
   }
 
-  const leagueAvgGoalsFor =
-    Array.from(table.values()).reduce((sum, t) => sum + t.goalsFor, 0) /
-      Math.max(1, Array.from(table.values()).reduce((sum, t) => sum + t.matches, 0)) ||
-    1.35;
+  const gfAvg = avg(goalsFor);
+  const gaAvg = avg(goalsAgainst);
 
-  const ratings = new Map<string, TeamRating>();
+  const homeAvg = avg(homeGoals) || gfAvg;
+  const awayAvg = avg(awayGoals) || gfAvg;
 
-  for (const [teamId, t] of table.entries()) {
-    const gfPerGame = t.goalsFor / Math.max(1, t.matches);
-    const gaPerGame = t.goalsAgainst / Math.max(1, t.matches);
-    const pointsPerGame = t.points / Math.max(1, t.matches);
-    const homeGfPerGame = t.homeGoalsFor / Math.max(1, t.homeMatches);
+  const attack =
+    0.7 +
+    gfAvg * 0.28;
 
-    ratings.set(teamId, {
-      attack: clamp(gfPerGame / leagueAvgGoalsFor, 0.55, 1.75),
-      defense: clamp(leagueAvgGoalsFor / Math.max(0.45, gaPerGame), 0.55, 1.75),
-      form: clamp((pointsPerGame - 1.35) / 1.65, -0.35, 0.45),
-      homeAdvantage: clamp(homeGfPerGame / Math.max(0.8, gfPerGame), 0.95, 1.22),
-      sampleSize: t.matches,
-    });
-  }
+  const defense =
+    1.6 -
+    gaAvg * 0.22;
 
-  return ratings;
-}
+  const form =
+    points / (played.length * 3);
 
-export function getTeamRating(
-  ratings: Map<string, TeamRating>,
-  teamId?: string | null
-): TeamRating {
-  if (!teamId) return DEFAULT_RATING;
-  return ratings.get(teamId) || DEFAULT_RATING;
+  const homeAdvantage =
+    homeAvg / Math.max(0.8, awayAvg);
+
+  return {
+    attack: Math.max(0.6, Math.min(2.2, attack)),
+    defense: Math.max(0.6, Math.min(1.8, defense)),
+    form: Math.max(0, Math.min(1, form)),
+    homeAdvantage: Math.max(0.8, Math.min(1.4, homeAdvantage)),
+    sampleSize: played.length,
+  };
 }
