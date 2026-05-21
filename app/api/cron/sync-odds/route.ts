@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { ODDS_SPORT_KEYS } from "@/lib/competitions";
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 30;
+export const maxDuration = 60;
 
 const sports = ODDS_SPORT_KEYS;
 
@@ -12,19 +12,68 @@ function key(name: string) {
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
-    .replace(/fc|cf|afc|sc|sv|club|football|munchen|muenchen/g, "")
-    .replace(/manchester-city/g, "city")
-    .replace(/manchester city/g, "city")
-    .replace(/tottenham-hotspur/g, "tottenham")
-    .replace(/tottenham hotspur/g, "tottenham")
-    .replace(/nottingham-forest/g, "nottingham")
-    .replace(/nottingham forest/g, "nottingham")
+    .replace(/\b(fc|cf|afc|sc|sv|club|football|de|the)\b/g, "")
+    .replace(/munchen|muenchen/g, "munich")
+    .replace(/internazionale/g, "inter")
+    .replace(/athletic club/g, "athletic bilbao")
+    .replace(/real sociedad de futbol/g, "real sociedad")
+    .replace(/rcd espanyol de barcelona/g, "espanyol")
+    .replace(/ca osasuna/g, "osasuna")
+    .replace(/rc celta de vigo/g, "celta vigo")
+    .replace(/deportivo alaves/g, "alaves")
+    .replace(/real betis balompie/g, "real betis")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
 }
 
+function tokens(name: string) {
+  return key(name).split("-").filter(Boolean);
+}
+
+function similarity(a: string, b: string) {
+  const ta = new Set(tokens(a));
+  const tb = new Set(tokens(b));
+
+  if (!ta.size || !tb.size) return 0;
+
+  let overlap = 0;
+
+  for (const t of ta) {
+    if (tb.has(t)) overlap++;
+  }
+
+  return overlap / Math.max(ta.size, tb.size);
+}
+
 function implied(price: number) {
   return price > 0 ? 1 / price : 0;
+}
+
+function matchScore(dbMatch: any, game: any) {
+  const dbHome = dbMatch.homeTeam?.name || dbMatch.homeTeamId;
+  const dbAway = dbMatch.awayTeam?.name || dbMatch.awayTeamId;
+
+  const direct =
+    key(dbHome) === key(game.home_team) &&
+    key(dbAway) === key(game.away_team);
+
+  const swapped =
+    key(dbHome) === key(game.away_team) &&
+    key(dbAway) === key(game.home_team);
+
+  const homeSim = similarity(dbHome, game.home_team);
+  const awaySim = similarity(dbAway, game.away_team);
+
+  const swappedHomeSim = similarity(dbHome, game.away_team);
+  const swappedAwaySim = similarity(dbAway, game.home_team);
+
+  const normalScore =
+    direct ? 1 : (homeSim + awaySim) / 2;
+
+  const swappedScore =
+    swapped ? 1 : (swappedHomeSim + swappedAwaySim) / 2;
+
+  return Math.max(normalScore, swappedScore);
 }
 
 async function syncSport(sport: string) {
@@ -35,7 +84,7 @@ async function syncSport(sport: string) {
   }
 
   const now = new Date();
-  const to = new Date(now.getTime() + 1000 * 60 * 60 * 24 * 3);
+  const to = new Date(now.getTime() + 1000 * 60 * 60 * 24 * 14);
 
   const dbMatches = await prisma.match.findMany({
     where: {
@@ -47,19 +96,21 @@ async function syncSport(sport: string) {
     include: {
       homeTeam: true,
       awayTeam: true,
+      league: true,
     },
+    take: 800,
   });
 
   const url =
     `https://api.the-odds-api.com/v4/sports/${sport}/odds` +
     `?apiKey=${apiKey}` +
-    `&regions=eu` +
+    `&regions=eu,uk,us` +
     `&markets=h2h,totals` +
     `&oddsFormat=decimal` +
     `&dateFormat=iso`;
 
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 6000);
+  const timeout = setTimeout(() => controller.abort(), 10000);
 
   const res = await fetch(url, {
     cache: "no-store",
@@ -80,40 +131,49 @@ async function syncSport(sport: string) {
 
   const debug: any[] = [];
 
-  for (const game of games.slice(0, 10)) {
-    const oddsHome = key(game.home_team);
-    const oddsAway = key(game.away_team);
+  for (const game of games) {
     const oddsTime = new Date(game.commence_time).getTime();
 
-    const match = dbMatches.find((m) => {
-      const dbHome = key(m.homeTeam?.name || m.homeTeamId);
-      const dbAway = key(m.awayTeam?.name || m.awayTeamId);
-      const dbTime = m.kickoff ? new Date(m.kickoff).getTime() : 0;
+    const candidates = dbMatches
+      .map((m) => {
+        const dbTime = m.kickoff ? new Date(m.kickoff).getTime() : 0;
+        const hours = Math.abs(dbTime - oddsTime) / (1000 * 60 * 60);
 
-      const sameTeams =
-        dbHome === oddsHome &&
-        dbAway === oddsAway;
+        return {
+          match: m,
+          score: matchScore(m, game),
+          hours,
+        };
+      })
+      .filter((c) => c.hours <= 72)
+      .sort((a, b) => {
+        if (b.score !== a.score) return b.score - a.score;
+        return a.hours - b.hours;
+      });
 
-      const timeClose =
-        Math.abs(dbTime - oddsTime) < 1000 * 60 * 60 * 30;
+    const best = candidates[0];
 
-      return sameTeams && timeClose;
-    });
-
-    if (debug.length < 8) {
+    if (debug.length < 12) {
       debug.push({
+        sport,
         oddsHome: game.home_team,
         oddsAway: game.away_team,
         commence: game.commence_time,
-        matched: !!match,
+        matched: Boolean(best && best.score >= 0.55),
+        bestScore: best?.score ?? 0,
+        bestHours: best?.hours ?? null,
+        dbHome: best?.match?.homeTeam?.name,
+        dbAway: best?.match?.awayTeam?.name,
       });
     }
 
-    if (!match) continue;
+    if (!best || best.score < 0.55) continue;
+
+    const match = best.match;
 
     matched++;
 
-    for (const bm of (game.bookmakers || []).slice(0, 1)) {
+    for (const bm of game.bookmakers || []) {
       for (const market of bm.markets || []) {
         for (const outcome of market.outcomes || []) {
           if (!outcome.price) continue;
@@ -173,7 +233,10 @@ export async function GET() {
     } catch (e: any) {
       results.push({
         sport,
-        error: e?.name === "AbortError" ? "Odds API timeout" : e?.message || "Unknown error",
+        error:
+          e?.name === "AbortError"
+            ? "Odds API timeout"
+            : e?.message || "Unknown error",
       });
     }
   }
