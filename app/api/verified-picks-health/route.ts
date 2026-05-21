@@ -65,7 +65,11 @@ export async function GET() {
 
     const probs = await calculateFootballProbabilities(match, ratings, elo);
     const bestPick = selectBestPick(probs);
-    const isVerified = isVerifiedPick(bestPick.label, probs);
+
+  const oddsRows =
+    (match.bookmakerOdds?.length || 0) +
+    (match.odds?.length || 0);
+    const isVerified = isVerifiedPick(bestPick.label, probs, oddsRows);
 
     if (isVerified) verified++;
     else rejected++;
