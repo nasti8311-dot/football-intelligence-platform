@@ -6,7 +6,7 @@ import { calculateTrustScore } from "@/lib/trust-score";
 import { calculateValueSignals, getBestValueSignal } from "@/lib/value-engine";
 import { getDataQualityLabel, getRatingLabel } from "@/lib/data-quality";
 
-export default function CleanMatchCard({ p, ratings, forms, elo }: any) {
+export default async function CleanMatchCard({ p, ratings, forms, elo }: any) {
   const match = p.match;
   const probs = await calculateFootballProbabilities(match, ratings, elo);
   const isLowData = probs.dataQuality === "LOW";

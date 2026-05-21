@@ -130,7 +130,7 @@ export async function calculateFootballProbabilities(
     home?: EloTeamRating;
     away?: EloTeamRating;
   }
-): FootballProbabilities {
+): Promise<FootballProbabilities> {
   const odds = normalize1x2(match);
 
   const hasOdds = Boolean(odds);
