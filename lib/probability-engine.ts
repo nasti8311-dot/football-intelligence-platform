@@ -119,8 +119,8 @@ export function calculateFootballProbabilities(
 
   const hasEnoughFormData =
     Boolean(home && away) &&
-    (home?.sampleSize || 0) >= 5 &&
-    (away?.sampleSize || 0) >= 5;
+    (home?.sampleSize || 0) >= 3 &&
+    (away?.sampleSize || 0) >= 3;
 
   const hasOdds = Boolean(odds);
 
