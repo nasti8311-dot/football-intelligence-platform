@@ -17,7 +17,11 @@ function clamp(v: number, min: number, max: number) {
 
 export function buildTeamRating(matches: any[], teamId: string): TeamRating {
   const played = matches
-    .filter((m) => m.status === "FINISHED")
+    .filter((m) =>
+    ["FINISHED", "completed", "final"].includes(
+      String(m.status)
+    )
+  )
     .slice(0, 15);
 
   if (!played.length) {
