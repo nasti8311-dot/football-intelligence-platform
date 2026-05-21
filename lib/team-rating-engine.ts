@@ -11,73 +11,100 @@ function avg(arr: number[]) {
   return arr.reduce((a, b) => a + b, 0) / arr.length;
 }
 
+function clamp(v: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, v));
+}
+
 export function buildTeamRating(matches: any[], teamId: string): TeamRating {
   const played = matches
     .filter((m) => m.status === "FINISHED")
-    .slice(0, 12);
+    .slice(0, 15);
 
   if (!played.length) {
     return {
       attack: 1,
       defense: 1,
-      form: 0,
+      form: 0.5,
       homeAdvantage: 1,
       sampleSize: 0,
     };
   }
 
-  const goalsFor: number[] = [];
-  const goalsAgainst: number[] = [];
+  const gf: number[] = [];
+  const ga: number[] = [];
+
+  const recentPoints: number[] = [];
 
   const homeGoals: number[] = [];
   const awayGoals: number[] = [];
 
-  let points = 0;
-
   for (const m of played) {
     const isHome = m.homeTeamId === teamId;
 
-    const gf = isHome ? m.homeGoals : m.awayGoals;
-    const ga = isHome ? m.awayGoals : m.homeGoals;
+    const goalsFor = isHome
+      ? Number(m.homeGoals || 0)
+      : Number(m.awayGoals || 0);
 
-    goalsFor.push(gf);
-    goalsAgainst.push(ga);
+    const goalsAgainst = isHome
+      ? Number(m.awayGoals || 0)
+      : Number(m.homeGoals || 0);
 
-    if (isHome) {
-      homeGoals.push(gf);
+    gf.push(goalsFor);
+    ga.push(goalsAgainst);
+
+    if (isHome) homeGoals.push(goalsFor);
+    else awayGoals.push(goalsFor);
+
+    if (goalsFor > goalsAgainst) {
+      recentPoints.push(3);
+    } else if (goalsFor === goalsAgainst) {
+      recentPoints.push(1);
     } else {
-      awayGoals.push(gf);
+      recentPoints.push(0);
     }
-
-    if (gf > ga) points += 3;
-    else if (gf === ga) points += 1;
   }
 
-  const gfAvg = avg(goalsFor);
-  const gaAvg = avg(goalsAgainst);
+  const gfAvg = avg(gf);
+  const gaAvg = avg(ga);
 
-  const homeAvg = avg(homeGoals) || gfAvg;
-  const awayAvg = avg(awayGoals) || gfAvg;
+  const pointsAvg =
+    avg(recentPoints) / 3;
+
+  const homeAvg =
+    avg(homeGoals) || gfAvg;
+
+  const awayAvg =
+    avg(awayGoals) || gfAvg;
 
   const attack =
-    0.7 +
-    gfAvg * 0.28;
+    clamp(
+      0.55 + gfAvg * 0.55,
+      0.5,
+      2.5
+    );
 
   const defense =
-    1.6 -
-    gaAvg * 0.22;
+    clamp(
+      1.9 - gaAvg * 0.45,
+      0.45,
+      2.2
+    );
 
   const form =
-    points / (played.length * 3);
+    clamp(pointsAvg, 0, 1);
 
   const homeAdvantage =
-    homeAvg / Math.max(0.8, awayAvg);
+    clamp(
+      homeAvg / Math.max(0.6, awayAvg),
+      0.75,
+      1.45
+    );
 
   return {
-    attack: Math.max(0.6, Math.min(2.2, attack)),
-    defense: Math.max(0.6, Math.min(1.8, defense)),
-    form: Math.max(0, Math.min(1, form)),
-    homeAdvantage: Math.max(0.8, Math.min(1.4, homeAdvantage)),
+    attack,
+    defense,
+    form,
+    homeAdvantage,
     sampleSize: played.length,
   };
 }
@@ -87,17 +114,27 @@ export function buildTeamRatings(matches: any[]) {
   const ratings = new Map<string, TeamRating>();
 
   for (const match of matches) {
-    if (!match.homeTeamId || !match.awayTeamId) continue;
+    if (!match.homeTeamId || !match.awayTeamId) {
+      continue;
+    }
 
-    if (!byTeam.has(match.homeTeamId)) byTeam.set(match.homeTeamId, []);
-    if (!byTeam.has(match.awayTeamId)) byTeam.set(match.awayTeamId, []);
+    if (!byTeam.has(match.homeTeamId)) {
+      byTeam.set(match.homeTeamId, []);
+    }
+
+    if (!byTeam.has(match.awayTeamId)) {
+      byTeam.set(match.awayTeamId, []);
+    }
 
     byTeam.get(match.homeTeamId)?.push(match);
     byTeam.get(match.awayTeamId)?.push(match);
   }
 
   for (const [teamId, teamMatches] of byTeam.entries()) {
-    ratings.set(teamId, buildTeamRating(teamMatches, teamId));
+    ratings.set(
+      teamId,
+      buildTeamRating(teamMatches, teamId)
+    );
   }
 
   return ratings;
@@ -107,21 +144,11 @@ export function getTeamRating(
   ratings: Map<string, TeamRating>,
   teamId?: string | null
 ): TeamRating {
-  if (!teamId) {
-    return {
-      attack: 1,
-      defense: 1,
-      form: 0,
-      homeAdvantage: 1,
-      sampleSize: 0,
-    };
-  }
-
   return (
-    ratings.get(teamId) || {
+    ratings.get(teamId || "") || {
       attack: 1,
       defense: 1,
-      form: 0,
+      form: 0.5,
       homeAdvantage: 1,
       sampleSize: 0,
     }
