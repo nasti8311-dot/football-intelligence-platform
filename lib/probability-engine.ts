@@ -206,7 +206,7 @@ export function calculateFootballProbabilities(
     over15: pct(model.over15, 25, 92),
     over25: pct(model.over25, 15, 82),
     under25: pct(model.under25, 18, 85),
-    under35: pct(model.under35, 30, 92),
+    under35: pct(model.under35, 30, 79),
     dataQuality: hasOdds && hasEnoughFormData ? "HIGH" : "MEDIUM",
   };
 }

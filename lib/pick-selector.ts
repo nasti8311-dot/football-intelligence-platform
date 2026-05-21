@@ -57,13 +57,6 @@ export function selectBestPick(probs: FootballProbabilities): SelectedPick {
       reason: "Über 1,5 ist stabil, aber oft kein starker Value-Tipp.",
     },
     {
-      label: "Unter 3,5 Tore",
-      probability: probs.under35,
-      risk: "NIEDRIG",
-      score: score(probs.under35, 24),
-      reason: "Unter 3,5 ist stabil, wird aber wegen geringer Aussagekraft stark abgewertet.",
-    },
-    {
       label: "Remis",
       probability: probs.draw,
       risk: "HOCH",
