@@ -6,6 +6,7 @@ import MobileBottomNav from "@/components/MobileBottomNav";
 import { filterRiskControlledPicks } from "@/lib/risk-control";
 import { buildTeamRatings, getTeamRating } from "@/lib/team-rating-engine";
 import { buildEloRatings, getEloRating } from "@/lib/elo-engine";
+import { buildTeamFormMap } from "@/lib/team-form-engine";
 
 export const dynamic = "force-dynamic";
 
@@ -52,6 +53,7 @@ export default async function DailyPicksPage() {
 
   const teamRatings = buildTeamRatings(historicalMatches);
   const eloRatings = buildEloRatings(historicalMatches);
+  const advancedTeamFormMap = await buildTeamFormMap();
 
   const filteredPicks = filterRiskControlledPicks(matches);
 

@@ -2,6 +2,7 @@ import type { TeamRating } from "@/lib/team-rating-engine";
 import { eloWinProbability } from "@/lib/elo-engine";
 import { calibrateProbability } from "@/lib/calibration-engine";
 import type { EloTeamRating } from "@/lib/elo-engine";
+import { estimateExpectedGoals } from "@/lib/xg-engine";
 
 export type FootballProbabilities = {
   homeWin: number;
@@ -173,6 +174,12 @@ export async function calculateFootballProbabilities(
   draw /= total1x2;
   awayWin /= total1x2;
 
+  
+  const xg = estimateExpectedGoals({
+    home: advancedForm?.home,
+    away: advancedForm?.away,
+  });
+
   const favourite = Math.max(homeWin, awayWin);
   const mismatch = Math.abs(homeWin - awayWin);
   const balance = 1 - mismatch;
@@ -188,7 +195,7 @@ export async function calculateFootballProbabilities(
       ? marketOver25
       : marketUnder25 != null
         ? 1 - marketUnder25
-        : 0.48 + (balance - 0.5) * 0.16 + (1 - draw) * 0.08;
+        : 0.26 + xg.totalXg * 0.11 + (balance - 0.5) * 0.12;
 
   over25 = clamp(over25 * 100, 24, 76) / 100;
 
@@ -202,21 +209,21 @@ export async function calculateFootballProbabilities(
   let over15 =
     marketOver15 != null
       ? marketOver15
-      : 0.52 + over25 * 0.34 + favourite * 0.08 - draw * 0.08;
+      : 0.42 + xg.totalXg * 0.11 + favourite * 0.06 - draw * 0.05;
 
   over15 = clamp(over15 * 100, 48, 88) / 100;
 
   let under35 =
     marketUnder35 != null
       ? marketUnder35
-      : 0.92 - over25 * 0.34 + draw * 0.06;
+      : 0.95 - xg.totalXg * 0.12 + draw * 0.04;
 
   under35 = clamp(under35 * 100, 48, 84) / 100;
 
   let btts =
     marketBtts != null
       ? marketBtts
-      : 0.36 + over25 * 0.36 + balance * 0.12 - favourite * 0.08;
+      : 0.30 + Math.min(xg.homeXg, xg.awayXg) * 0.18 + over25 * 0.28 + balance * 0.08;
 
   btts = clamp(btts * 100, 28, 72) / 100;
 

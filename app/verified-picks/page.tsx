@@ -3,6 +3,7 @@ import CleanMatchCard from "@/components/picks/CleanMatchCard";
 import { filterRiskControlledPicks } from "@/lib/risk-control";
 import { buildTeamRatings, getTeamRating } from "@/lib/team-rating-engine";
 import { buildEloRatings, getEloRating } from "@/lib/elo-engine";
+import { buildTeamFormMap } from "@/lib/team-form-engine";
 import { getTeamFormMap } from "@/lib/team-form-service";
 import { calculateFootballProbabilities } from "@/lib/probability-engine";
 import { selectBestPick } from "@/lib/pick-selector";
@@ -49,6 +50,7 @@ export default async function VerifiedPicksPage() {
 
   const teamRatings = buildTeamRatings(historicalMatches);
   const eloRatings = buildEloRatings(historicalMatches);
+  const advancedTeamFormMap = await buildTeamFormMap();
 
   const teamIds = matches.flatMap((match) => [
     match.homeTeamId,

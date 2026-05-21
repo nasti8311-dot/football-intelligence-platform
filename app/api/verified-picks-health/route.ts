@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { buildTeamRatings, getTeamRating } from "@/lib/team-rating-engine";
 import { buildEloRatings, getEloRating } from "@/lib/elo-engine";
+import { buildTeamFormMap } from "@/lib/team-form-engine";
 import { calculateFootballProbabilities } from "@/lib/probability-engine";
 import { selectBestPick } from "@/lib/pick-selector";
 import { isVerifiedPick } from "@/lib/verified-picks";
@@ -46,6 +47,7 @@ export async function GET() {
 
   const teamRatings = buildTeamRatings(historicalMatches);
   const eloRatings = buildEloRatings(historicalMatches);
+  const advancedTeamFormMap = await buildTeamFormMap();
 
   let verified = 0;
   let rejected = 0;
@@ -63,7 +65,15 @@ export async function GET() {
       away: getEloRating(eloRatings, match.awayTeamId),
     };
 
-    const probs = await calculateFootballProbabilities(match, ratings, elo);
+    const probs = await calculateFootballProbabilities(
+      match,
+      ratings,
+      elo,
+      {
+        home: advancedTeamFormMap[match.homeTeamId],
+        away: advancedTeamFormMap[match.awayTeamId],
+      }
+    );
     const bestPick = selectBestPick(probs);
 
   const oddsRows =
