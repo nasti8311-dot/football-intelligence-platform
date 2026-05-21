@@ -79,9 +79,9 @@ export default async function VerifiedPicksPage() {
 
     const bestPick = selectBestPick(probs);
 
-  const oddsRows =
-    (match.bookmakerOdds?.length || 0) +
-    (match.odds?.length || 0);
+    const oddsRows =
+      (pick.match.bookmakerOdds?.length || 0) +
+      (pick.match.odds?.length || 0);
 
     if (isVerifiedPick(bestPick.label, probs, oddsRows)) {
       verified.push({
