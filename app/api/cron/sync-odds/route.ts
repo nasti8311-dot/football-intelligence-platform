@@ -105,7 +105,7 @@ async function syncSport(sport: string) {
     `https://api.the-odds-api.com/v4/sports/${sport}/odds` +
     `?apiKey=${apiKey}` +
     `&regions=eu,uk,us` +
-    `&markets=h2h,totals` +
+    `&markets=h2h` +
     `&oddsFormat=decimal` +
     `&dateFormat=iso`;
 
