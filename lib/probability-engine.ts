@@ -1,11 +1,5 @@
 import type { TeamRating } from "@/lib/team-rating-engine";
 
-type OddsLike = {
-  homeOdds?: number | null;
-  drawOdds?: number | null;
-  awayOdds?: number | null;
-};
-
 export type FootballProbabilities = {
   homeWin: number;
   draw: number;
@@ -36,42 +30,66 @@ function poisson(lambda: number, goals: number) {
   return (Math.exp(-lambda) * Math.pow(lambda, goals)) / factorial(goals);
 }
 
-function normalizeOdds(odds?: OddsLike[]) {
-  const valid =
-    odds?.filter(
-      (o) =>
-        Number(o.homeOdds) > 1 &&
-        Number(o.drawOdds) > 1 &&
-        Number(o.awayOdds) > 1
-    ) || [];
+function normalizeOdds(match: any) {
+  if (Array.isArray(match?.odds) && match.odds.length > 0) {
+    const row = match.odds.find(
+      (o: any) => o.homeOdds && o.drawOdds && o.awayOdds
+    );
 
-  if (!valid.length) return null;
+    if (row) {
+      const h = 1 / Number(row.homeOdds);
+      const d = 1 / Number(row.drawOdds);
+      const a = 1 / Number(row.awayOdds);
+      const total = h + d + a;
 
-  const avg = valid.reduce(
-    (
-      acc: { homeOdds: number; drawOdds: number; awayOdds: number },
-      o
-    ) => ({
-      homeOdds: acc.homeOdds + Number(o.homeOdds),
-      drawOdds: acc.drawOdds + Number(o.drawOdds),
-      awayOdds: acc.awayOdds + Number(o.awayOdds),
-    }),
-    { homeOdds: 0, drawOdds: 0, awayOdds: 0 }
+      return {
+        home: h / total,
+        draw: d / total,
+        away: a / total,
+      };
+    }
+  }
+
+  const bookmakerOdds = Array.isArray(match?.bookmakerOdds)
+    ? match.bookmakerOdds
+    : [];
+
+  const h2h = bookmakerOdds.filter((o: any) =>
+    String(o.market || "").toLowerCase().includes("h2h")
   );
 
-  avg.homeOdds /= valid.length;
-  avg.drawOdds /= valid.length;
-  avg.awayOdds /= valid.length;
+  if (h2h.length === 0) return null;
 
-  const h = 1 / avg.homeOdds;
-  const d = 1 / avg.drawOdds;
-  const a = 1 / avg.awayOdds;
-  const total = h + d + a;
+  const homeName = String(match?.homeTeam?.name || "").toLowerCase();
+  const awayName = String(match?.awayTeam?.name || "").toLowerCase();
+
+  let home = 0;
+  let draw = 0;
+  let away = 0;
+
+  for (const odd of h2h) {
+    const outcome = String(odd.outcome || "").toLowerCase();
+    const implied = Number(odd.impliedProb || 0);
+
+    if (!implied || implied <= 0) continue;
+
+    if (outcome === "draw" || outcome === "x" || outcome.includes("draw")) {
+      draw += implied;
+    } else if (homeName && outcome.includes(homeName)) {
+      home += implied;
+    } else if (awayName && outcome.includes(awayName)) {
+      away += implied;
+    }
+  }
+
+  const total = home + draw + away;
+
+  if (total <= 0) return null;
 
   return {
-    home: h / total,
-    draw: d / total,
-    away: a / total,
+    home: home / total,
+    draw: draw / total,
+    away: away / total,
   };
 }
 
@@ -112,11 +130,7 @@ export function calculateFootballProbabilities(
     away?: TeamRating;
   }
 ): FootballProbabilities {
-  const odds = normalizeOdds(
-    Array.isArray(match?.odds) && match.odds.length > 0
-      ? match.odds
-      : match?.bookmakerOdds
-  );
+  const odds = normalizeOdds(match);
 
   const home = ratings?.home;
   const away = ratings?.away;
@@ -142,9 +156,6 @@ export function calculateFootballProbabilities(
     };
   }
 
-  const dataQuality =
-    hasOdds && hasEnoughFormData ? "HIGH" : hasOdds ? "MEDIUM" : "MEDIUM";
-
   let homeXg = 1.35;
   let awayXg = 1.1;
 
@@ -167,7 +178,6 @@ export function calculateFootballProbabilities(
   awayXg = Math.min(3.0, Math.max(0.45, awayXg));
 
   const model = scoreMatrix(homeXg, awayXg);
-
   const totalModel = model.homeWin + model.draw + model.awayWin;
 
   let homeWin = model.homeWin / totalModel;
@@ -197,6 +207,6 @@ export function calculateFootballProbabilities(
     over25: pct(model.over25, 15, 82),
     under25: pct(model.under25, 18, 85),
     under35: pct(model.under35, 30, 92),
-    dataQuality,
+    dataQuality: hasOdds && hasEnoughFormData ? "HIGH" : "MEDIUM",
   };
 }
