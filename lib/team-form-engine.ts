@@ -1,24 +1,48 @@
 import { prisma } from "@/lib/prisma";
 
-function points(result: string, isHome: boolean) {
-  if (!result) return 0;
+export type AdvancedTeamForm = {
+  teamId: string;
+  teamName: string;
+  played: number;
+  goalsFor: number;
+  goalsAgainst: number;
+  attackStrength: number;
+  defenseStrength: number;
+  homeAttack: number;
+  awayAttack: number;
+  formIndex: number;
+  recent: number[];
+};
 
-  const [h, a] = result.split(":").map(Number);
+function ensure(map: Record<string, any>, teamId: string, teamName: string) {
+  if (!map[teamId]) {
+    map[teamId] = {
+      teamId,
+      teamName,
+      played: 0,
+      homePlayed: 0,
+      awayPlayed: 0,
+      goalsFor: 0,
+      goalsAgainst: 0,
+      homeGoalsFor: 0,
+      homeGoalsAgainst: 0,
+      awayGoalsFor: 0,
+      awayGoalsAgainst: 0,
+      formPoints: 0,
+      recent: [],
+    };
+  }
 
-  if (Number.isNaN(h) || Number.isNaN(a)) return 0;
-
-  if (h === a) return 1;
-
-  const won = isHome ? h > a : a > h;
-
-  return won ? 3 : 0;
+  return map[teamId];
 }
 
 export async function buildTeamFormMap() {
   const matches = await prisma.match.findMany({
     where: {
-      status: "FINISHED",
-      result: {
+      homeGoals: {
+        not: null,
+      },
+      awayGoals: {
         not: null,
       },
     },
@@ -32,40 +56,11 @@ export async function buildTeamFormMap() {
     },
   });
 
-  const map: any = {};
-
-  function ensure(teamId: string, teamName: string) {
-    if (!map[teamId]) {
-      map[teamId] = {
-        teamId,
-        teamName,
-
-        played: 0,
-
-        goalsFor: 0,
-        goalsAgainst: 0,
-
-        homeGoalsFor: 0,
-        homeGoalsAgainst: 0,
-
-        awayGoalsFor: 0,
-        awayGoalsAgainst: 0,
-
-        formPoints: 0,
-
-        recent: [],
-      };
-    }
-
-    return map[teamId];
-  }
+  const map: Record<string, any> = {};
 
   for (const match of matches) {
-    if (!match.result) continue;
-
-    const [homeGoals, awayGoals] = match.result
-      .split(":")
-      .map(Number);
+    const homeGoals = Number(match.homeGoals);
+    const awayGoals = Number(match.awayGoals);
 
     if (
       Number.isNaN(homeGoals) ||
@@ -75,32 +70,44 @@ export async function buildTeamFormMap() {
     }
 
     const home = ensure(
+      map,
       match.homeTeamId,
       match.homeTeam?.name || match.homeTeamId
     );
 
     const away = ensure(
+      map,
       match.awayTeamId,
       match.awayTeam?.name || match.awayTeamId
     );
 
     home.played++;
-    away.played++;
-
+    home.homePlayed++;
     home.goalsFor += homeGoals;
     home.goalsAgainst += awayGoals;
-
-    away.goalsFor += awayGoals;
-    away.goalsAgainst += homeGoals;
-
     home.homeGoalsFor += homeGoals;
     home.homeGoalsAgainst += awayGoals;
 
+    away.played++;
+    away.awayPlayed++;
+    away.goalsFor += awayGoals;
+    away.goalsAgainst += homeGoals;
     away.awayGoalsFor += awayGoals;
     away.awayGoalsAgainst += homeGoals;
 
-    const homePts = points(match.result, true);
-    const awayPts = points(match.result, false);
+    const homePts =
+      homeGoals > awayGoals
+        ? 3
+        : homeGoals === awayGoals
+          ? 1
+          : 0;
+
+    const awayPts =
+      awayGoals > homeGoals
+        ? 3
+        : homeGoals === awayGoals
+          ? 1
+          : 0;
 
     home.formPoints += homePts;
     away.formPoints += awayPts;
@@ -114,7 +121,7 @@ export async function buildTeamFormMap() {
     }
   }
 
-  for (const team of Object.values(map) as any[]) {
+  for (const team of Object.values(map)) {
     team.attackStrength =
       team.played > 0
         ? team.goalsFor / team.played
@@ -126,14 +133,14 @@ export async function buildTeamFormMap() {
         : 1;
 
     team.homeAttack =
-      team.played > 0
-        ? team.homeGoalsFor / Math.max(1, team.played / 2)
-        : 1;
+      team.homePlayed > 0
+        ? team.homeGoalsFor / team.homePlayed
+        : team.attackStrength;
 
     team.awayAttack =
-      team.played > 0
-        ? team.awayGoalsFor / Math.max(1, team.played / 2)
-        : 1;
+      team.awayPlayed > 0
+        ? team.awayGoalsFor / team.awayPlayed
+        : team.attackStrength;
 
     team.formIndex =
       team.recent.length > 0
@@ -142,5 +149,5 @@ export async function buildTeamFormMap() {
         : 0.5;
   }
 
-  return map;
+  return map as Record<string, AdvancedTeamForm>;
 }
