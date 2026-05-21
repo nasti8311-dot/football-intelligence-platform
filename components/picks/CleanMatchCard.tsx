@@ -1,3 +1,4 @@
+import { isVerifiedPick } from "@/lib/verified-picks";
 import ProbabilityRing from "./ProbabilityRing";
 import { calculateFootballProbabilities } from "@/lib/probability-engine";
 import { selectBestPick } from "@/lib/pick-selector";
