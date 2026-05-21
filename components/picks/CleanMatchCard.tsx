@@ -5,7 +5,7 @@ import { explainPrediction } from "@/lib/prediction-explainer";
 import { calculateTrustScore } from "@/lib/trust-score";
 import { getDataQualityLabel, getRatingLabel } from "@/lib/data-quality";
 
-export default function CleanMatchCard({ p, ratings }: any) {
+export default function CleanMatchCard({ p, ratings, forms, elo }: any) {
   const match = p.match;
   const probs = calculateFootballProbabilities(match, ratings, elo);
   const isLowData = probs.dataQuality === "LOW";
