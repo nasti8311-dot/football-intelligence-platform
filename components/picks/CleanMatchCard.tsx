@@ -3,6 +3,7 @@ import { calculateFootballProbabilities } from "@/lib/probability-engine";
 import { selectBestPick } from "@/lib/pick-selector";
 import { explainPrediction } from "@/lib/prediction-explainer";
 import { calculateTrustScore } from "@/lib/trust-score";
+import { calculateValueSignals, getBestValueSignal } from "@/lib/value-engine";
 import { getDataQualityLabel, getRatingLabel } from "@/lib/data-quality";
 
 export default function CleanMatchCard({ p, ratings, forms, elo }: any) {
