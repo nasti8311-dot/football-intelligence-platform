@@ -9,7 +9,9 @@ export default function CleanMatchCard({ p, ratings }: any) {
   const match = p.match;
   const probs = calculateFootballProbabilities(match, ratings);
   const isLowData = probs.dataQuality === "LOW";
-  const hasOdds = Array.isArray(match?.odds) && match.odds.length > 0;
+  const hasOdds =
+    (Array.isArray(match?.odds) && match.odds.length > 0) ||
+    (Array.isArray(match?.bookmakerOdds) && match.bookmakerOdds.length > 0);
 
   const bestPick = isLowData
     ? {

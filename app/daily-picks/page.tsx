@@ -25,6 +25,7 @@ export default async function DailyPicksPage() {
       awayTeam: true,
       league: true,
       odds: true,
+      bookmakerOdds: true,
       stats: true,
     },
     orderBy: {

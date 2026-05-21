@@ -112,7 +112,11 @@ export function calculateFootballProbabilities(
     away?: TeamRating;
   }
 ): FootballProbabilities {
-  const odds = normalizeOdds(match?.odds);
+  const odds = normalizeOdds(
+    Array.isArray(match?.odds) && match.odds.length > 0
+      ? match.odds
+      : match?.bookmakerOdds
+  );
 
   const home = ratings?.home;
   const away = ratings?.away;
