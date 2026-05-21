@@ -1,4 +1,6 @@
 import type { TeamRating } from "@/lib/team-rating-engine";
+import { eloWinProbability } from "@/lib/elo-engine";
+import type { EloTeamRating } from "@/lib/elo-engine";
 
 export type FootballProbabilities = {
   homeWin: number;
@@ -122,6 +124,10 @@ export function calculateFootballProbabilities(
   ratings?: {
     home?: TeamRating;
     away?: TeamRating;
+  },
+  elo?: {
+    home?: EloTeamRating;
+    away?: EloTeamRating;
   }
 ): FootballProbabilities {
   const odds = normalize1x2(match);
@@ -146,9 +152,20 @@ export function calculateFootballProbabilities(
     };
   }
 
-  let homeWin = odds?.home ?? 0.45;
-  let draw = odds?.draw ?? 0.27;
-  let awayWin = odds?.away ?? 0.28;
+  const eloProb =
+    elo?.home && elo?.away
+      ? eloWinProbability(elo.home, elo.away)
+      : null;
+
+  let homeWin = odds?.home ?? eloProb?.home ?? 0.45;
+  let draw = odds?.draw ?? eloProb?.draw ?? 0.27;
+  let awayWin = odds?.away ?? eloProb?.away ?? 0.28;
+
+  if (odds && eloProb) {
+    homeWin = odds.home * 0.68 + eloProb.home * 0.32;
+    draw = odds.draw * 0.68 + eloProb.draw * 0.32;
+    awayWin = odds.away * 0.68 + eloProb.away * 0.32;
+  }
 
   const total1x2 = homeWin + draw + awayWin;
   homeWin /= total1x2;
@@ -211,6 +228,6 @@ export function calculateFootballProbabilities(
     over25: pct(over25, 24, 76),
     under25: pct(under25, 24, 78),
     under35: pct(under35, 48, 84),
-    dataQuality: hasOdds && hasForm ? "HIGH" : "MEDIUM",
+    dataQuality: hasOdds && hasForm && elo?.home?.matches && elo?.away?.matches ? "HIGH" : "MEDIUM",
   };
 }

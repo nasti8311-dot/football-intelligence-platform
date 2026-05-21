@@ -5,6 +5,7 @@ import CleanMatchCard from "@/components/picks/CleanMatchCard";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import { filterRiskControlledPicks } from "@/lib/risk-control";
 import { buildTeamRatings, getTeamRating } from "@/lib/team-rating-engine";
+import { buildEloRatings, getEloRating } from "@/lib/elo-engine";
 
 export const dynamic = "force-dynamic";
 
@@ -50,6 +51,7 @@ export default async function DailyPicksPage() {
   });
 
   const teamRatings = buildTeamRatings(historicalMatches);
+  const eloRatings = buildEloRatings(historicalMatches);
 
   const filteredPicks = filterRiskControlledPicks(matches);
 
