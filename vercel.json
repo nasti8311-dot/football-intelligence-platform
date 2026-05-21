@@ -11,6 +11,10 @@
     {
       "path": "/api/cron/sync-news",
       "schedule": "30 6 * * *"
+    },
+    {
+      "path": "/api/cron/resolve-predictions",
+      "schedule": "45 6 * * *"
     }
   ]
 }
