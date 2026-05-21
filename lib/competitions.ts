@@ -5,3 +5,11 @@ export const ODDS_SPORT_KEYS = [
   "soccer_germany_bundesliga",
   "soccer_uefa_champs_league",
 ];
+
+export const FOOTBALL_DATA_COMPETITIONS = [
+  "PL",
+  "PD",
+  "SA",
+  "BL1",
+  "CL",
+];
