@@ -84,7 +84,7 @@ async function syncSport(sport: string) {
   }
 
   const now = new Date();
-  const to = new Date(now.getTime() + 1000 * 60 * 60 * 24 * 14);
+  const to = new Date(now.getTime() + 1000 * 60 * 60 * 24 * 3);
 
   const dbMatches = await prisma.match.findMany({
     where: {

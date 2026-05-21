@@ -12,14 +12,14 @@ export const dynamic = "force-dynamic";
 
 export default async function VerifiedPicksPage() {
   const now = new Date();
-  const in14Days = new Date();
-  in14Days.setDate(now.getDate() + 14);
+  const in3Days = new Date();
+  in3Days.setDate(now.getDate() + 3);
 
   const matches = await prisma.match.findMany({
     where: {
       kickoff: {
         gte: now,
-        lte: in14Days,
+        lte: in3Days,
       },
     },
     include: {
