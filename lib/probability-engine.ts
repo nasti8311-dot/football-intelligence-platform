@@ -206,25 +206,49 @@ export function calculateFootballProbabilities(
     };
   }
 
-  let homeXg = 1.35;
-  let awayXg = 1.15;
+  let homeXg = 1.2;
+  let awayXg = 1.0;
 
   if (hasEnoughFormData && home && away) {
+    const attackDiff =
+      (home.attack - away.defense) * 0.9;
+
+    const awayAttackDiff =
+      (away.attack - home.defense) * 0.75;
+
+    const formBoost =
+      (home.form - away.form) * 0.45;
+
+    const totalStrength =
+      home.attack +
+      away.attack +
+      (2 - home.defense) +
+      (2 - away.defense);
+
     homeXg =
-      1.2 +
-      home.attack * 0.45 -
-      away.defense * 0.2 +
-      home.form * 0.2;
+      1.15 +
+      attackDiff +
+      formBoost +
+      (home.homeAdvantage - 1) * 0.4;
 
     awayXg =
-      1.0 +
-      away.attack * 0.35 -
-      home.defense * 0.2 +
-      away.form * 0.15;
+      0.95 +
+      awayAttackDiff -
+      formBoost * 0.35;
+
+    if (totalStrength > 4.8) {
+      homeXg += 0.25;
+      awayXg += 0.2;
+    }
+
+    if (totalStrength < 3.4) {
+      homeXg -= 0.18;
+      awayXg -= 0.15;
+    }
   }
 
-  homeXg = Math.min(3.5, Math.max(0.4, homeXg));
-  awayXg = Math.min(3.2, Math.max(0.3, awayXg));
+  homeXg = Math.min(3.8, Math.max(0.35, homeXg));
+  awayXg = Math.min(3.4, Math.max(0.25, awayXg));
 
   const model = scoreMatrix(homeXg, awayXg);
 
