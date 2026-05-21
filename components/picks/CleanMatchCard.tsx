@@ -37,6 +37,9 @@ export default function CleanMatchCard({ p, ratings, forms, elo }: any) {
     away: ratings?.away,
   });
 
+  const valueSignals = calculateValueSignals(match, probs);
+  const bestValue = getBestValueSignal(valueSignals);
+
   return (
     <article className="overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.04] shadow-2xl shadow-black/20 backdrop-blur">
       <header className="flex items-center justify-between border-b border-white/5 px-5 py-4">
@@ -156,6 +159,25 @@ export default function CleanMatchCard({ p, ratings, forms, elo }: any) {
             <p className="mt-3 text-xs leading-5 text-neutral-500">
               {bestPick.reason}
             </p>
+
+            {bestValue ? (
+              <div className="mt-3 rounded-2xl border border-emerald-400/20 bg-emerald-500/10 p-3">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-[10px] font-black uppercase tracking-[0.18em] text-emerald-300">
+                    Value Signal
+                  </span>
+                  <span className="text-xs font-black text-emerald-200">
+                    +{Math.round((bestValue.edge || 0) * 100)}%
+                  </span>
+                </div>
+                <p className="mt-1 text-xs font-bold text-white">
+                  {bestValue.market}
+                </p>
+                <p className="mt-1 text-[11px] text-neutral-400">
+                  Modell {Math.round(bestValue.modelProbability * 100)}% vs. Markt {bestValue.marketProbability != null ? Math.round(bestValue.marketProbability * 100) : "—"}%
+                </p>
+              </div>
+            ) : null}
           </div>
         </div>
       </div>
