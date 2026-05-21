@@ -8,7 +8,7 @@ import { getDataQualityLabel, getRatingLabel } from "@/lib/data-quality";
 
 export default function CleanMatchCard({ p, ratings, forms, elo }: any) {
   const match = p.match;
-  const probs = calculateFootballProbabilities(match, ratings, elo);
+  const probs = await calculateFootballProbabilities(match, ratings, elo);
   const isLowData = probs.dataQuality === "LOW";
   const hasOdds =
     (Array.isArray(match?.odds) && match.odds.length > 0) ||

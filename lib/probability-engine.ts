@@ -1,5 +1,6 @@
 import type { TeamRating } from "@/lib/team-rating-engine";
 import { eloWinProbability } from "@/lib/elo-engine";
+import { calibrateProbability } from "@/lib/calibration-engine";
 import type { EloTeamRating } from "@/lib/elo-engine";
 
 export type FootballProbabilities = {
@@ -119,7 +120,7 @@ function normalize1x2(match: any) {
   };
 }
 
-export function calculateFootballProbabilities(
+export async function calculateFootballProbabilities(
   match: any,
   ratings?: {
     home?: TeamRating;
@@ -219,14 +220,44 @@ export function calculateFootballProbabilities(
 
   btts = clamp(btts * 100, 28, 72) / 100;
 
+  const calibratedHome = await calibrateProbability(
+    "Sieg Heim",
+    homeWin
+  );
+
+  const calibratedAway = await calibrateProbability(
+    "Sieg Auswärts",
+    awayWin
+  );
+
+  const calibratedDraw = await calibrateProbability(
+    "Remis",
+    draw
+  );
+
+  const calibratedOver25 = await calibrateProbability(
+    "Über 2.5 Tore",
+    over25
+  );
+
+  const calibratedUnder25 = await calibrateProbability(
+    "Unter 2.5 Tore",
+    under25
+  );
+
+  const calibratedBtts = await calibrateProbability(
+    "Beide treffen",
+    btts
+  );
+
   return {
-    homeWin: pct(homeWin, 3, 85),
-    draw: pct(draw, 8, 38),
-    awayWin: pct(awayWin, 3, 85),
-    btts: pct(btts, 28, 72),
+    homeWin: pct(calibratedHome, 3, 85),
+    draw: pct(calibratedDraw, 8, 38),
+    awayWin: pct(calibratedAway, 3, 85),
+    btts: pct(calibratedBtts, 28, 72),
     over15: pct(over15, 48, 88),
-    over25: pct(over25, 24, 76),
-    under25: pct(under25, 24, 78),
+    over25: pct(calibratedOver25, 24, 76),
+    under25: pct(calibratedUnder25, 24, 78),
     under35: pct(under35, 48, 84),
     dataQuality: hasOdds && hasForm && elo?.home?.matches && elo?.away?.matches ? "HIGH" : "MEDIUM",
   };
