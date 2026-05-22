@@ -38,7 +38,7 @@ export default function PremiumPickCard({
           </p>
 
           <p className="mt-1 text-xs text-neutral-500">
-            {kickoff ? new Date(kickoff).toLocaleString("de-DE") : "Kickoff offen"}
+            {kickoff ? new Date(kickoff).toLocaleString("de-DE") : "Termin offen"}
           </p>
         </div>
 
@@ -47,7 +47,7 @@ export default function PremiumPickCard({
             {Number(probability).toFixed(0)}%
           </p>
           <p className="text-[10px] font-black uppercase tracking-[0.18em]">
-            Quote
+            Wahrscheinlichkeit
           </p>
         </div>
       </div>
@@ -64,8 +64,8 @@ export default function PremiumPickCard({
 
       <div className="mt-4 grid grid-cols-3 gap-3">
         <Metric label="Qualität" value={confidence || "—"} />
-        <Metric label="Value" value={valueScore ?? "—"} />
-        <Metric label="Quoten" value={oddsRows} />
+        <Metric label="Score" value={valueScore ?? "—"} />
+        <Metric label="Wahrscheinlichkeitn" value={oddsRows} />
       </div>
     </article>
   );

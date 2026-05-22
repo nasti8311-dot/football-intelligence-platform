@@ -14,7 +14,7 @@ export default function PremiumFooter() {
         <div>
           <p className="text-2xl font-black">Football IQ</p>
           <p className="mt-2 max-w-xl text-sm leading-7 text-neutral-500">
-            Tägliche datenbasierte Fußballprognosen. Keine sicheren Tipps. Keine Massen-Picks.
+            Tägliche datenbasierte Fußballprognosen. Wenige Picks. Klare Performance.
           </p>
         </div>
 
