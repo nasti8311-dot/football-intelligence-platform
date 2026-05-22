@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import Footer from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
   title: "Football IQ",
@@ -15,7 +16,8 @@ export default function RootLayout({
     <html lang="de">
       <body className="bg-neutral-950 text-white antialiased">
         {children}
-      </body>
+        <Footer />
+</body>
     </html>
   );
 }
