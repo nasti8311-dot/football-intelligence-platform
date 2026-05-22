@@ -74,21 +74,21 @@ export default async function VerifiedPicksPage() {
 
           <div className="relative z-10">
             <div className="inline-flex rounded-full border border-emerald-400/20 bg-emerald-400/10 px-4 py-2 text-xs font-black uppercase tracking-[0.25em] text-emerald-300">
-              Updated Daily · 3 Day Window
+              Täglich aktualisiert · 3-Tage-Fenster
             </div>
 
             <h1 className="mt-6 text-5xl font-black tracking-tight md:text-7xl">
-              Daily Football Picks
+              Daily Picks
             </h1>
 
             <p className="mt-5 max-w-3xl text-base leading-8 text-neutral-400">
-              Maximal 10 ausgewählte Predictions. Keine Masse, keine Fake-Sicherheit:
-              nur Picks mit Odds-Daten, Modellbewertung und Qualitätsfilter.
+              Maximal 10 ausgewählte Fußballprognosen. Keine Masse, keine Fake-Sicherheit:
+              nur Picks mit Quoten-Daten, Modellbewertung und Qualitätsfilter.
             </p>
 
             <div className="mt-8 grid gap-4 md:grid-cols-3">
-              <Stat label="Shown Picks" value={picks.length} />
-              <Stat label="Target" value="3–10" />
+              <Stat label="Angezeigte Picks" value={picks.length} />
+              <Stat label="Ziel" value="3–10" />
               <Stat label="Update" value="Daily" />
             </div>
           </div>
@@ -116,7 +116,7 @@ export default async function VerifiedPicksPage() {
             <h2 className="text-2xl font-black">Heute zu wenige Qualitäts-Picks</h2>
             <p className="mt-3 max-w-2xl text-sm leading-7">
               Aktuell gibt es weniger als 3 Picks, die unsere Mindestqualität erfüllen.
-              Das ist gewollt: lieber keine Veröffentlichung als schwache Predictions.
+              Das ist gewollt: lieber keine Veröffentlichung als schwache Prognosen.
             </p>
           </section>
         )}

@@ -1,10 +1,10 @@
 import Link from "next/link";
 
 const links = [
-  { href: "/", label: "Home" },
+  { href: "/", label: "Start" },
   { href: "/verified-picks", label: "Daily Picks" },
-  { href: "/public-track-record", label: "Track Record" },
-  { href: "/methodology", label: "Methodology" },
+  { href: "/public-track-record", label: "Performance" },
+  { href: "/methodology", label: "Methodik" },
 ];
 
 export default function Navbar() {
@@ -22,7 +22,7 @@ export default function Navbar() {
             </p>
 
             <p className="text-[10px] uppercase tracking-[0.22em] text-neutral-500">
-              Quant Football
+              Fußball Prognosen
             </p>
           </div>
         </Link>
