@@ -1,142 +1,137 @@
 import { prisma } from "@/lib/prisma";
-import CleanMatchCard from "@/components/picks/CleanMatchCard";
 import PremiumPickCard from "@/components/picks/PremiumPickCard";
-import { filterRiskControlledPicks } from "@/lib/risk-control";
-import { buildTeamRatings, getTeamRating } from "@/lib/team-rating-engine";
-import { buildEloRatings, getEloRating } from "@/lib/elo-engine";
-import { buildTeamFormMap } from "@/lib/team-form-engine";
-import { getTeamFormMap } from "@/lib/team-form-service";
-import { calculateFootballProbabilities } from "@/lib/probability-engine";
-import { selectBestPick } from "@/lib/pick-selector";
-import { isVerifiedPick } from "@/lib/verified-picks";
 
 export const dynamic = "force-dynamic";
 
+function scorePick(p: any) {
+  const marketPenalty =
+    p.market?.includes("Über 2.5") ? 18 :
+    p.market?.includes("Unter 2.5") ? 8 :
+    p.market?.includes("Beide") ? 3 :
+    0;
+
+  return Number(p.probability || 0) + Number(p.valueScore || 0) - marketPenalty;
+}
+
 export default async function VerifiedPicksPage() {
   const now = new Date();
-  const in3Days = new Date();
-  in3Days.setDate(now.getDate() + 3);
+  const end = new Date(now.getTime() + 1000 * 60 * 60 * 24 * 3);
 
-  const matches = await prisma.match.findMany({
+  const rows = await prisma.predictionSnapshot.findMany({
     where: {
-      kickoff: {
-        gte: now,
-        lte: in3Days,
+      isCorrect: null,
+      match: {
+        kickoff: {
+          gte: now,
+          lte: end,
+        },
       },
     },
     include: {
-      league: true,
-      homeTeam: true,
-      awayTeam: true,
-      odds: true,
-      bookmakerOdds: true,
-      stats: true,
+      match: {
+        include: {
+          league: true,
+          homeTeam: true,
+          awayTeam: true,
+          bookmakerOdds: true,
+          odds: true,
+        },
+      },
     },
-    orderBy: {
-      kickoff: "asc",
-    },
-    take: 120,
+    take: 250,
   });
 
-  const historicalMatches = await prisma.match.findMany({
-    where: {
-      homeGoals: { not: null },
-      awayGoals: { not: null },
-    },
-    orderBy: {
-      kickoff: "asc",
-    },
-    take: 3000,
-  });
+  const picks = rows
+    .map((p) => {
+      const oddsRows =
+        (p.match.bookmakerOdds?.length || 0) +
+        (p.match.odds?.length || 0);
 
-  const teamRatings = buildTeamRatings(historicalMatches);
-  const eloRatings = buildEloRatings(historicalMatches);
-  const advancedTeamFormMap = await buildTeamFormMap();
-
-  const teamIds = matches.flatMap((match) => [
-    match.homeTeamId,
-    match.awayTeamId,
-  ]);
-
-  const teamForms = await getTeamFormMap(teamIds);
-  const filteredPicks = filterRiskControlledPicks(matches);
-
-  const verified: any[] = [];
-
-  for (const pick of filteredPicks) {
-    const ratings = {
-      home: getTeamRating(teamRatings, pick.match.homeTeamId),
-      away: getTeamRating(teamRatings, pick.match.awayTeamId),
-    };
-
-    const elo = {
-      home: getEloRating(eloRatings, pick.match.homeTeamId),
-      away: getEloRating(eloRatings, pick.match.awayTeamId),
-    };
-
-    const probs = await calculateFootballProbabilities(
-      pick.match,
-      ratings,
-      elo
-    );
-
-    const bestPick = selectBestPick(probs);
-
-    const oddsRows =
-      (pick.match.bookmakerOdds?.length || 0) +
-      (pick.match.odds?.length || 0);
-
-    if (isVerifiedPick(bestPick.label, probs, oddsRows)) {
-      verified.push({
-        pick,
-        ratings,
-        elo,
-        bestPick,
-      });
-    }
-  }
+      return {
+        id: p.id,
+        match: `${p.match.homeTeam?.name} vs ${p.match.awayTeam?.name}`,
+        league: p.match.league?.name || "Unknown",
+        kickoff: p.match.kickoff,
+        market: p.market,
+        pick: p.pick,
+        probability: Number(p.probability || 0),
+        confidence: p.confidence || "Model",
+        valueScore: p.valueScore || 0,
+        oddsRows,
+        qualityScore: scorePick(p) + oddsRows,
+      };
+    })
+    .filter((p) => p.oddsRows > 0)
+    .filter((p) => p.probability >= 52)
+    .sort((a, b) => b.qualityScore - a.qualityScore)
+    .slice(0, 10);
 
   return (
     <main className="min-h-screen bg-[#050707] px-4 py-8 text-white md:px-8">
-      <div className="mx-auto max-w-7xl space-y-6">
-        <section className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 shadow-2xl shadow-black/30 backdrop-blur">
-          <p className="text-xs font-black uppercase tracking-[0.25em] text-emerald-400">
-            Football IQ verified
-          </p>
-          <h1 className="mt-3 text-4xl font-black tracking-tight md:text-6xl">
-            Verifizierte Picks
-          </h1>
-          <p className="mt-4 max-w-2xl text-sm leading-6 text-neutral-400">
-            Nur Picks, die aktuelle Modellwahrscheinlichkeit und historische Kalibrierung bestehen.
-          </p>
+      <div className="mx-auto max-w-7xl space-y-8">
+        <section className="relative overflow-hidden rounded-[2.75rem] border border-white/10 bg-gradient-to-br from-emerald-500/10 via-white/[0.04] to-black p-8 shadow-[0_0_120px_rgba(16,185,129,0.08)] md:p-12">
+          <div className="absolute right-0 top-0 h-80 w-80 rounded-full bg-emerald-400/10 blur-3xl" />
+
+          <div className="relative z-10">
+            <div className="inline-flex rounded-full border border-emerald-400/20 bg-emerald-400/10 px-4 py-2 text-xs font-black uppercase tracking-[0.25em] text-emerald-300">
+              Updated Daily · 3 Day Window
+            </div>
+
+            <h1 className="mt-6 text-5xl font-black tracking-tight md:text-7xl">
+              Daily Football Picks
+            </h1>
+
+            <p className="mt-5 max-w-3xl text-base leading-8 text-neutral-400">
+              Maximal 10 ausgewählte Predictions. Keine Masse, keine Fake-Sicherheit:
+              nur Picks mit Odds-Daten, Modellbewertung und Qualitätsfilter.
+            </p>
+
+            <div className="mt-8 grid gap-4 md:grid-cols-3">
+              <Stat label="Shown Picks" value={picks.length} />
+              <Stat label="Target" value="3–10" />
+              <Stat label="Update" value="Daily" />
+            </div>
+          </div>
         </section>
 
-        <section className="grid gap-5 lg:grid-cols-3">
-          {visiblePicks.map((item: any) => (
-            <PremiumPickCard
-              key={item.pick.match.id}
-              match={`${item.pick.match.homeTeam?.name} vs ${item.pick.match.awayTeam?.name}`}
-              league={item.pick.match.league?.name || "Unknown"}
-              kickoff={item.pick.match.kickoff}
-              market={item.bestPick?.label || "Verified Pick"}
-              pick={item.bestPick?.label || "Verified Pick"}
-              probability={item.bestPick?.probability || 0}
-              confidence="Verified"
-              valueScore={item.bestPick?.score || 0}
-              oddsRows={
-                (item.pick.match.bookmakerOdds?.length || 0) +
-                (item.pick.match.odds?.length || 0)
-              }
-            />
-          ))}
-        </section>
-
-        {verified.length === 0 ? (
-          <section className="rounded-[2rem] border border-yellow-400/20 bg-yellow-500/10 p-6 text-yellow-100">
-            Aktuell gibt es keine verifizierten Picks. Das ist gewollt: Lieber keine Veröffentlichung als schwache Signale.
+        {picks.length >= 3 ? (
+          <section className="grid gap-5 lg:grid-cols-3">
+            {picks.map((p) => (
+              <PremiumPickCard
+                key={p.id}
+                match={p.match}
+                league={p.league}
+                kickoff={p.kickoff}
+                market={p.market}
+                pick={p.pick}
+                probability={p.probability}
+                confidence={p.confidence}
+                valueScore={p.valueScore}
+                oddsRows={p.oddsRows}
+              />
+            ))}
           </section>
-        ) : null}
+        ) : (
+          <section className="rounded-[2rem] border border-yellow-400/20 bg-yellow-500/10 p-6 text-yellow-100">
+            <h2 className="text-2xl font-black">Heute zu wenige Qualitäts-Picks</h2>
+            <p className="mt-3 max-w-2xl text-sm leading-7">
+              Aktuell gibt es weniger als 3 Picks, die unsere Mindestqualität erfüllen.
+              Das ist gewollt: lieber keine Veröffentlichung als schwache Predictions.
+            </p>
+          </section>
+        )}
       </div>
     </main>
+  );
+}
+
+function Stat({ label, value }: { label: string; value: string | number }) {
+  return (
+    <div className="rounded-[1.5rem] border border-white/10 bg-black/30 p-5">
+      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-neutral-500">
+        {label}
+      </p>
+      <p className="mt-2 text-3xl font-black">{value}</p>
+    </div>
   );
 }
