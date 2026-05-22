@@ -61,7 +61,7 @@ export default async function VerifiedPicksPage() {
   const teamForms = await getTeamFormMap(teamIds);
   const filteredPicks = filterRiskControlledPicks(matches);
 
-  const verified = [];
+  const verified: any[] = [];
 
   for (const pick of filteredPicks) {
     const ratings = {
@@ -112,7 +112,7 @@ export default async function VerifiedPicksPage() {
         </section>
 
         <section className="grid gap-5 lg:grid-cols-3">
-          {verified.map((item: any) => (
+          {visiblePicks.map((item: any) => (
             <PremiumPickCard
               key={item.pick.match.id}
               match={`${item.pick.match.homeTeam?.name} vs ${item.pick.match.awayTeam?.name}`}
