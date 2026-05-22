@@ -29,6 +29,54 @@ export default async function HomePage() {
       ? Number(((correct / resolved) * 100).toFixed(1))
       : 0;
 
+  const now = new Date();
+  const end = new Date(now.getTime() + 1000 * 60 * 60 * 24 * 3);
+
+  const previewRows = await prisma.predictionSnapshot.findMany({
+    where: {
+      isCorrect: null,
+      match: {
+        kickoff: {
+          gte: now,
+          lte: end,
+        },
+      },
+    },
+    include: {
+      match: {
+        include: {
+          league: true,
+          homeTeam: true,
+          awayTeam: true,
+          bookmakerOdds: true,
+          odds: true,
+        },
+      },
+    },
+    orderBy: {
+      probability: "desc",
+    },
+    take: 25,
+  });
+
+  const previewPicks = previewRows
+    .map((p) => {
+      const oddsRows =
+        (p.match.bookmakerOdds?.length || 0) +
+        (p.match.odds?.length || 0);
+
+      return {
+        id: p.id,
+        match: `${p.match.homeTeam?.name} vs ${p.match.awayTeam?.name}`,
+        market: p.market,
+        pick: p.pick,
+        probability: Number(p.probability || 0),
+        oddsRows,
+      };
+    })
+    .filter((p) => p.oddsRows > 0)
+    .slice(0, 3);
+
   return (
     <main className="min-h-screen bg-[#050707] text-white">
       <section className="relative overflow-hidden border-b border-white/10">
@@ -101,6 +149,39 @@ export default async function HomePage() {
           value={oddsRows}
         />
       </section>
+
+      {previewPicks.length > 0 ? (
+        <section className="mx-auto max-w-7xl px-4 pb-10 md:px-8">
+          <div className="mb-5 flex items-end justify-between gap-4">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.25em] text-emerald-400">
+                Aktuelle Auswahl
+              </p>
+              <h2 className="mt-2 text-3xl font-black">
+                Top Daily Picks
+              </h2>
+            </div>
+            <Link href="/daily-picks" className="text-sm font-black text-emerald-300">
+              Alle ansehen
+            </Link>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-3">
+            {previewPicks.map((p) => (
+              <div key={p.id} className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6">
+                <p className="text-xs font-black uppercase tracking-[0.2em] text-emerald-400">
+                  {p.market}
+                </p>
+                <h3 className="mt-3 text-xl font-black">{p.match}</h3>
+                <p className="mt-4 text-3xl font-black">{p.pick}</p>
+                <p className="mt-2 text-sm text-neutral-400">
+                  Modell: {p.probability.toFixed(1)}%
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <section className="mx-auto max-w-7xl px-4 pb-20 md:px-8">
         <div className="rounded-[2.5rem] border border-white/10 bg-gradient-to-br from-white/[0.05] to-black p-8 md:p-12">
