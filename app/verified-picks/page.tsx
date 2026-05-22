@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import CleanMatchCard from "@/components/picks/CleanMatchCard";
+import PremiumPickCard from "@/components/picks/PremiumPickCard";
 import { filterRiskControlledPicks } from "@/lib/risk-control";
 import { buildTeamRatings, getTeamRating } from "@/lib/team-rating-engine";
 import { buildEloRatings, getEloRating } from "@/lib/elo-engine";
@@ -90,6 +91,7 @@ export default async function VerifiedPicksPage() {
         pick,
         ratings,
         elo,
+        bestPick,
       });
     }
   }
@@ -111,15 +113,20 @@ export default async function VerifiedPicksPage() {
 
         <section className="grid gap-5 lg:grid-cols-3">
           {verified.map((item: any) => (
-            <CleanMatchCard
+            <PremiumPickCard
               key={item.pick.match.id}
-              p={item.pick}
-              ratings={item.ratings}
-              forms={{
-                home: teamForms.get(item.pick.match.homeTeamId),
-                away: teamForms.get(item.pick.match.awayTeamId),
-              }}
-              elo={item.elo}
+              match={`${item.pick.match.homeTeam?.name} vs ${item.pick.match.awayTeam?.name}`}
+              league={item.pick.match.league?.name || "Unknown"}
+              kickoff={item.pick.match.kickoff}
+              market={item.bestPick?.label || "Verified Pick"}
+              pick={item.bestPick?.label || "Verified Pick"}
+              probability={item.bestPick?.probability || 0}
+              confidence="Verified"
+              valueScore={item.bestPick?.score || 0}
+              oddsRows={
+                (item.pick.match.bookmakerOdds?.length || 0) +
+                (item.pick.match.odds?.length || 0)
+              }
             />
           ))}
         </section>
