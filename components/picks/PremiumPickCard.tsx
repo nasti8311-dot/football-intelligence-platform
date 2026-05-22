@@ -22,11 +22,11 @@ export default function PremiumPickCard({
   oddsRows = 0,
 }: Props) {
   return (
-    <article className="overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-br from-white/[0.06] to-white/[0.02] p-5 shadow-2xl shadow-black/20">
+    <article className="overflow-hidden rounded-[2.2rem] border border-white/10 bg-gradient-to-br from-white/[0.07] to-white/[0.02] p-6 shadow-2xl shadow-black/30 transition hover:border-emerald-400/30 hover:translate-y-[-2px]">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-[10px] font-black uppercase tracking-[0.22em] text-emerald-400">
-            Verified Signal
+            Daily Pick
           </p>
 
           <h3 className="mt-3 text-xl font-black leading-tight text-white">
@@ -47,7 +47,7 @@ export default function PremiumPickCard({
             {Number(probability).toFixed(0)}%
           </p>
           <p className="text-[10px] font-black uppercase tracking-[0.18em]">
-            Model
+            Quote
           </p>
         </div>
       </div>
@@ -63,9 +63,9 @@ export default function PremiumPickCard({
       </div>
 
       <div className="mt-4 grid grid-cols-3 gap-3">
-        <Metric label="Confidence" value={confidence || "—"} />
+        <Metric label="Qualität" value={confidence || "—"} />
         <Metric label="Value" value={valueScore ?? "—"} />
-        <Metric label="Odds Rows" value={oddsRows} />
+        <Metric label="Quoten" value={oddsRows} />
       </div>
     </article>
   );

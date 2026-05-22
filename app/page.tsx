@@ -47,9 +47,8 @@ export default async function HomePage() {
             </h1>
 
             <p className="mt-8 max-w-2xl text-lg leading-8 text-neutral-400">
-              Football IQ liefert täglich ausgewählte Daily Picks auf Basis von
-              Quoten, historischen Ergebnissen, Modellwahrscheinlichkeiten und
-              Performance-Tracking.
+              Football IQ veröffentlicht täglich ausgewählte Spiele auf Basis von
+              Daten, Quoten und Modellwahrscheinlichkeiten.
             </p>
 
             <div className="mt-10 flex flex-wrap gap-4">
@@ -95,13 +94,13 @@ export default async function HomePage() {
           </p>
 
           <h2 className="mt-4 text-4xl font-black">
-            Keine Massen-Tipps. Keine Fake-Sicherheit.
+            Weniger Picks.
+            Bessere Qualität.
           </h2>
 
           <p className="mt-6 max-w-3xl text-base leading-8 text-neutral-400">
-            Wir veröffentlichen nur eine begrenzte Auswahl täglicher Picks.
-            Ziel sind nicht möglichst viele Vorhersagen, sondern nachvollziehbare,
-            messbare und datenbasierte Prognosen.
+            Unser Fokus liegt nicht auf Masse, sondern auf wenigen hochwertigen
+            Daily Picks mit nachvollziehbarer Performance.
           </p>
         </div>
       </section>

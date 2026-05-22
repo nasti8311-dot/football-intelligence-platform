@@ -74,16 +74,16 @@ export default async function VerifiedPicksPage() {
 
           <div className="relative z-10">
             <div className="inline-flex rounded-full border border-emerald-400/20 bg-emerald-400/10 px-4 py-2 text-xs font-black uppercase tracking-[0.25em] text-emerald-300">
-              Täglich aktualisiert · 3-Tage-Fenster
+              Täglich aktualisierte Auswahl
             </div>
 
-            <h1 className="mt-6 text-5xl font-black tracking-tight md:text-7xl">
+            <h1 className="mt-6 text-6xl font-black tracking-tight leading-none md:text-8xl">
               Daily Picks
             </h1>
 
             <p className="mt-5 max-w-3xl text-base leading-8 text-neutral-400">
-              Maximal 10 ausgewählte Fußballprognosen. Keine Masse, keine Fake-Sicherheit:
-              nur Picks mit Quoten-Daten, Modellbewertung und Qualitätsfilter.
+              Jeden Tag maximal 10 ausgewählte Spiele mit Modellbewertung,
+              Quoten-Daten und Qualitätsfilter.
             </p>
 
             <div className="mt-8 grid gap-4 md:grid-cols-3">
