@@ -11,6 +11,8 @@ const links = [
   { href: "/contact", label: "Contact" },
   { href: "/changelog", label: "Changelog" },
   { href: "/roadmap", label: "Roadmap" },
+  { href: "/legal", label: "Legal" },
+  { href: "/press", label: "Press" },
 ];
 
 export default function Footer() {
