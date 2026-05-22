@@ -68,29 +68,28 @@ export default async function PublicTrackRecordPage() {
       <div className="mx-auto max-w-7xl space-y-6">
         <section className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 backdrop-blur">
           <p className="text-xs font-black uppercase tracking-[0.25em] text-emerald-400">
-            Football IQ Transparency
+            Football IQ Performance
           </p>
 
           <h1 className="mt-3 text-5xl font-black">
-            Public Track Record
+            Performance
           </h1>
 
           <p className="mt-4 max-w-2xl text-sm leading-6 text-neutral-400">
-            Öffentliche historische Modellperformance auf Basis gespeicherter
-            Prediction-Snapshots.
+            Historische Auswertung der gespeicherten Prognosen.
           </p>
         </section>
 
         <section className="grid gap-4 md:grid-cols-4">
-          <Card label="Predictions" value={total} />
-          <Card label="Wins" value={wins} />
-          <Card label="Losses" value={losses} />
-          <Card label="Accuracy" value={pct(overall)} />
+          <Card label="Prognosen" value={total} />
+          <Card label="Richtig" value={wins} />
+          <Card label="Falsch" value={losses} />
+          <Card label="Trefferquote" value={pct(overall)} />
         </section>
 
         <section className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 backdrop-blur">
           <p className="text-xs font-black uppercase tracking-[0.2em] text-emerald-400">
-            Markets
+            Märkte
           </p>
 
           <div className="mt-5 overflow-auto">
@@ -98,9 +97,9 @@ export default async function PublicTrackRecordPage() {
               <thead>
                 <tr className="border-b border-white/10 text-left text-neutral-500">
                   <th className="px-4 py-3">Markt</th>
-                  <th className="px-4 py-3">Predictions</th>
-                  <th className="px-4 py-3">Wins</th>
-                  <th className="px-4 py-3">Accuracy</th>
+                  <th className="px-4 py-3">Prognosen</th>
+                  <th className="px-4 py-3">Richtig</th>
+                  <th className="px-4 py-3">Trefferquote</th>
                 </tr>
               </thead>
 

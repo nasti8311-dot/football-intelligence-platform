@@ -44,19 +44,19 @@ export default function MethodologyPage() {
       <div className="mx-auto max-w-5xl space-y-6">
         <section className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 backdrop-blur">
           <p className="text-xs font-black uppercase tracking-[0.25em] text-emerald-400">
-            Football IQ Transparency
+            Football IQ Transparenz
           </p>
           <h1 className="mt-3 text-5xl font-black">Methodik</h1>
           <p className="mt-4 max-w-2xl text-sm leading-6 text-neutral-400">
-            Wie Football IQ Wahrscheinlichkeiten, Verified Picks und Modellqualität berechnet.
+            Wie Football IQ tägliche Picks auswählt, bewertet und überprüft.
           </p>
 
           <div className="mt-6 flex flex-wrap gap-3">
             <Link href="/quant-hub" className="rounded-2xl bg-emerald-400 px-5 py-3 text-sm font-black text-black">
-              Quant Hub
+              Übersicht
             </Link>
             <Link href="/model-quality" className="rounded-2xl bg-white/10 px-5 py-3 text-sm font-black text-white">
-              Modellqualität
+              Performance
             </Link>
           </div>
         </section>
