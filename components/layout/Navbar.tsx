@@ -2,7 +2,7 @@ import Link from "next/link";
 
 const links = [
   { href: "/", label: "Start" },
-  { href: "/verified-picks", label: "Daily Picks" },
+  { href: "/daily-picks", label: "Daily Picks" },
   { href: "/public-track-record", label: "Performance" },
   { href: "/methodology", label: "Methodik" },
 ];

@@ -54,7 +54,7 @@ export default async function HomePage() {
 
             <div className="mt-10 flex flex-wrap gap-4">
               <Link
-                href="/verified-picks"
+                href="/daily-picks"
                 className="rounded-2xl bg-emerald-400 px-7 py-4 text-sm font-black text-black transition hover:scale-[1.02]"
               >
                 Daily Picks ansehen
