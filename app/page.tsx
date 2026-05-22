@@ -70,6 +70,21 @@ export default async function HomePage() {
         </div>
       </section>
 
+      <section className="mx-auto max-w-7xl px-4 pt-10 md:px-8">
+        <div className="rounded-[2rem] border border-emerald-400/20 bg-emerald-500/10 p-6">
+          <p className="text-xs font-black uppercase tracking-[0.25em] text-emerald-300">
+            Heute maximal 10 Picks
+          </p>
+          <h2 className="mt-3 text-3xl font-black">
+            Wenige ausgewählte Spiele statt Massen-Tipps.
+          </h2>
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-emerald-100/80">
+            Die Daily Picks werden einmal täglich aktualisiert und nach Datenqualität,
+            Quotenverfügbarkeit und Modellbewertung sortiert.
+          </p>
+        </div>
+      </section>
+
       <section className="mx-auto grid max-w-7xl gap-5 px-4 py-10 md:grid-cols-3 md:px-8">
         <Card
           label="Historische Trefferquote"

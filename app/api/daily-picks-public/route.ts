@@ -41,7 +41,7 @@ export async function GET() {
     take: 250,
   });
 
-  const picks = rows
+  const ranked = rows
     .map((p) => {
       const oddsRows =
         (p.match.bookmakerOdds?.length || 0) +
@@ -62,15 +62,16 @@ export async function GET() {
       };
     })
     .filter((p) => p.oddsRows > 0)
-    .filter((p) => p.probability >= 48)
-    .sort((a, b) => b.qualityScore - a.qualityScore)
-    .slice(0, 10);
+    .sort((a, b) => b.qualityScore - a.qualityScore);
+
+  const strict = ranked.filter((p) => p.probability >= 48).slice(0, 10);
+  const fallback = ranked.slice(0, 3);
+  const picks = strict.length >= 3 ? strict : fallback;
 
   return NextResponse.json({
     updatedAt: new Date().toISOString(),
     totalShown: picks.length,
-    minTarget: 3,
-    maxTarget: 10,
+    target: "3-10",
     picks,
   });
 }
