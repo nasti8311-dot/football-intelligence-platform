@@ -5,8 +5,8 @@ export const dynamic = "force-dynamic";
 
 function scorePick(p: any) {
   const marketPenalty =
-    p.market?.includes("Über 2.5") ? 18 :
-    p.market?.includes("Unter 2.5") ? 8 :
+    p.market?.includes("Über 2.5") ? 12 :
+    p.market?.includes("Unter 2.5") ? 6 :
     p.market?.includes("Beide") ? 3 :
     0;
 
@@ -62,7 +62,7 @@ export async function GET() {
       };
     })
     .filter((p) => p.oddsRows > 0)
-    .filter((p) => p.probability >= 52)
+    .filter((p) => p.probability >= 48)
     .sort((a, b) => b.qualityScore - a.qualityScore)
     .slice(0, 10);
 

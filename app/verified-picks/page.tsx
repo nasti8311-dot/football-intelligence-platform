@@ -5,8 +5,8 @@ export const dynamic = "force-dynamic";
 
 function scorePick(p: any) {
   const marketPenalty =
-    p.market?.includes("Über 2.5") ? 18 :
-    p.market?.includes("Unter 2.5") ? 8 :
+    p.market?.includes("Über 2.5") ? 12 :
+    p.market?.includes("Unter 2.5") ? 6 :
     p.market?.includes("Beide") ? 3 :
     0;
 
@@ -41,7 +41,7 @@ export default async function VerifiedPicksPage() {
     take: 250,
   });
 
-  const picks = rows
+  const allRanked = rows
     .map((p) => {
       const oddsRows =
         (p.match.bookmakerOdds?.length || 0) +
@@ -62,9 +62,22 @@ export default async function VerifiedPicksPage() {
       };
     })
     .filter((p) => p.oddsRows > 0)
-    .filter((p) => p.probability >= 52)
-    .sort((a, b) => b.qualityScore - a.qualityScore)
+    .filter((p) => p.probability >= 48)
+    .sort((a, b) => b.qualityScore - a.qualityScore);
+
+  const strictPicks = allRanked
+    .filter((p) => p.oddsRows > 0)
+    .filter((p) => p.probability >= 48)
     .slice(0, 10);
+
+  const fallbackPicks = allRanked
+    .filter((p) => p.oddsRows > 0)
+    .slice(0, 3);
+
+  const picks =
+    strictPicks.length >= 3
+      ? strictPicks
+      : fallbackPicks;
 
   return (
     <main className="min-h-screen bg-[#050707] px-4 py-8 text-white md:px-8">
@@ -94,7 +107,7 @@ export default async function VerifiedPicksPage() {
           </div>
         </section>
 
-        {picks.length >= 3 ? (
+        {picks.length > 0 ? (
           <section className="grid gap-5 lg:grid-cols-3">
             {picks.map((p) => (
               <PremiumPickCard
