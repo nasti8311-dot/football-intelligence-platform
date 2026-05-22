@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import PremiumPickCard from "@/components/picks/PremiumPickCard";
 
 export const dynamic = "force-dynamic";
 
@@ -78,40 +79,18 @@ export default async function SharpFeedPage() {
 
         <section className="grid gap-4">
           {sharp.map((p) => (
-            <div
+            <PremiumPickCard
               key={p.id}
-              className="rounded-[1.5rem] border border-emerald-400/20 bg-emerald-500/10 p-5"
-            >
-              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                <div>
-                  <p className="text-xl font-black">
-                    {p.match}
-                  </p>
-
-                  <p className="mt-1 text-sm text-neutral-400">
-                    {p.league}
-                  </p>
-
-                  <p className="mt-1 text-xs text-neutral-500">
-                    {p.kickoff ? new Date(p.kickoff).toLocaleString("de-DE") : "—"}
-                  </p>
-                </div>
-
-                <div className="text-right">
-                  <p className="text-sm font-black text-emerald-300">
-                    {p.market}
-                  </p>
-
-                  <p className="mt-1 text-2xl font-black">
-                    {p.pick}
-                  </p>
-
-                  <p className="mt-1 text-sm text-neutral-300">
-                    {Number(p.probability).toFixed(1)}% · Value {p.valueScore}
-                  </p>
-                </div>
-              </div>
-            </div>
+              match={p.match}
+              league={p.league}
+              kickoff={p.kickoff}
+              market={p.market}
+              pick={p.pick}
+              probability={p.probability}
+              confidence={p.confidence}
+              valueScore={p.valueScore}
+              oddsRows={p.oddsRows}
+            />
           ))}
 
           {sharp.length === 0 ? (
