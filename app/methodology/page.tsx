@@ -1,79 +1,55 @@
 import Link from "next/link";
 
-const sections = [
+const items = [
   {
-    title: "1. Datenbasis",
-    body:
-      "Football IQ nutzt historische Ergebnisse, kommende Fixtures, verfügbare Marktquoten, Teamform und gespeicherte Prediction-Snapshots. Spiele ohne ausreichende Daten werden bewusst abgewertet oder nicht als Verified Pick veröffentlicht.",
+    title: "1. Daten",
+    text: "Wir nutzen kommende Spiele, historische Ergebnisse, gespeicherte Quoten und frühere Prognosen.",
   },
   {
-    title: "2. Team Strength",
-    body:
-      "Teams werden über Resultate, Tore, Gegentore, Heim-/Auswärtsprofil, Form und ELO-ähnliche Ratings bewertet. Das Modell unterscheidet zwischen allgemeiner Stärke und aktueller Form.",
+    title: "2. Modell",
+    text: "Das Modell bewertet Teams über Stärke, Form, Tore, Gegentore und Marktinformationen.",
   },
   {
-    title: "3. xG-Schätzung",
-    body:
-      "Die erwarteten Tore werden aus Team-Offensive, gegnerischer Defensive, Heim-/Auswärtsprofil und Form abgeleitet. Es handelt sich um eine modellierte xG-Schätzung, nicht um offizielles Event-xG.",
+    title: "3. Auswahl",
+    text: "Es werden nicht alle Spiele angezeigt. Nur Picks mit ausreichender Qualität schaffen es in die Daily Picks.",
   },
   {
-    title: "4. Marktquoten",
-    body:
-      "Wenn Odds vorhanden sind, nutzt Football IQ Marktinformationen als starken Prior. Die Plattform unterscheidet zwischen Modellwahrscheinlichkeit und Markt-Wahrscheinlichkeit.",
-  },
-  {
-    title: "5. Calibration",
-    body:
-      "Jede gespeicherte Prediction wird später gegen das echte Ergebnis geprüft. Daraus entstehen Calibration-Buckets, geglättete Trefferquoten und Marktqualität nach Pick-Typ.",
-  },
-  {
-    title: "6. Verified Picks",
-    body:
-      "Ein Pick wird nur dann verifiziert, wenn Datenqualität, Odds-Verfügbarkeit und Mindestwahrscheinlichkeit erfüllt sind. Ziel ist nicht, jedes Spiel zu tippen, sondern nur veröffentlichbare Signale zu zeigen.",
-  },
-  {
-    title: "7. Grenzen",
-    body:
-      "Football IQ garantiert keine Gewinne. Fußballmärkte sind effizient, und jedes Modell hat Unsicherheit. Die Plattform priorisiert Transparenz, Messbarkeit und kontinuierliche Verbesserung statt Fake-Confidence.",
+    title: "4. Kontrolle",
+    text: "Jede Prognose wird nach dem Spiel ausgewertet. So entsteht eine echte Performance-Historie.",
   },
 ];
 
 export default function MethodologyPage() {
   return (
-    <main className="min-h-screen bg-[#050707] px-4 py-8 text-white md:px-8">
+    <main className="min-h-screen bg-[#050707] px-4 py-10 text-white md:px-8">
       <div className="mx-auto max-w-5xl space-y-6">
-        <section className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 backdrop-blur">
+        <section className="rounded-[2.5rem] border border-white/10 bg-white/[0.04] p-8">
           <p className="text-xs font-black uppercase tracking-[0.25em] text-emerald-400">
-            Football IQ Transparenz
-          </p>
-          <h1 className="mt-3 text-5xl font-black">Methodik</h1>
-          <p className="mt-4 max-w-2xl text-sm leading-6 text-neutral-400">
-            Wie Football IQ tägliche Picks auswählt, bewertet und überprüft.
+            Methodik
           </p>
 
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Link href="/quant-hub" className="rounded-2xl bg-emerald-400 px-5 py-3 text-sm font-black text-black">
-              Übersicht
-            </Link>
-            <Link href="/model-quality" className="rounded-2xl bg-white/10 px-5 py-3 text-sm font-black text-white">
-              Performance
-            </Link>
-          </div>
+          <h1 className="mt-4 text-5xl font-black">
+            Wie entstehen die Daily Picks?
+          </h1>
+
+          <p className="mt-6 max-w-2xl text-base leading-8 text-neutral-400">
+            Football IQ kombiniert Daten, Quoten und Modellbewertung. Ziel sind wenige,
+            verständliche und überprüfbare Prognosen.
+          </p>
         </section>
 
-        <section className="grid gap-4">
-          {sections.map((section) => (
-            <article
-              key={section.title}
-              className="rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-5 backdrop-blur"
-            >
-              <h2 className="text-xl font-black">{section.title}</h2>
-              <p className="mt-3 text-sm leading-7 text-neutral-400">
-                {section.body}
-              </p>
-            </article>
+        <section className="grid gap-4 md:grid-cols-2">
+          {items.map((item) => (
+            <div key={item.title} className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6">
+              <h2 className="text-2xl font-black">{item.title}</h2>
+              <p className="mt-4 text-sm leading-7 text-neutral-400">{item.text}</p>
+            </div>
           ))}
         </section>
+
+        <Link href="/daily-picks" className="inline-flex rounded-2xl bg-emerald-400 px-5 py-3 text-sm font-black text-black">
+          Daily Picks ansehen
+        </Link>
       </div>
     </main>
   );
