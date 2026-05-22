@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma";
 import { HeroSection } from "@/components/marketing/HeroSection";
 import { StatsStrip } from "@/components/marketing/StatsStrip";
 import { FeatureGrid } from "@/components/marketing/FeatureGrid";
+import { TrustSection } from "@/components/marketing/TrustSection";
+import { CTASection } from "@/components/marketing/CTASection";
 
 export const dynamic = "force-dynamic";
 
@@ -46,6 +48,10 @@ export default async function HomePage() {
         />
 
         <FeatureGrid />
+
+        <TrustSection />
+
+        <CTASection />
       </div>
     </main>
   );
