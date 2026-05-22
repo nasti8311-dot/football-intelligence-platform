@@ -104,14 +104,14 @@ export default async function HomePage() {
                 href="/daily-picks"
                 className="rounded-2xl bg-emerald-400 px-7 py-4 text-sm font-black text-black transition hover:scale-[1.02]"
               >
-                Daily Picks ansehen
+                Heutige Daily Picks ansehen
               </Link>
 
               <Link
                 href="/public-track-record"
                 className="rounded-2xl border border-white/10 bg-white/[0.04] px-7 py-4 text-sm font-black text-white transition hover:border-emerald-400/40"
               >
-                Performance prüfen
+                Performance ansehen
               </Link>
             </div>
           </div>
