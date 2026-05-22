@@ -10,6 +10,7 @@ const links = [
   { href: "/disclaimer", label: "Disclaimer" },
   { href: "/contact", label: "Contact" },
   { href: "/changelog", label: "Changelog" },
+  { href: "/roadmap", label: "Roadmap" },
 ];
 
 export default function Footer() {
