@@ -6,15 +6,19 @@
     },
     {
       "path": "/api/cron/sync-odds-events",
-      "schedule": "15 6 * * *"
+      "schedule": "10 6 * * *"
     },
     {
-      "path": "/api/cron/sync-news",
-      "schedule": "30 6 * * *"
+      "path": "/api/cron/sync-odds",
+      "schedule": "20 6 * * *"
+    },
+    {
+      "path": "/api/cron/save-predictions",
+      "schedule": "35 6 * * *"
     },
     {
       "path": "/api/cron/resolve-predictions",
-      "schedule": "45 6 * * *"
+      "schedule": "50 6 * * *"
     }
   ]
 }
