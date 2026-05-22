@@ -1,7 +1,10 @@
 import { prisma } from "@/lib/prisma";
 import { HeroSection } from "@/components/marketing/HeroSection";
 import { StatsStrip } from "@/components/marketing/StatsStrip";
+import { LiveModulesStrip } from "@/components/marketing/LiveModulesStrip";
 import { FeatureGrid } from "@/components/marketing/FeatureGrid";
+import { DashboardPreview } from "@/components/marketing/DashboardPreview";
+import { PublicProofSection } from "@/components/marketing/PublicProofSection";
 import { TrustSection } from "@/components/marketing/TrustSection";
 import { CTASection } from "@/components/marketing/CTASection";
 

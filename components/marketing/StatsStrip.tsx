@@ -35,7 +35,7 @@ export function StatsStrip({
       {items.map((item) => (
         <div
           key={item.label}
-          className="rounded-[1.75rem] border border-white/10 bg-white/[0.04] p-6"
+          className="rounded-[1.75rem] border border-white/10 bg-gradient-to-br from-white/[0.06] to-white/[0.02] p-6 shadow-xl shadow-black/20 transition hover:border-emerald-400/30 hover:shadow-emerald-500/5"
         >
           <p className="text-[10px] font-black uppercase tracking-[0.25em] text-neutral-500">
             {item.label}
