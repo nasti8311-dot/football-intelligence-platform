@@ -40,6 +40,8 @@ export default async function HomePage() {
       <div className="mx-auto max-w-7xl space-y-6">
         <HeroSection />
 
+        <LiveModulesStrip />
+
         <StatsStrip
           matches={matches}
           oddsRows={oddsRows}
