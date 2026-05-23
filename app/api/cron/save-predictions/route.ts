@@ -72,6 +72,9 @@ export async function GET() {
       const bttsYes = randomBetween(40, 75);
       const bttsNo = Number((100 - bttsYes).toFixed(2));
 
+      const homeXg = randomBetween(0.8, 2.4);
+      const awayXg = randomBetween(0.6, 2.1);
+
       const marketPick = pickMarket(homeWin, draw, awayWin);
 
       await prisma.predictionSnapshot.create({
@@ -91,6 +94,9 @@ export async function GET() {
 
           bttsYes,
           bttsNo,
+
+          homeXg,
+          awayXg,
 
           confidence:
             marketPick.probability >= 70
