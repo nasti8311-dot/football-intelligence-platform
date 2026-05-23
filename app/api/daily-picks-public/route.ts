@@ -55,7 +55,7 @@ export async function GET() {
         market: p.market,
         pick: p.pick,
         probability: Number(p.probability || 0),
-        confidence: p.confidence || "Model",
+        confidence: oddsRows > 0 ? "Geprüft" : "Modell-Pick",
         valueScore: p.valueScore || 0,
         oddsRows,
         qualityScore: scorePick({ ...p, oddsRows }),

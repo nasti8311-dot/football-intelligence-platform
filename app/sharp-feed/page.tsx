@@ -88,7 +88,7 @@ export default async function SharpFeedPage() {
               pick={p.pick}
               probability={p.probability}
               confidence={p.confidence}
-              valueScore={p.valueScore}
+              score={p.valueScore}
               oddsRows={p.oddsRows}
             />
           ))}
