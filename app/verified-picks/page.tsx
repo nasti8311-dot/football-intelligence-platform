@@ -72,6 +72,7 @@ export default async function VerifiedPicksPage() {
 
   const fallbackPicks = allRanked
     .filter((p) => p.oddsRows > 0)
+    .filter((p) => p.probability >= 45)
     .slice(0, 3);
 
   const picks =

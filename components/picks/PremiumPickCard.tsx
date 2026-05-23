@@ -38,13 +38,13 @@ export default function PremiumPickCard({
           </p>
 
           <p className="mt-1 text-xs text-neutral-500">
-            {kickoff ? new Date(kickoff).toLocaleString("de-DE") : "Termin offen"}
+            {kickoff ? new Date(kickoff).toLocaleString("de-DE") : "Zeit offen"}
           </p>
         </div>
 
         <div className="rounded-2xl bg-emerald-400 px-4 py-3 text-center text-black">
           <p className="text-2xl font-black">
-            {Number(probability).toFixed(0)}%
+            {Math.round(Number(probability))}%
           </p>
           <p className="text-[10px] font-black uppercase tracking-[0.18em]">
             Chance
