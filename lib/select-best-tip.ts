@@ -16,30 +16,25 @@ type TipOption = {
   score: number;
 };
 
-function impliedFairOdds(probability: number) {
-  return probability > 0 ? 100 / probability : 99;
-}
-
-function valueScore(probability: number, market: string) {
-  const fairOdds = impliedFairOdds(probability);
+function marketValue(market: string, probability: number) {
+  const balancedProbabilityBonus =
+    probability >= 55 && probability <= 78 ? 8 :
+    probability > 78 && probability <= 88 ? 3 :
+    probability > 88 ? -8 :
+    probability >= 45 ? 2 :
+    -10;
 
   const marketBonus =
-    market === "Heimsieg" ? 7 :
-    market === "Auswärtssieg" ? 8 :
+    market === "Heimsieg" ? 6 :
+    market === "Auswärtssieg" ? 7 :
+    market === "Unentschieden" ? -10 :
     market === "Beide Teams treffen" ? 5 :
     market === "Über 2,5 Tore" ? 5 :
-    market === "Über 1,5 Tore" ? -16 :
-    market === "Unter 3,5 Tore" ? -14 :
+    market === "Über 1,5 Tore" ? -3 :
+    market === "Unter 3,5 Tore" ? -3 :
     0;
 
-  const priceValue =
-    fairOdds >= 1.35 && fairOdds <= 2.40 ? 8 :
-    fairOdds >= 1.25 && fairOdds <= 3.00 ? 5 :
-    fairOdds < 1.20 ? -12 :
-    fairOdds > 3.50 ? -10 :
-    0;
-
-  return marketBonus + priceValue;
+  return balancedProbabilityBonus + marketBonus;
 }
 
 export function selectBestTip(input: BestTipInput) {
@@ -82,9 +77,9 @@ export function selectBestTip(input: BestTipInput) {
   ];
 
   const ranked: TipOption[] = options
-    .filter((o) => o.probability >= 35)
+    .filter((o) => o.probability >= 40)
     .map((o) => {
-      const value = valueScore(o.probability, o.market);
+      const value = marketValue(o.market, o.probability);
 
       return {
         ...o,
