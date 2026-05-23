@@ -4,6 +4,15 @@ import { estimateOver15, estimateUnder35 } from "@/lib/market-probabilities";
 
 export const dynamic = "force-dynamic";
 
+const priorityLeagues = [
+  "premier league",
+  "bundesliga",
+  "la liga",
+  "serie a",
+  "ligue 1",
+  "champions league",
+];
+
 function scorePick(p: any) {
   const marketPenalty =
     p.market?.includes("Über 2.5") ? 12 :
@@ -11,12 +20,24 @@ function scorePick(p: any) {
     p.market?.includes("Beide") ? 3 :
     0;
 
-  return Number(p.probability || 0) + Number(p.valueScore || 0) + Number(p.oddsRows || 0) - marketPenalty;
+  const leagueBoost = priorityLeagues.some((l) =>
+    String(p.match?.league?.name || p.league || "")
+      .toLowerCase()
+      .includes(l)
+  )
+    ? 12
+    : 0;
+
+  return Number(p.probability || 0)
+    + Number(p.valueScore || 0)
+    + Number(p.oddsRows || 0)
+    + leagueBoost
+    - marketPenalty;
 }
 
 export default async function VerifiedPicksPage() {
   const now = new Date();
-  const end = new Date(now.getTime() + 1000 * 60 * 60 * 24 * 3);
+  const end = new Date(now.getTime() + 1000 * 60 * 60 * 24 * 2);
 
   const rows = await prisma.predictionSnapshot.findMany({
     where: {

@@ -16,7 +16,7 @@ function scorePick(p: any) {
 
 export async function GET() {
   const now = new Date();
-  const end = new Date(now.getTime() + 1000 * 60 * 60 * 24 * 3);
+  const end = new Date(now.getTime() + 1000 * 60 * 60 * 24 * 2);
 
   const rows = await prisma.predictionSnapshot.findMany({
     where: {
