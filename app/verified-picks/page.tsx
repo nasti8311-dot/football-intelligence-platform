@@ -67,7 +67,8 @@ export default async function VerifiedPicksPage() {
   const withOdds = ranked.filter((p) => p.oddsRows > 0);
   const withoutOdds = ranked.filter((p) => p.oddsRows <= 0);
 
-  const picks = [...withOdds, ...withoutOdds].slice(0, 10);
+  const picks = [...withOdds, ...withoutOdds]
+    .slice(0, 10);
 
   const lastUpdated = new Date().toLocaleString("de-DE", {
     dateStyle: "medium",
@@ -97,7 +98,7 @@ export default async function VerifiedPicksPage() {
             <div className="mt-8 grid gap-4 md:grid-cols-4">
               <Stat label="Angezeigte Picks" value={picks.length} />
               <Stat label="Ziel pro Tag" value="3–10" />
-              <Stat label="Mit Quoten" value={withOdds.length} />
+              <Stat label="Mit Quoten" value={picks.filter((p) => p.oddsRows > 0).length} />
               <Stat label="Update" value={lastUpdated} />
             </div>
           </div>
