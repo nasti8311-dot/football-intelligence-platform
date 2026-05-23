@@ -76,13 +76,13 @@ export async function GET() {
         pick: bestTip.pick,
         probability: bestTip.probability,
         confidence: oddsRows > 0 ? "Geprüft" : "Modell-Pick",
-        valueScore: p.valueScore || 0,
+        valueScore: Math.round(bestTip.score || p.valueScore || 0),
         oddsRows,
         over15,
         under35,
         over25,
         btts,
-        qualityScore: Number(bestTip.probability || 0) + Number(p.valueScore || 0) + oddsRows,
+        qualityScore: Number(bestTip.score || bestTip.probability || 0) + oddsRows,
       };
     })
     .filter((p) => p.probability >= 45)

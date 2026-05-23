@@ -76,7 +76,7 @@ export async function GET() {
               ? "B"
               : "C",
 
-          valueScore: Math.round(bestTip.probability / 10),
+          valueScore: Math.round(bestTip.score),
         },
       });
 
