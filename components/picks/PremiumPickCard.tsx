@@ -59,19 +59,19 @@ export default function PremiumPickCard({
         </div>
       </div>
 
-      <div className="mt-5 rounded-[1.5rem] border border-white/10 bg-black/25 p-4">
+      <div className="mt-5 rounded-[1.5rem] border border-emerald-400/20 bg-emerald-500/10 p-4">
         <p className="text-xs font-black uppercase tracking-[0.2em] text-neutral-500">
           {market}
         </p>
 
-        <p className="mt-2 text-3xl font-black text-white">
+        <p className="mt-2 text-3xl font-black text-emerald-50">
           {pick}
         </p>
       </div>
 
       <div className="mt-4 grid grid-cols-2 gap-3">
-        <MarketProbability label="Über 1,5 Tore" value={over15} />
-        <MarketProbability label="Unter 3,5 Tore" value={under35} />
+        <MarketProbability label="Ü1,5" value={over15} />
+        <MarketProbability label="U3,5" value={under35} />
       </div>
 
       <div className="mt-4 grid grid-cols-3 gap-3">
@@ -117,7 +117,7 @@ function MarketProbability({
         {label}
       </p>
 
-      <p className="mt-2 text-2xl font-black text-white">
+      <p className="mt-2 text-xl font-black text-white">
         {value != null ? `${Math.round(value)}%` : "—"}
       </p>
     </div>
