@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { estimateOver15, estimateUnder35 } from "@/lib/market-probabilities";
 
 export const dynamic = "force-dynamic";
 
@@ -47,6 +48,9 @@ export async function GET() {
         (p.match.bookmakerOdds?.length || 0) +
         (p.match.odds?.length || 0);
 
+      const homeXg = Number(p.homeXg || 1.35);
+      const awayXg = Number(p.awayXg || 1.15);
+
       return {
         id: p.id,
         match: `${p.match.homeTeam?.name} vs ${p.match.awayTeam?.name}`,
@@ -58,6 +62,8 @@ export async function GET() {
         confidence: oddsRows > 0 ? "Geprüft" : "Modell-Pick",
         valueScore: p.valueScore || 0,
         oddsRows,
+        over15: estimateOver15(homeXg, awayXg),
+        under35: estimateUnder35(homeXg, awayXg),
         qualityScore: scorePick({ ...p, oddsRows }),
       };
     })

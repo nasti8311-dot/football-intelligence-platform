@@ -48,6 +48,9 @@ export default async function VerifiedPicksPage() {
         (p.match.bookmakerOdds?.length || 0) +
         (p.match.odds?.length || 0);
 
+      const homeXg = Number(p.homeXg || 1.35);
+      const awayXg = Number(p.awayXg || 1.15);
+
       return {
         id: p.id,
         match: `${p.match.homeTeam?.name} vs ${p.match.awayTeam?.name}`,
@@ -59,33 +62,17 @@ export default async function VerifiedPicksPage() {
         confidence: oddsRows > 0 ? "Geprüft" : "Modell-Pick",
         valueScore: p.valueScore || 0,
         oddsRows,
-        const homeGoals = Number((p.homeGoals ?? 1.4));
-        const awayGoals = Number((p.awayGoals ?? 1.2));
-
-        return {
-          id: p.id,
-          match: `${p.match.homeTeam?.name} vs ${p.match.awayTeam?.name}`,
-          league: p.match.league?.name || "Unknown",
-          kickoff: p.match.kickoff,
-          market: p.market,
-          pick: p.pick,
-          probability: Number(p.probability || 0),
-          confidence: oddsRows > 0 ? "Geprüft" : "Modell-Pick",
-          valueScore: p.valueScore || 0,
-          oddsRows,
-          over15: estimateOver15(homeGoals, awayGoals),
-          under35: estimateUnder35(homeGoals, awayGoals),
-          qualityScore: scorePick({ ...p, oddsRows }),
-        };
+        over15: estimateOver15(homeXg, awayXg),
+        under35: estimateUnder35(homeXg, awayXg),
+        qualityScore: scorePick({ ...p, oddsRows }),
+      };
     })
     .filter((p) => p.probability >= 45)
     .sort((a, b) => b.qualityScore - a.qualityScore);
 
   const withOdds = ranked.filter((p) => p.oddsRows > 0);
   const withoutOdds = ranked.filter((p) => p.oddsRows <= 0);
-
-  const picks = [...withOdds, ...withoutOdds]
-    .slice(0, 10);
+  const picks = [...withOdds, ...withoutOdds].slice(0, 10);
 
   const lastUpdated = new Date().toLocaleString("de-DE", {
     dateStyle: "medium",
