@@ -93,7 +93,19 @@ export async function GET() {
   const withOdds = ranked.filter((p) => p.oddsRows > 0);
   const withoutOdds = ranked.filter((p) => p.oddsRows <= 0);
 
-  const picks = [...withOdds, ...withoutOdds].slice(0, 10);
+  const marketCounts = new Map<string, number>();
+  const picks = [];
+
+  for (const pick of [...withOdds, ...withoutOdds]) {
+    const count = marketCounts.get(pick.market) || 0;
+
+    if (count >= 4) continue;
+
+    marketCounts.set(pick.market, count + 1);
+    picks.push(pick);
+
+    if (picks.length >= 10) break;
+  }
 
   return NextResponse.json({
     updatedAt: new Date().toISOString(),
