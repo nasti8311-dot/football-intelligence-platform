@@ -100,9 +100,9 @@ export default async function VerifiedPicksPage() {
             </p>
 
             <div className="mt-8 grid gap-4 md:grid-cols-3">
-              <Stat label="Angezeigte Picks" value={picks.length} />
-              <Stat label="Ziel" value="3–10" />
-              <Stat label="Update" value="Daily" />
+              <Stat label="Verfügbare Picks" value={picks.length} />
+              <Stat label="Ziel pro Tag" value="3–10" />
+              <Stat label="Update" value="täglich" />
             </div>
           </div>
         </section>
@@ -128,9 +128,9 @@ export default async function VerifiedPicksPage() {
           <section className="rounded-[2rem] border border-yellow-400/20 bg-yellow-500/10 p-6 text-yellow-100">
             <h2 className="text-2xl font-black">Heute zu wenige Qualitäts-Picks</h2>
             <p className="mt-3 max-w-2xl text-sm leading-7">
-              Aktuell fehlen ausreichend Spiele mit Quoten-Daten oder Modellqualität.
-              Die Seite aktualisiert sich täglich automatisch. Wenn weniger als 3 starke Picks verfügbar sind,
-              zeigen wir bewusst keine schwachen Prognosen.
+              Aktuell erfüllen weniger als 3 Spiele unsere Qualitätskriterien.
+              Die Auswahl wird täglich aktualisiert. Wir zeigen lieber keine Picks
+              als schwache oder künstlich erzeugte Prognosen.
             </p>
           </section>
         )}
