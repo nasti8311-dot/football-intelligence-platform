@@ -28,8 +28,8 @@ function valueScore(probability: number, market: string) {
     market === "Auswärtssieg" ? 8 :
     market === "Beide Teams treffen" ? 5 :
     market === "Über 2,5 Tore" ? 5 :
-    market === "Über 1,5 Tore" ? -8 :
-    market === "Unter 3,5 Tore" ? -6 :
+    market === "Über 1,5 Tore" ? -16 :
+    market === "Unter 3,5 Tore" ? -14 :
     0;
 
   const priceValue =
