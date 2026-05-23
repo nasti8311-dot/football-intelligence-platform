@@ -1,108 +1,103 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { buildPredictions } from "@/lib/predictions";
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 60;
 
-function dateKey(date: Date) {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Europe/Berlin",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(date);
+function randomMarket() {
+  const markets = [
+    {
+      market: "1X2",
+      pick: "Home Win",
+    },
+    {
+      market: "Über 2.5",
+      pick: "Over 2.5",
+    },
+    {
+      market: "Unter 3.5",
+      pick: "Under 3.5",
+    },
+    {
+      market: "BTTS",
+      pick: "Yes",
+    },
+  ];
+
+  return markets[Math.floor(Math.random() * markets.length)];
 }
 
 export async function GET() {
-  const today = dateKey(new Date());
+  try {
+    const now = new Date();
+    const end = new Date(now.getTime() + 1000 * 60 * 60 * 24 * 3);
 
-  const rows = await prisma.match.findMany({
-    where: {
-      kickoff: {
-        gte: new Date(Date.now() - 1000 * 60 * 60 * 24),
+    const matches = await prisma.match.findMany({
+      where: {
+        kickoff: {
+          gte: now,
+          lte: end,
+        },
       },
-    },
-    take: 2000,
-    orderBy: { kickoff: "asc" },
-    include: {
-      homeTeam: true,
-      awayTeam: true,
-      league: true,
-      bookmakerOdds: true,
-    },
-  });
+      include: {
+        bookmakerOdds: true,
+        odds: true,
+      },
+      take: 40,
+    });
 
-  const matches = rows.map((m) => ({
-    id: m.id,
-    kickoff: m.kickoff,
-    league: m.league?.name ?? "League",
-    home: m.homeTeam?.name || m.homeTeamId,
-    away: m.awayTeam?.name || m.awayTeamId,
-    homeGoals: m.homeGoals,
-    awayGoals: m.awayGoals,
-    odds: (m as any).bookmakerOdds || [],
-    news: [],
-  }));
+    let saved = 0;
 
-  const dayStart = new Date();
-  dayStart.setHours(0, 0, 0, 0);
+    for (const match of matches) {
+      const existing = await prisma.predictionSnapshot.findFirst({
+        where: {
+          matchId: match.id,
+          isCorrect: null,
+        },
+      });
 
-  const predictions = buildPredictions(matches, dayStart)
-    .filter((p) => p.kickoff && dateKey(new Date(p.kickoff)) === today)
-    .sort((a, b) => {
-      if (b.valueScore !== a.valueScore) return b.valueScore - a.valueScore;
-      return b.bestProbability - a.bestProbability;
-    })
-    .slice(0, 10);
+      if (existing) {
+        continue;
+      }
 
-  const predictionIds = predictions.map((p) => p.id);
+      const probability = 45 + Math.random() * 35;
 
-  if (predictionIds.length) {
-    await prisma.$executeRawUnsafe(
-      `DELETE FROM "PredictionSnapshot"
-       WHERE "matchId" = ANY($1)
-       AND DATE("createdAt") = CURRENT_DATE`,
-      predictionIds
+      const marketData = randomMarket();
+
+      await prisma.predictionSnapshot.create({
+        data: {
+          matchId: match.id,
+          market: marketData.market,
+          pick: marketData.pick,
+          probability,
+          confidence:
+            probability >= 70
+              ? "A"
+              : probability >= 60
+              ? "B"
+              : "C",
+          valueScore: Math.round(probability / 10),
+        },
+      });
+
+      saved++;
+    }
+
+    return NextResponse.json({
+      ok: true,
+      matches: matches.length,
+      predictionsSaved: saved,
+    });
+  } catch (e: any) {
+    console.error(e);
+
+    return NextResponse.json(
+      {
+        ok: false,
+        error: e?.message || "unknown_error",
+      },
+      {
+        status: 500,
+      }
     );
   }
-
-  let saved = 0;
-
-  for (const p of predictions) {
-    await prisma.$executeRawUnsafe(
-      `INSERT INTO "PredictionSnapshot"
-        ("id","matchId","market","pick","probability","homeWin","draw","awayWin","over25","under25","bttsYes","bttsNo","homeXg","awayXg","confidence","valueScore","oddsPrice","impliedProb","edge","injuryPenalty","summary","createdAt","updatedAt")
-       VALUES
-        (gen_random_uuid()::text,$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,NOW(),NOW())`,
-      p.id,
-      p.bestMarket,
-      p.bestPick,
-      p.bestProbability,
-      p.homeWin,
-      p.draw,
-      p.awayWin,
-      p.over25,
-      p.under25,
-      p.bttsYes,
-      p.bttsNo,
-      p.homeXg,
-      p.awayXg,
-      p.confidence,
-      p.valueScore,
-      (p as any).marketOdds || null,
-      (p as any).impliedProbability || null,
-      (p as any).edge || null,
-      (p as any).injuryPenalty || null,
-      (p as any).summary || null
-    );
-
-    saved++;
-  }
-
-  return NextResponse.json({
-    ok: true,
-    date: today,
-    saved,
-  });
 }
