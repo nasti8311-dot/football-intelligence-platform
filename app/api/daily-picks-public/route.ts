@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { estimateOver15, estimateUnder35 } from "@/lib/market-probabilities";
+
 import { selectBestTip } from "@/lib/select-best-tip";
 
 export const dynamic = "force-dynamic";
@@ -52,8 +52,8 @@ export async function GET() {
       const homeXg = Number(p.homeXg || 1.35);
       const awayXg = Number(p.awayXg || 1.15);
 
-      const over15 = estimateOver15(homeXg, awayXg);
-      const under35 = estimateUnder35(homeXg, awayXg);
+      const over15 = Number((p as any).over15 || 0);
+      const under35 = Number((p as any).under35 || 0);
       const over25 = Number(p.over25 || 0);
       const btts = Number(p.bttsYes || 0);
 
