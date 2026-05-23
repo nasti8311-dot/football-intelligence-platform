@@ -74,7 +74,6 @@ export default async function HomePage() {
         oddsRows,
       };
     })
-    .filter((p) => p.oddsRows > 0)
     .filter((p) => p.probability >= 45)
     .slice(0, 3);
 
@@ -175,7 +174,7 @@ export default async function HomePage() {
                 <h3 className="mt-3 text-xl font-black">{p.match}</h3>
                 <p className="mt-4 text-3xl font-black">{p.pick}</p>
                 <p className="mt-2 text-sm text-neutral-400">
-                  Modell: {p.probability.toFixed(1)}%
+                  Chance: {Math.round(p.probability)}%
                 </p>
               </div>
             ))}
