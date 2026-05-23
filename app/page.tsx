@@ -95,8 +95,7 @@ export default async function HomePage() {
             </h1>
 
             <p className="mt-8 max-w-2xl text-lg leading-8 text-neutral-400">
-              Football IQ veröffentlicht täglich ausgewählte Spiele auf Basis von
-              Daten, Quoten und Modellwahrscheinlichkeiten.
+              Football IQ zeigt jeden Tag wenige ausgewählte Fußballspiele mit datenbasierter Prognose, Quotenbezug und Performance-Tracking.
             </p>
 
             <div className="mt-10 flex flex-wrap gap-4">
@@ -104,7 +103,7 @@ export default async function HomePage() {
                 href="/daily-picks"
                 className="rounded-2xl bg-emerald-400 px-7 py-4 text-sm font-black text-black transition hover:scale-[1.02]"
               >
-                Heutige Daily Picks ansehen
+                Daily Picks öffnen
               </Link>
 
               <Link
@@ -135,17 +134,17 @@ export default async function HomePage() {
 
       <section className="mx-auto grid max-w-7xl gap-5 px-4 py-10 md:grid-cols-3 md:px-8">
         <Card
-          label="Historische Trefferquote"
+          label="Bisherige Trefferquote"
           value={`${accuracy}%`}
         />
 
         <Card
-          label="Ausgewertete Prognosen"
+          label="Ausgewertete Picks"
           value={resolved}
         />
 
         <Card
-          label="Gespeicherte Quoten"
+          label="Quoten-Daten"
           value={oddsRows}
         />
       </section>
