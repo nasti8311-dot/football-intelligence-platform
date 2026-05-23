@@ -10,7 +10,7 @@ function scorePick(p: any) {
     p.market?.includes("Beide") ? 3 :
     0;
 
-  return Number(p.probability || 0) + Number(p.valueScore || 0) - marketPenalty;
+  return Number(p.probability || 0) + Number(p.valueScore || 0) + Number(p.oddsRows || 0) - marketPenalty;
 }
 
 export default async function VerifiedPicksPage() {
@@ -58,7 +58,7 @@ export default async function VerifiedPicksPage() {
         confidence: p.confidence || "Model",
         valueScore: p.valueScore || 0,
         oddsRows,
-        qualityScore: scorePick(p) + oddsRows,
+        qualityScore: scorePick({ ...p, oddsRows }),
       };
     })
     .filter((p) => p.oddsRows > 0)

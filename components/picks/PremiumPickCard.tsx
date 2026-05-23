@@ -6,7 +6,7 @@ type Props = {
   pick: string;
   probability: number;
   confidence?: string | null;
-  valueBewertung?: number | null;
+  valueRating?: number | null;
   oddsRows?: number;
 };
 
@@ -18,7 +18,7 @@ export default function PremiumPickCard({
   pick,
   probability,
   confidence,
-  valueBewertung,
+  valueRating,
   oddsRows = 0,
 }: Props) {
   return (
@@ -26,7 +26,7 @@ export default function PremiumPickCard({
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-[10px] font-black uppercase tracking-[0.22em] text-emerald-400">
-            Ausgewählter Pick
+            Empfehlung
           </p>
 
           <h3 className="mt-3 text-xl font-black leading-tight text-white">
@@ -47,7 +47,7 @@ export default function PremiumPickCard({
             {Number(probability).toFixed(0)}%
           </p>
           <p className="text-[10px] font-black uppercase tracking-[0.18em]">
-            Modell
+            Chance
           </p>
         </div>
       </div>
@@ -64,8 +64,8 @@ export default function PremiumPickCard({
 
       <div className="mt-4 grid grid-cols-3 gap-3">
         <Metric label="Qualität" value={confidence || "Geprüft"} />
-        <Metric label="Bewertung" value={valueBewertung ?? "—"} />
-        <Metric label="Modelln" value={oddsRows} />
+        <Metric label="Rating" value={valueRating ?? "—"} />
+        <Metric label="Chancen" value={oddsRows} />
       </div>
     </article>
   );
