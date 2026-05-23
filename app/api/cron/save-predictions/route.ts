@@ -3,27 +3,32 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-function randomMarket() {
-  const markets = [
-    {
+function randomBetween(min: number, max: number) {
+  return Number((min + Math.random() * (max - min)).toFixed(2));
+}
+
+function pickMarket(homeWin: number, draw: number, awayWin: number) {
+  if (homeWin >= awayWin && homeWin >= draw) {
+    return {
       market: "1X2",
       pick: "Home Win",
-    },
-    {
-      market: "Über 2.5",
-      pick: "Over 2.5",
-    },
-    {
-      market: "Unter 3.5",
-      pick: "Under 3.5",
-    },
-    {
-      market: "BTTS",
-      pick: "Yes",
-    },
-  ];
+      probability: homeWin,
+    };
+  }
 
-  return markets[Math.floor(Math.random() * markets.length)];
+  if (awayWin >= homeWin && awayWin >= draw) {
+    return {
+      market: "1X2",
+      pick: "Away Win",
+      probability: awayWin,
+    };
+  }
+
+  return {
+    market: "1X2",
+    pick: "Draw",
+    probability: draw,
+  };
 }
 
 export async function GET() {
@@ -55,27 +60,46 @@ export async function GET() {
         },
       });
 
-      if (existing) {
-        continue;
-      }
+      if (existing) continue;
 
-      const probability = 45 + Math.random() * 35;
+      const homeWin = randomBetween(35, 65);
+      const draw = randomBetween(15, 30);
+      const awayWin = Number((100 - homeWin - draw).toFixed(2));
 
-      const marketData = randomMarket();
+      const over25 = randomBetween(45, 78);
+      const under25 = Number((100 - over25).toFixed(2));
+
+      const bttsYes = randomBetween(40, 75);
+      const bttsNo = Number((100 - bttsYes).toFixed(2));
+
+      const marketPick = pickMarket(homeWin, draw, awayWin);
 
       await prisma.predictionSnapshot.create({
         data: {
           matchId: match.id,
-          market: marketData.market,
-          pick: marketData.pick,
-          probability,
+
+          market: marketPick.market,
+          pick: marketPick.pick,
+          probability: marketPick.probability,
+
+          homeWin,
+          draw,
+          awayWin,
+
+          over25,
+          under25,
+
+          bttsYes,
+          bttsNo,
+
           confidence:
-            probability >= 70
+            marketPick.probability >= 70
               ? "A"
-              : probability >= 60
+              : marketPick.probability >= 60
               ? "B"
               : "C",
-          valueScore: Math.round(probability / 10),
+
+          valueScore: Math.round(marketPick.probability / 10),
         },
       });
 
