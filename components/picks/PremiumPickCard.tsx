@@ -6,7 +6,8 @@ type Props = {
   pick: string;
   probability: number;
   confidence?: string | null;
-  valueRating?: number | null;
+  valueScore?: number | null;
+  score?: number | null;
   oddsRows?: number;
 };
 
@@ -18,11 +19,12 @@ export default function PremiumPickCard({
   pick,
   probability,
   confidence,
-  valueRating,
+  valueScore,
+  score,
   oddsRows = 0,
 }: Props) {
   return (
-    <article className="overflow-hidden rounded-[2.2rem] border border-white/10 bg-gradient-to-br from-white/[0.07] to-white/[0.02] p-6 shadow-2xl shadow-black/30 transition hover:border-emerald-400/30 hover:translate-y-[-2px]">
+    <article className="overflow-hidden rounded-[2.2rem] border border-white/10 bg-gradient-to-br from-white/[0.07] to-white/[0.02] p-6 shadow-2xl shadow-black/30 transition hover:translate-y-[-2px] hover:border-emerald-400/30">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-[10px] font-black uppercase tracking-[0.22em] text-emerald-400">
@@ -64,8 +66,8 @@ export default function PremiumPickCard({
 
       <div className="mt-4 grid grid-cols-3 gap-3">
         <Metric label="Qualität" value={confidence || "Geprüft"} />
-        <Metric label="Rating" value={valueRating ?? "—"} />
-        <Metric label="Chancen" value={oddsRows} />
+        <Metric label="Rating" value={valueScore ?? score ?? "—"} />
+        <Metric label="Status" value={oddsRows > 0 ? "Geprüft" : "Modell"} />
       </div>
     </article>
   );
