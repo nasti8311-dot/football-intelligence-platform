@@ -9,6 +9,8 @@ type Props = {
   valueScore?: number | null;
   score?: number | null;
   oddsRows?: number;
+  over15?: number;
+  under35?: number;
 };
 
 export default function PremiumPickCard({
@@ -22,6 +24,8 @@ export default function PremiumPickCard({
   valueScore,
   score,
   oddsRows = 0,
+  over15,
+  under35,
 }: Props) {
   return (
     <article className="overflow-hidden rounded-[2.2rem] border border-white/10 bg-gradient-to-br from-white/[0.07] to-white/[0.02] p-6 shadow-2xl shadow-black/30 transition hover:translate-y-[-2px] hover:border-emerald-400/30">
@@ -48,6 +52,7 @@ export default function PremiumPickCard({
           <p className="text-2xl font-black">
             {Math.round(Number(probability))}%
           </p>
+
           <p className="text-[10px] font-black uppercase tracking-[0.18em]">
             Chance
           </p>
@@ -62,6 +67,11 @@ export default function PremiumPickCard({
         <p className="mt-2 text-3xl font-black text-white">
           {pick}
         </p>
+      </div>
+
+      <div className="mt-4 grid grid-cols-2 gap-3">
+        <Metric label="Ü 1.5" value={`${over15 ?? "-"}%`} />
+        <Metric label="U 3.5" value={`${under35 ?? "-"}%`} />
       </div>
 
       <div className="mt-4 grid grid-cols-3 gap-3">

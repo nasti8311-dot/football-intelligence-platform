@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import PremiumPickCard from "@/components/picks/PremiumPickCard";
+import { estimateOver15, estimateUnder35 } from "@/lib/market-probabilities";
 
 export const dynamic = "force-dynamic";
 
@@ -58,8 +59,24 @@ export default async function VerifiedPicksPage() {
         confidence: oddsRows > 0 ? "Geprüft" : "Modell-Pick",
         valueScore: p.valueScore || 0,
         oddsRows,
-        qualityScore: scorePick({ ...p, oddsRows }),
-      };
+        const homeGoals = Number((p.homeGoals ?? 1.4));
+        const awayGoals = Number((p.awayGoals ?? 1.2));
+
+        return {
+          id: p.id,
+          match: `${p.match.homeTeam?.name} vs ${p.match.awayTeam?.name}`,
+          league: p.match.league?.name || "Unknown",
+          kickoff: p.match.kickoff,
+          market: p.market,
+          pick: p.pick,
+          probability: Number(p.probability || 0),
+          confidence: oddsRows > 0 ? "Geprüft" : "Modell-Pick",
+          valueScore: p.valueScore || 0,
+          oddsRows,
+          over15: estimateOver15(homeGoals, awayGoals),
+          under35: estimateUnder35(homeGoals, awayGoals),
+          qualityScore: scorePick({ ...p, oddsRows }),
+        };
     })
     .filter((p) => p.probability >= 45)
     .sort((a, b) => b.qualityScore - a.qualityScore);
@@ -118,6 +135,8 @@ export default async function VerifiedPicksPage() {
                 confidence={p.confidence}
                 valueScore={p.valueScore}
                 oddsRows={p.oddsRows}
+                over15={p.over15}
+                under35={p.under35}
               />
             ))}
           </section>
