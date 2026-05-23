@@ -65,7 +65,7 @@ export async function GET() {
     .sort((a, b) => b.qualityScore - a.qualityScore);
 
   const strict = ranked.filter((p) => p.probability >= 48).slice(0, 10);
-  const fallback = ranked.slice(0, 3);
+  const fallback = ranked.filter((p) => p.probability >= 45).slice(0, 3);
   const picks = strict.length >= 3 ? strict : fallback;
 
   return NextResponse.json({
