@@ -37,10 +37,12 @@ export async function GET() {
   return NextResponse.json({
     openSnapshots3Days: rows.length,
     withOdds: withOdds.length,
-    shownTarget: "3-10",
+    modelOnly: rows.length - withOdds.length,
+    target: "3-10",
+    canShowAtLeast3: rows.length >= 3,
     status:
-      withOdds.length >= 3
+      rows.length >= 3
         ? "OK"
-        : "LOW_PICK_AVAILABILITY",
+        : "NEEDS_MORE_PREDICTIONS",
   });
 }

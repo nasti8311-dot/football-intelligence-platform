@@ -61,15 +61,19 @@ export async function GET() {
         qualityScore: scorePick({ ...p, oddsRows }),
       };
     })
+    .filter((p) => p.probability >= 45)
     .sort((a, b) => b.qualityScore - a.qualityScore);
 
-  const strict = ranked.filter((p) => p.probability >= 48).slice(0, 10);
-  const fallback = ranked.filter((p) => p.probability >= 45).slice(0, 3);
-  const picks = strict.length >= 3 ? strict : fallback;
+  const withOdds = ranked.filter((p) => p.oddsRows > 0);
+  const withoutOdds = ranked.filter((p) => p.oddsRows <= 0);
+
+  const picks = [...withOdds, ...withoutOdds].slice(0, 10);
 
   return NextResponse.json({
     updatedAt: new Date().toISOString(),
     totalShown: picks.length,
+    withOdds: picks.filter((p) => p.oddsRows > 0).length,
+    modelOnly: picks.filter((p) => p.oddsRows <= 0).length,
     target: "3-10",
     picks,
   });
