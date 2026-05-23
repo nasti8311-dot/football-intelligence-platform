@@ -41,7 +41,7 @@ export default async function VerifiedPicksPage() {
     take: 250,
   });
 
-  const allRanked = rows
+  const ranked = rows
     .map((p) => {
       const oddsRows =
         (p.match.bookmakerOdds?.length || 0) +
@@ -55,30 +55,24 @@ export default async function VerifiedPicksPage() {
         market: p.market,
         pick: p.pick,
         probability: Number(p.probability || 0),
-        confidence: p.confidence || "Model",
+        confidence: oddsRows > 0 ? "Geprüft" : "Modell-Pick",
         valueScore: p.valueScore || 0,
         oddsRows,
         qualityScore: scorePick({ ...p, oddsRows }),
       };
     })
-    .filter((p) => p.oddsRows > 0)
-    .filter((p) => p.probability >= 48)
+    .filter((p) => p.probability >= 45)
     .sort((a, b) => b.qualityScore - a.qualityScore);
 
-  const strictPicks = allRanked
-    .filter((p) => p.oddsRows > 0)
-    .filter((p) => p.probability >= 48)
-    .slice(0, 10);
+  const withOdds = ranked.filter((p) => p.oddsRows > 0);
+  const withoutOdds = ranked.filter((p) => p.oddsRows <= 0);
 
-  const fallbackPicks = allRanked
-    .filter((p) => p.oddsRows > 0)
-    .filter((p) => p.probability >= 45)
-    .slice(0, 3);
+  const picks = [...withOdds, ...withoutOdds].slice(0, 10);
 
-  const picks =
-    strictPicks.length >= 3
-      ? strictPicks
-      : fallbackPicks;
+  const lastUpdated = new Date().toLocaleString("de-DE", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
 
   return (
     <main className="min-h-screen bg-[#050707] px-4 py-8 text-white md:px-8">
@@ -96,14 +90,15 @@ export default async function VerifiedPicksPage() {
             </h1>
 
             <p className="mt-5 max-w-3xl text-base leading-8 text-neutral-400">
-              Jeden Tag maximal 10 ausgewählte Spiele mit Modellbewertung,
-              Quoten-Daten und Qualitätsfilter.
+              Jeden Tag 3 bis 10 ausgewählte Fußballprognosen. Picks mit Quoten-Daten
+              werden bevorzugt, fehlende Quoten werden transparent markiert.
             </p>
 
-            <div className="mt-8 grid gap-4 md:grid-cols-3">
-              <Stat label="Verfügbare Picks" value={picks.length} />
+            <div className="mt-8 grid gap-4 md:grid-cols-4">
+              <Stat label="Angezeigte Picks" value={picks.length} />
               <Stat label="Ziel pro Tag" value="3–10" />
-              <Stat label="Update" value="täglich" />
+              <Stat label="Mit Quoten" value={withOdds.length} />
+              <Stat label="Update" value={lastUpdated} />
             </div>
           </div>
         </section>
@@ -127,14 +122,10 @@ export default async function VerifiedPicksPage() {
           </section>
         ) : (
           <section className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-8 text-white">
-            <h2 className="text-2xl font-black">Heute keine Veröffentlichung</h2>
-            <p className="mt-3 max-w-2xl text-sm leading-7">
-              Aktuell erfüllen weniger als 3 Spiele unsere Qualitätskriterien.
-              Das kann passieren, wenn zu wenige Quoten verfügbar sind oder das Modell
-              keine klaren Signale findet.
-            </p>
-            <p className="mt-4 text-sm font-bold text-yellow-100">
-              Nächstes automatisches Update: morgen früh.
+            <h2 className="text-2xl font-black">Heute keine Spiele verfügbar</h2>
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-neutral-400">
+              Es wurden keine kommenden Spiele im 3-Tage-Fenster gefunden.
+              Bitte prüfe den Fixture-Sync.
             </p>
           </section>
         )}
@@ -149,7 +140,7 @@ function Stat({ label, value }: { label: string; value: string | number }) {
       <p className="text-[10px] font-black uppercase tracking-[0.22em] text-neutral-500">
         {label}
       </p>
-      <p className="mt-2 text-3xl font-black">{value}</p>
+      <p className="mt-2 text-2xl font-black">{value}</p>
     </div>
   );
 }
