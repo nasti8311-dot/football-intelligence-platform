@@ -72,7 +72,20 @@ export default async function VerifiedPicksPage() {
 
   const withOdds = ranked.filter((p) => p.oddsRows > 0);
   const withoutOdds = ranked.filter((p) => p.oddsRows <= 0);
-  const picks = [...withOdds, ...withoutOdds].slice(0, 10);
+  const seenMatches = new Set();
+
+  const picks = [...withOdds, ...withoutOdds]
+    .filter((p) => {
+      const key = p.match.toLowerCase();
+
+      if (seenMatches.has(key)) {
+        return false;
+      }
+
+      seenMatches.add(key);
+      return true;
+    })
+    .slice(0, 10);
 
   const lastUpdated = new Date().toLocaleString("de-DE", {
     dateStyle: "medium",
