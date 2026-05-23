@@ -64,6 +64,8 @@ export async function GET() {
         oddsRows,
         over15: estimateOver15(homeXg, awayXg),
         under35: estimateUnder35(homeXg, awayXg),
+        over25: Number(p.over25 || 0),
+        btts: Number(p.bttsYes || 0),
         qualityScore: scorePick({ ...p, oddsRows }),
       };
     })

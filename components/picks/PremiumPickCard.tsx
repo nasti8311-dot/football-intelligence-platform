@@ -11,6 +11,8 @@ type Props = {
   oddsRows?: number;
   over15?: number;
   under35?: number;
+  over25?: number;
+  btts?: number;
 };
 
 export default function PremiumPickCard({
@@ -26,6 +28,8 @@ export default function PremiumPickCard({
   oddsRows = 0,
   over15,
   under35,
+  over25,
+  btts,
 }: Props) {
   return (
     <article className="overflow-hidden rounded-[2.2rem] border border-white/10 bg-gradient-to-br from-white/[0.07] to-white/[0.02] p-6 shadow-2xl shadow-black/30 transition hover:translate-y-[-2px] hover:border-emerald-400/30">
@@ -44,7 +48,12 @@ export default function PremiumPickCard({
           </p>
 
           <p className="mt-1 text-xs text-neutral-500">
-            {kickoff ? new Date(kickoff).toLocaleString("de-DE", { dateStyle: "short", timeStyle: "short" }) : "Zeit offen"}
+            {kickoff
+              ? new Date(kickoff).toLocaleString("de-DE", {
+                  dateStyle: "short",
+                  timeStyle: "short",
+                })
+              : "Zeit offen"}
           </p>
         </div>
 
@@ -70,6 +79,8 @@ export default function PremiumPickCard({
       </div>
 
       <div className="mt-4 grid grid-cols-2 gap-3">
+        <MarketProbability label="BTTS" value={btts} />
+        <MarketProbability label="Ü2,5" value={over25} />
         <MarketProbability label="Ü1,5" value={over15} />
         <MarketProbability label="U3,5" value={under35} />
       </div>
@@ -80,6 +91,26 @@ export default function PremiumPickCard({
         <Metric label="Status" value={oddsRows > 0 ? "Quoten geprüft" : "Modell-Prognose"} />
       </div>
     </article>
+  );
+}
+
+function MarketProbability({
+  label,
+  value,
+}: {
+  label: string;
+  value?: number;
+}) {
+  return (
+    <div className="rounded-2xl border border-emerald-400/20 bg-emerald-500/10 p-4">
+      <p className="text-[9px] font-black uppercase tracking-[0.18em] text-emerald-300">
+        {label}
+      </p>
+
+      <p className="mt-2 text-xl font-black text-white">
+        {value != null ? `${Math.round(value)}%` : "—"}
+      </p>
+    </div>
   );
 }
 
@@ -98,27 +129,6 @@ function Metric({
 
       <p className="mt-1 text-sm font-black text-white">
         {value}
-      </p>
-    </div>
-  );
-}
-
-
-function MarketProbability({
-  label,
-  value,
-}: {
-  label: string;
-  value?: number;
-}) {
-  return (
-    <div className="rounded-2xl border border-emerald-400/20 bg-emerald-500/10 p-4">
-      <p className="text-[9px] font-black uppercase tracking-[0.18em] text-emerald-300">
-        {label}
-      </p>
-
-      <p className="mt-2 text-xl font-black text-white">
-        {value != null ? `${Math.round(value)}%` : "—"}
       </p>
     </div>
   );

@@ -85,6 +85,8 @@ export default async function VerifiedPicksPage() {
         oddsRows,
         over15: estimateOver15(homeXg, awayXg),
         under35: estimateUnder35(homeXg, awayXg),
+        over25: Number(p.over25 || 0),
+        btts: Number(p.bttsYes || 0),
         qualityScore: scorePick({ ...p, oddsRows }),
       };
     })
@@ -158,6 +160,8 @@ export default async function VerifiedPicksPage() {
                 oddsRows={p.oddsRows}
                 over15={p.over15}
                 under35={p.under35}
+                over25={p.over25}
+                btts={p.btts}
               />
             ))}
           </section>
