@@ -15,6 +15,22 @@ const priorityLeagues = [
   "champions league",
 ];
 
+function normalizeMatchKey(name: string) {
+  return String(name || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\b(fc|cf|afc|sc|club|football|and|&|the)\b/g, "")
+    .replace(/brighton hove albion/g, "brighton")
+    .replace(/brighton and hove albion/g, "brighton")
+    .replace(/manchester united/g, "man united")
+    .replace(/manchester city/g, "man city")
+    .replace(/newcastle united/g, "newcastle")
+    .replace(/wolverhampton wanderers/g, "wolves")
+    .replace(/[^a-z0-9]+/g, "")
+    .trim();
+}
+
 function scorePick(p: any) {
   const marketPenalty =
     p.market?.includes("Über 2.5") ? 12 :

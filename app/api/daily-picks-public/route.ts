@@ -6,6 +6,22 @@ import { calculateGoalMarkets } from "@/lib/goal-markets";
 
 export const dynamic = "force-dynamic";
 
+function normalizeMatchKey(name: string) {
+  return String(name || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\b(fc|cf|afc|sc|club|football|and|&|the)\b/g, "")
+    .replace(/brighton hove albion/g, "brighton")
+    .replace(/brighton and hove albion/g, "brighton")
+    .replace(/manchester united/g, "man united")
+    .replace(/manchester city/g, "man city")
+    .replace(/newcastle united/g, "newcastle")
+    .replace(/wolverhampton wanderers/g, "wolves")
+    .replace(/[^a-z0-9]+/g, "")
+    .trim();
+}
+
 function scorePick(p: any) {
   const marketPenalty =
     p.market?.includes("Über 2.5") ? 12 :
@@ -94,13 +110,17 @@ export async function GET() {
   const withoutOdds = ranked.filter((p) => p.oddsRows <= 0);
 
   const marketCounts = new Map<string, number>();
+  const seenMatches = new Set<string>();
   const picks = [];
 
   for (const pick of [...withOdds, ...withoutOdds]) {
     const count = marketCounts.get(pick.market) || 0;
+    const matchKey = normalizeMatchKey(pick.match);
 
+    if (seenMatches.has(matchKey)) continue;
     if (count >= 4) continue;
 
+    seenMatches.add(matchKey);
     marketCounts.set(pick.market, count + 1);
     picks.push(pick);
 
