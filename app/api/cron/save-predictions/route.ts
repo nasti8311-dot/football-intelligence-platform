@@ -7,34 +7,55 @@ function randomBetween(min: number, max: number) {
   return Number((min + Math.random() * (max - min)).toFixed(2));
 }
 
-function pickMarket(homeWin: number, draw: number, awayWin: number) {
-  if (homeWin >= awayWin && homeWin >= draw) {
-    return {
+function choosePrediction(data: {
+  homeWin: number;
+  draw: number;
+  awayWin: number;
+  over25: number;
+  under25: number;
+  bttsYes: number;
+  bttsNo: number;
+}) {
+  const options = [
+    {
       market: "1X2",
       pick: "Home Win",
-      probability: homeWin,
-    };
-  }
-
-  if (awayWin >= homeWin && awayWin >= draw) {
-    return {
+      probability: data.homeWin,
+    },
+    {
       market: "1X2",
       pick: "Away Win",
-      probability: awayWin,
-    };
-  }
+      probability: data.awayWin,
+    },
+    {
+      market: "Über 2.5",
+      pick: "Over 2.5",
+      probability: data.over25,
+    },
+    {
+      market: "Unter 2.5",
+      pick: "Under 2.5",
+      probability: data.under25,
+    },
+    {
+      market: "BTTS",
+      pick: "Yes",
+      probability: data.bttsYes,
+    },
+    {
+      market: "BTTS",
+      pick: "No",
+      probability: data.bttsNo,
+    },
+  ];
 
-  return {
-    market: "1X2",
-    pick: "Draw",
-    probability: draw,
-  };
+  return options.sort((a, b) => b.probability - a.probability)[0];
 }
 
 export async function GET() {
   try {
     const now = new Date();
-    const end = new Date(now.getTime() + 1000 * 60 * 60 * 24 * 3);
+    const end = new Date(now.getTime() + 1000 * 60 * 60 * 24 * 2);
 
     const matches = await prisma.match.findMany({
       where: {
@@ -43,47 +64,48 @@ export async function GET() {
           lte: end,
         },
       },
-      include: {
-        bookmakerOdds: true,
-        odds: true,
-      },
       take: 40,
+    });
+
+    await prisma.predictionSnapshot.deleteMany({
+      where: {
+        isCorrect: null,
+      },
     });
 
     let saved = 0;
 
     for (const match of matches) {
-      const existing = await prisma.predictionSnapshot.findFirst({
-        where: {
-          matchId: match.id,
-          isCorrect: null,
-        },
-      });
+      const homeWin = randomBetween(30, 60);
+      const draw = randomBetween(18, 30);
+      const awayWin = randomBetween(20, 55);
 
-      if (existing) continue;
-
-      const homeWin = randomBetween(35, 65);
-      const draw = randomBetween(15, 30);
-      const awayWin = Number((100 - homeWin - draw).toFixed(2));
-
-      const over25 = randomBetween(45, 78);
+      const over25 = randomBetween(45, 82);
       const under25 = Number((100 - over25).toFixed(2));
 
-      const bttsYes = randomBetween(40, 75);
+      const bttsYes = randomBetween(40, 78);
       const bttsNo = Number((100 - bttsYes).toFixed(2));
 
       const homeXg = randomBetween(0.8, 2.4);
       const awayXg = randomBetween(0.6, 2.1);
 
-      const marketPick = pickMarket(homeWin, draw, awayWin);
+      const selected = choosePrediction({
+        homeWin,
+        draw,
+        awayWin,
+        over25,
+        under25,
+        bttsYes,
+        bttsNo,
+      });
 
       await prisma.predictionSnapshot.create({
         data: {
           matchId: match.id,
 
-          market: marketPick.market,
-          pick: marketPick.pick,
-          probability: marketPick.probability,
+          market: selected.market,
+          pick: selected.pick,
+          probability: selected.probability,
 
           homeWin,
           draw,
@@ -99,13 +121,13 @@ export async function GET() {
           awayXg,
 
           confidence:
-            marketPick.probability >= 70
+            selected.probability >= 70
               ? "A"
-              : marketPick.probability >= 60
+              : selected.probability >= 60
               ? "B"
               : "C",
 
-          valueScore: Math.round(marketPick.probability / 10),
+          valueScore: Math.round(selected.probability / 10),
         },
       });
 
@@ -114,12 +136,9 @@ export async function GET() {
 
     return NextResponse.json({
       ok: true,
-      matches: matches.length,
       predictionsSaved: saved,
     });
   } catch (e: any) {
-    console.error(e);
-
     return NextResponse.json(
       {
         ok: false,
