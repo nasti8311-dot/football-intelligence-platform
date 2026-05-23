@@ -125,15 +125,15 @@ export default async function VerifiedPicksPage() {
             ))}
           </section>
         ) : (
-          <section className="rounded-[2rem] border border-yellow-400/20 bg-yellow-500/10 p-6 text-yellow-100">
-            <h2 className="text-2xl font-black">Heute keine ausreichende Auswahl</h2>
+          <section className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-8 text-white">
+            <h2 className="text-2xl font-black">Heute keine Veröffentlichung</h2>
             <p className="mt-3 max-w-2xl text-sm leading-7">
               Aktuell erfüllen weniger als 3 Spiele unsere Qualitätskriterien.
               Das kann passieren, wenn zu wenige Quoten verfügbar sind oder das Modell
               keine klaren Signale findet.
             </p>
             <p className="mt-4 text-sm font-bold text-yellow-100">
-              Nächstes Update: morgen früh automatisch.
+              Nächstes automatisches Update: morgen früh.
             </p>
           </section>
         )}
