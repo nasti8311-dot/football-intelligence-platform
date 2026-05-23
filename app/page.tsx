@@ -189,13 +189,13 @@ export default async function HomePage() {
           </p>
 
           <h2 className="mt-4 text-4xl font-black">
-            Weniger Picks.
-            Bessere Qualität.
+            Wenige Picks.
+            Klare Qualität.
           </h2>
 
           <p className="mt-6 max-w-3xl text-base leading-8 text-neutral-400">
-            Unser Fokus liegt nicht auf Masse, sondern auf wenigen hochwertigen
-            Daily Picks mit nachvollziehbarer Performance.
+            Football IQ zeigt bewusst nur eine kleine tägliche Auswahl.
+            Jeder Pick basiert auf Daten, Modellbewertung und Performance-Tracking.
           </p>
         </div>
       </section>
