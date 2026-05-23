@@ -44,7 +44,7 @@ export default function PremiumPickCard({
           </p>
 
           <p className="mt-1 text-xs text-neutral-500">
-            {kickoff ? new Date(kickoff).toLocaleString("de-DE") : "Zeit offen"}
+            {kickoff ? new Date(kickoff).toLocaleString("de-DE", { dateStyle: "short", timeStyle: "short" }) : "Zeit offen"}
           </p>
         </div>
 
@@ -77,7 +77,7 @@ export default function PremiumPickCard({
       <div className="mt-4 grid grid-cols-3 gap-3">
         <Metric label="Qualität" value={confidence || "Geprüft"} />
         <Metric label="Rating" value={valueScore ?? score ?? "—"} />
-        <Metric label="Status" value={oddsRows > 0 ? "Geprüft" : "Modell"} />
+        <Metric label="Status" value={oddsRows > 0 ? "Quoten geprüft" : "Nur Modell"} />
       </div>
     </article>
   );
