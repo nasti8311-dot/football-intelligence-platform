@@ -22,6 +22,19 @@ function normalizeMatchKey(name: string) {
     .trim();
 }
 
+function leagueBoost(league: string) {
+  const l = String(league || "").toLowerCase();
+
+  if (l.includes("premier league") || l.includes("soccer epl")) return 10;
+  if (l.includes("la liga") || l.includes("primera")) return 8;
+  if (l.includes("serie a")) return 8;
+  if (l.includes("bundesliga")) return 8;
+  if (l.includes("ligue 1")) return 6;
+  if (l.includes("mls")) return 3;
+
+  return 0;
+}
+
 function scorePick(p: any) {
   const marketPenalty =
     p.market?.includes("Über 2.5") ? 12 :
@@ -110,18 +123,22 @@ export async function GET() {
   const withoutOdds = ranked.filter((p) => p.oddsRows <= 0);
 
   const marketCounts = new Map<string, number>();
+  const leagueCounts = new Map<string, number>();
   const seenMatches = new Set<string>();
   const picks = [];
 
   for (const pick of [...withOdds, ...withoutOdds]) {
     const count = marketCounts.get(pick.market) || 0;
+    const leagueCount = leagueCounts.get(pick.league) || 0;
     const matchKey = normalizeMatchKey(pick.match);
 
     if (seenMatches.has(matchKey)) continue;
     if (count >= 4) continue;
+    if (leagueCount >= 5) continue;
 
     seenMatches.add(matchKey);
     marketCounts.set(pick.market, count + 1);
+    leagueCounts.set(pick.league, leagueCount + 1);
     picks.push(pick);
 
     if (picks.length >= 10) break;

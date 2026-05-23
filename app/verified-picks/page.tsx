@@ -31,6 +31,19 @@ function normalizeMatchKey(name: string) {
     .trim();
 }
 
+function leagueBoost(league: string) {
+  const l = String(league || "").toLowerCase();
+
+  if (l.includes("premier league") || l.includes("soccer epl")) return 10;
+  if (l.includes("la liga") || l.includes("primera")) return 8;
+  if (l.includes("serie a")) return 8;
+  if (l.includes("bundesliga")) return 8;
+  if (l.includes("ligue 1")) return 6;
+  if (l.includes("mls")) return 3;
+
+  return 0;
+}
+
 function scorePick(p: any) {
   const marketPenalty =
     p.market?.includes("Über 2.5") ? 12 :
@@ -49,7 +62,7 @@ function scorePick(p: any) {
   return Number(p.probability || 0)
     + Number(p.valueScore || 0)
     + Number(p.oddsRows || 0)
-    + leagueBoost
+    + leagueBoost(String(p.match?.league?.name || p.league || ""))
     - marketPenalty;
 }
 
