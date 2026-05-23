@@ -27,12 +27,12 @@ export default function Navbar() {
           </div>
         </Link>
 
-        <nav className="flex items-center gap-1 md:gap-2">
+        <nav className="flex items-center gap-1 overflow-x-auto md:gap-2">
           {links.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="rounded-xl px-3 py-2 text-xs font-bold text-neutral-300 transition hover:bg-white/10 hover:text-white md:px-4 md:text-sm"
+              className="whitespace-nowrap rounded-xl px-3 py-2 text-xs font-bold text-neutral-300 transition hover:bg-white/10 hover:text-white md:px-4 md:text-sm"
             >
               {link.label}
             </Link>
