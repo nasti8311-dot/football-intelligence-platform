@@ -95,8 +95,8 @@ export default async function VerifiedPicksPage() {
             </h1>
 
             <p className="mt-5 max-w-3xl text-base leading-8 text-neutral-400">
-              Jeden Tag 3 bis 10 ausgewählte Fußballprognosen. Picks mit Quoten-Daten
-              werden bevorzugt. Modell-Picks werden klar markiert, wenn keine Quoten verfügbar sind.
+              Jeden Tag 3 bis 10 ausgewählte Fußballprognosen. Zusätzlich zeigen wir pro Spiel
+              die Modellwahrscheinlichkeiten für Über 1,5 und Unter 3,5 Tore.
             </p>
 
             <div className="mt-8 grid gap-4 md:grid-cols-4">
