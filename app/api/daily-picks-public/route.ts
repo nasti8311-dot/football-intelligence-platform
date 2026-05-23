@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { estimateOver15, estimateUnder35 } from "@/lib/market-probabilities";
+import { selectBestTip } from "@/lib/select-best-tip";
 
 export const dynamic = "force-dynamic";
 
@@ -51,22 +52,37 @@ export async function GET() {
       const homeXg = Number(p.homeXg || 1.35);
       const awayXg = Number(p.awayXg || 1.15);
 
+      const over15 = estimateOver15(homeXg, awayXg);
+      const under35 = estimateUnder35(homeXg, awayXg);
+      const over25 = Number(p.over25 || 0);
+      const btts = Number(p.bttsYes || 0);
+
+      const bestTip = selectBestTip({
+        homeWin: Number(p.homeWin || 0),
+        draw: Number(p.draw || 0),
+        awayWin: Number(p.awayWin || 0),
+        over25,
+        bttsYes: btts,
+        over15,
+        under35,
+      });
+
       return {
         id: p.id,
         match: `${p.match.homeTeam?.name} vs ${p.match.awayTeam?.name}`,
         league: p.match.league?.name || "Unknown",
         kickoff: p.match.kickoff,
-        market: p.market,
-        pick: p.pick,
-        probability: Number(p.probability || 0),
+        market: bestTip.market,
+        pick: bestTip.pick,
+        probability: bestTip.probability,
         confidence: oddsRows > 0 ? "Geprüft" : "Modell-Pick",
         valueScore: p.valueScore || 0,
         oddsRows,
-        over15: estimateOver15(homeXg, awayXg),
-        under35: estimateUnder35(homeXg, awayXg),
-        over25: Number(p.over25 || 0),
-        btts: Number(p.bttsYes || 0),
-        qualityScore: scorePick({ ...p, oddsRows }),
+        over15,
+        under35,
+        over25,
+        btts,
+        qualityScore: Number(bestTip.probability || 0) + Number(p.valueScore || 0) + oddsRows,
       };
     })
     .filter((p) => p.probability >= 45)
