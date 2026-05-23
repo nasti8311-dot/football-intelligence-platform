@@ -61,7 +61,6 @@ export async function GET() {
         qualityScore: scorePick({ ...p, oddsRows }),
       };
     })
-    .filter((p) => p.oddsRows > 0)
     .sort((a, b) => b.qualityScore - a.qualityScore);
 
   const strict = ranked.filter((p) => p.probability >= 48).slice(0, 10);
