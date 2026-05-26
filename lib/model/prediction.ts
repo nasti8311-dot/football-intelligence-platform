@@ -49,7 +49,7 @@ export function predictMatch(input: MatchInput): MatchPrediction {
     outcomes,
     scoreMatrix: normalizedMatrix,
     topScores: [...normalizedMatrix].sort((a, b) => b.probability - a.probability).slice(0, 8),
-    markets: deriveMarkets(normalizedMatrix),
+    markets: [],
     breakdown,
     config,
     coveredMass,

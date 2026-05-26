@@ -89,7 +89,6 @@ const bestTip = selectBestTip({
               ? "B"
               : "C",
 
-          qualityScore,
           valueScore: Math.round(bestTip.score),
         },
       });

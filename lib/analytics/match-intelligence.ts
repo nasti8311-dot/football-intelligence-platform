@@ -83,7 +83,7 @@ export function predictFromDbTeams(homeTeam: Team, awayTeam: Team, leagueName?: 
     },
     scoreMatrix: normalizedMatrix,
     topScores: [...normalizedMatrix].sort((a, b) => b.probability - a.probability).slice(0, 10),
-    markets: deriveMarkets(normalizedMatrix),
+    markets: deriveMarkets(home.xgFor, away.xgFor),
     breakdown,
     config,
     coveredMass,

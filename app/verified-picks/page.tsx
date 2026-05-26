@@ -113,7 +113,7 @@ export default async function VerifiedPicksPage() {
         draw: Number(p.draw || 0),
         awayWin: Number(p.awayWin || 0),
         over25,
-        bttsYes: btts,
+        btts: btts,
         over15,
         under35,
       });

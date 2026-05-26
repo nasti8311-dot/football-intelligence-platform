@@ -5,7 +5,7 @@ type BestTipInput = {
   over15: number;
   over25: number;
   under35: number;
-  bttsYes: number;
+  btts: number;
 };
 
 type TipOption = {
@@ -42,7 +42,7 @@ export function selectBestTip(input: BestTipInput) {
     { market: "Heimsieg", pick: "Heimsieg", probability: input.homeWin },
     { market: "Unentschieden", pick: "Unentschieden", probability: input.draw },
     { market: "Auswärtssieg", pick: "Auswärtssieg", probability: input.awayWin },
-    { market: "Beide Teams treffen", pick: "Ja", probability: input.bttsYes },
+    { market: "Beide Teams treffen", pick: "Ja", probability: input.btts },
     { market: "Über 2,5 Tore", pick: "Über 2,5", probability: input.over25 },
     { market: "Über 1,5 Tore", pick: "Über 1,5", probability: input.over15 },
     { market: "Unter 3,5 Tore", pick: "Unter 3,5", probability: input.under35 },
