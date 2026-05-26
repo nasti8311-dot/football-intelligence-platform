@@ -10,109 +10,10 @@ type Props = {
   score?: number | null;
   oddsRows?: number;
   over15?: number;
-  under35?: number;
   over25?: number;
+  under35?: number;
   btts?: number;
 };
-
-export default function PremiumPickCard({
-  match,
-  league,
-  kickoff,
-  market,
-  pick,
-  probability,
-  ,
-  valueScore,
-  score,
-  oddsRows = 0,
-  over15,
-  under35,
-  over25,
-  btts,
-}: Props) {
-  return (
-    <article className="overflow-hidden rounded-[2.2rem] border border-white/10 bg-gradient-to-br from-white/[0.07] to-white/[0.02] p-6 shadow-2xl shadow-black/30 transition hover:translate-y-[-2px] hover:border-emerald-400/30">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-emerald-400">
-            Empfehlung
-          </p>
-
-          <h3 className="mt-3 text-xl font-black leading-tight text-white">
-            {match}
-          </h3>
-
-          <p className="mt-2 text-xs font-bold text-neutral-500">
-            {league}
-          </p>
-
-          <p className="mt-1 text-xs text-neutral-500">
-            {kickoff
-              ? new Date(kickoff).toLocaleString("de-DE", {
-                  dateStyle: "short",
-                  timeStyle: "short",
-                })
-              : "Zeit offen"}
-          </p>
-        </div>
-
-        <div className="rounded-2xl bg-emerald-400 px-4 py-3 text-center text-black">
-          <p className="text-2xl font-black">
-            {Math.round(Number(probability))}%
-          </p>
-
-          <p className="text-[10px] font-black uppercase tracking-[0.18em]">
-            Chance
-          </p>
-        </div>
-      </div>
-
-      <div className="mt-5 rounded-[1.5rem] border border-emerald-400/20 bg-emerald-500/10 p-4">
-        <p className="text-xs font-black uppercase tracking-[0.2em] text-neutral-500">
-          {market}
-        </p>
-
-        <p className="mt-2 text-3xl font-black text-emerald-50">
-          {pick}
-        </p>
-      </div>
-
-      <div className="mt-4 grid grid-cols-2 gap-3">
-        <MarketProbability label="BTTS" value={btts} />
-        <MarketProbability label="Ü2,5" value={over25} />
-        <MarketProbability label="Ü1,5" value={over15} />
-        <MarketProbability label="U3,5" value={under35} />
-      </div>
-
-      <div className="mt-4 grid grid-cols-3 gap-3">
-        <Metric label="Qualität" value={ || "Verifizierter Pick"} />
-        <Metric label="Modellwert" value={valueScore ?? score ?? "—"} />
-        <Metric label="Status" value={oddsRows > 0 ? "Quoten geprüft" : "Modell-Prognose"} />
-      </div>
-    </article>
-  );
-}
-
-function MarketProbability({
-  label,
-  value,
-}: {
-  label: string;
-  value?: number;
-}) {
-  return (
-    <div className="rounded-2xl border border-emerald-400/20 bg-emerald-500/10 p-4">
-      <p className="text-[9px] font-black uppercase tracking-[0.18em] text-emerald-300">
-        {label}
-      </p>
-
-      <p className="mt-2 text-xl font-black text-white">
-        {value != null ? `${Math.round(value)}%` : "—"}
-      </p>
-    </div>
-  );
-}
 
 function Metric({
   label,
@@ -123,13 +24,86 @@ function Metric({
 }) {
   return (
     <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3">
-      <p className="text-[9px] font-black uppercase tracking-[0.18em] text-neutral-500">
+      <div className="text-[10px] uppercase tracking-[0.25em] text-neutral-500">
         {label}
-      </p>
-
-      <p className="mt-1 text-sm font-black text-white">
+      </div>
+      <div className="mt-1 text-lg font-black text-white">
         {value}
-      </p>
+      </div>
     </div>
+  );
+}
+
+export default function PremiumPickCard({
+  match,
+  league,
+  kickoff,
+  market,
+  pick,
+  probability,
+  confidence,
+  valueScore,
+  score,
+  oddsRows = 0,
+  over15,
+  over25,
+  under35,
+  btts,
+}: Props) {
+  return (
+    <article className="rounded-[2rem] border border-white/10 bg-gradient-to-b from-[#111827] to-[#0b1220] p-6 shadow-2xl">
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <div className="text-xs uppercase tracking-[0.25em] text-cyan-300">
+            {league}
+          </div>
+
+          <h3 className="mt-2 text-2xl font-black leading-tight text-white">
+            {match}
+          </h3>
+
+          <p className="mt-2 text-sm text-neutral-400">
+            {kickoff
+              ? new Date(kickoff).toLocaleString("de-DE")
+              : "Kickoff folgt"}
+          </p>
+        </div>
+
+        <div className="flex flex-col items-end gap-2">
+          {probability >= 78 ? (
+            <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.25em] text-emerald-300">
+              Elite Pick
+            </span>
+          ) : probability >= 70 ? (
+            <span className="rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.25em] text-cyan-300">
+              Strong Edge
+            </span>
+          ) : null}
+
+          <div className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-bold text-white">
+            {confidence}
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-6 grid grid-cols-2 gap-3">
+        <Metric label="Markt" value={market} />
+        <Metric label="Tipp" value={pick} />
+        <Metric label="Wahrscheinlichkeit" value={`${probability}%`} />
+        <Metric label="Modellwert" value={valueScore ?? score ?? "—"} />
+      </div>
+
+      <div className="mt-5 grid grid-cols-2 gap-3">
+        <Metric label="Ü1.5" value={over15 ? `${over15}%` : "—"} />
+        <Metric label="Ü2.5" value={over25 ? `${over25}%` : "—"} />
+        <Metric label="U3.5" value={under35 ? `${under35}%` : "—"} />
+        <Metric label="BTTS" value={btts ? `${btts}%` : "—"} />
+      </div>
+
+      <div className="mt-5 flex items-center justify-between text-xs text-neutral-500">
+        <span>{oddsRows} Quotenquellen</span>
+        <span>Football IQ Modell</span>
+      </div>
+    </article>
   );
 }
