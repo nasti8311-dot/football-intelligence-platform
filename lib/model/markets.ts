@@ -45,3 +45,6 @@ export function calculateMatchProbabilities(homeXg: number, awayXg: number) {
     btts: btts * 100,
   };
 }
+
+# BACKWARD COMPATIBILITY
+export const deriveMarkets = calculateMatchProbabilities;
