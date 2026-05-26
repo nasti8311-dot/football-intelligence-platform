@@ -5,7 +5,7 @@ type Props = {
   market: string;
   pick: string;
   probability: number;
-  ?: string | null;
+  confidence?: string | null;
   valueScore?: number | null;
   score?: number | null;
   oddsRows?: number;
