@@ -46,5 +46,5 @@ export function calculateMatchProbabilities(homeXg: number, awayXg: number) {
   };
 }
 
-# BACKWARD COMPATIBILITY
+// BACKWARD COMPATIBILITY
 export const deriveMarkets = calculateMatchProbabilities;
