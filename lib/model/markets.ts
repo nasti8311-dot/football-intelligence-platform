@@ -1,82 +1,47 @@
-import type { BettingMarket, ScoreProbability } from "@/lib/types/football";
-
-function fairOdds(probability: number): number {
-  return probability <= 0 ? 0 : Number((1 / probability).toFixed(2));
+export function poisson(lambda: number, k: number) {
+  return (Math.pow(lambda, k) * Math.exp(-lambda)) / factorial(k);
 }
 
-function market(label: string, probability: number, explanation: string): BettingMarket {
-  return { label, probability, fairOdds: fairOdds(probability), explanation };
+function factorial(n: number): number {
+  if (n <= 1) return 1;
+  return n * factorial(n - 1);
 }
 
-export function deriveMarkets(matrix: ScoreProbability[]): BettingMarket[] {
-  const sum = (predicate: (score: ScoreProbability) => boolean) =>
-    matrix.filter(predicate).reduce((total, score) => total + score.probability, 0);
+export function calculateMatchProbabilities(homeXg: number, awayXg: number) {
+  let homeWin = 0;
+  let draw = 0;
+  let awayWin = 0;
 
-  const homeWin = sum((s) => s.homeGoals > s.awayGoals);
-  const draw = sum((s) => s.homeGoals === s.awayGoals);
-  const awayWin = sum((s) => s.homeGoals < s.awayGoals);
+  let over15 = 0;
+  let over25 = 0;
+  let under35 = 0;
+  let btts = 0;
 
-  return [
-    market("Home Win", homeWin, "Heimteam gewinnt."),
-    market("Draw", draw, "Spiel endet unentschieden."),
-    market("Away Win", awayWin, "Auswärtsteam gewinnt."),
+  for (let h = 0; h <= 7; h++) {
+    for (let a = 0; a <= 7; a++) {
+      const p =
+        poisson(homeXg, h) *
+        poisson(awayXg, a);
 
-    market("Double Chance 1X", homeWin + draw, "Heimteam verliert nicht."),
-    market("Double Chance X2", draw + awayWin, "Auswärtsteam verliert nicht."),
-    market("Double Chance 12", homeWin + awayWin, "Kein Unentschieden."),
+      if (h > a) homeWin += p;
+      if (h === a) draw += p;
+      if (a > h) awayWin += p;
 
-    market(
-      "BTTS Yes",
-      sum((s) => s.homeGoals > 0 && s.awayGoals > 0),
-      "Beide Teams treffen."
-    ),
+      if (h + a >= 2) over15 += p;
+      if (h + a >= 3) over25 += p;
+      if (h + a <= 3) under35 += p;
 
-    market(
-      "BTTS No",
-      sum((s) => s.homeGoals === 0 || s.awayGoals === 0),
-      "Mindestens ein Team trifft nicht."
-    ),
+      if (h >= 1 && a >= 1) btts += p;
+    }
+  }
 
-    market(
-      "Over 1.5 Goals",
-      sum((s) => s.homeGoals + s.awayGoals >= 2),
-      "Mindestens zwei Gesamttore."
-    ),
-
-    market(
-      "Over 2.5 Goals",
-      sum((s) => s.homeGoals + s.awayGoals >= 3),
-      "Mindestens drei Gesamttore."
-    ),
-
-    market(
-      "Over 3.5 Goals",
-      sum((s) => s.homeGoals + s.awayGoals >= 4),
-      "Mindestens vier Gesamttore."
-    ),
-
-    market(
-      "Under 2.5 Goals",
-      sum((s) => s.homeGoals + s.awayGoals <= 2),
-      "Maximal zwei Gesamttore."
-    ),
-
-    market(
-      "Under 3.5 Goals",
-      sum((s) => s.homeGoals + s.awayGoals <= 3),
-      "Maximal drei Gesamttore."
-    ),
-
-    market(
-      "Clean Sheet Home",
-      sum((s) => s.awayGoals === 0),
-      "Auswärtsteam erzielt kein Tor."
-    ),
-
-    market(
-      "Clean Sheet Away",
-      sum((s) => s.homeGoals === 0),
-      "Heimteam erzielt kein Tor."
-    ),
-  ];
+  return {
+    homeWin: homeWin * 100,
+    draw: draw * 100,
+    awayWin: awayWin * 100,
+    over15: over15 * 100,
+    over25: over25 * 100,
+    under35: under35 * 100,
+    btts: btts * 100,
+  };
 }

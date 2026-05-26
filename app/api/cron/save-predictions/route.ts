@@ -1,6 +1,8 @@
 import { getLeagueFactor } from "@/lib/model/leagueFactors";
 import { realisticProbability } from "@/lib/model/probability";
 import { calculateRecentForm } from "@/lib/model/form";
+import { calculateMatchProbabilities } from "@/lib/model/markets";
+import { chooseBestPick } from "@/lib/model/bestPick";
 
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
@@ -43,7 +45,17 @@ export async function GET() {
       const markets = calculatePoissonMarkets(homeXg, awayXg);
 
       const bestTip = selectBestTip({
-        homeWin: markets.homeWin,
+        
+homeWin: probabilities.homeWin,
+draw: probabilities.draw,
+awayWin: probabilities.awayWin,
+over15: probabilities.over15,
+over25: probabilities.over25,
+under35: probabilities.under35,
+bttsYes: probabilities.btts,
+bttsNo: 100 - probabilities.btts,
+
+homeWin: markets.homeWin,
         draw: markets.draw,
         awayWin: markets.awayWin,
         over25: markets.over25,
