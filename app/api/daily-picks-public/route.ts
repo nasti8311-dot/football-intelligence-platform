@@ -117,7 +117,7 @@ export async function GET() {
       };
     })
     .filter((p) => p.probability >= 45)
-    .sort((a, b) => b.qualityScore - a.qualityScore);
+    .sort((a, b) => (b.qualityScore + b.probability) - (a.qualityScore + a.probability));
 
   const withOdds = ranked.filter((p) => p.oddsRows > 0);
   const withoutOdds = ranked.filter((p) => p.oddsRows <= 0);

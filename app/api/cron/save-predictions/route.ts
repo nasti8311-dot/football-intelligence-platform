@@ -3,6 +3,8 @@ import { realisticProbability } from "@/lib/model/probability";
 import { calculateRecentForm } from "@/lib/model/form";
 import { calculateMatchProbabilities } from "@/lib/model/markets";
 import { chooseBestPick } from "@/lib/model/bestPick";
+import { calculatePredictionQuality, isElitePrediction } from "@/lib/model/quality";
+import { calculateValueScore } from "@/lib/model/value";
 
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
@@ -92,6 +94,7 @@ homeWin: markets.homeWin,
               ? "B"
               : "C",
 
+          qualityScore,
           valueScore: Math.round(bestTip.score),
         },
       });
