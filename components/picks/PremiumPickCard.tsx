@@ -5,7 +5,7 @@ type Props = {
   market: string;
   pick: string;
   probability: number;
-  confidence?: string | null;
+  ?: string | null;
   valueScore?: number | null;
   score?: number | null;
   oddsRows?: number;
@@ -22,7 +22,7 @@ export default function PremiumPickCard({
   market,
   pick,
   probability,
-  confidence,
+  ,
   valueScore,
   score,
   oddsRows = 0,
@@ -86,7 +86,7 @@ export default function PremiumPickCard({
       </div>
 
       <div className="mt-4 grid grid-cols-3 gap-3">
-        <Metric label="Qualität" value={confidence || "Verifizierter Pick"} />
+        <Metric label="Qualität" value={ || "Verifizierter Pick"} />
         <Metric label="Modellwert" value={valueScore ?? score ?? "—"} />
         <Metric label="Status" value={oddsRows > 0 ? "Quoten geprüft" : "Modell-Prognose"} />
       </div>
