@@ -46,24 +46,23 @@ function leagueBoost(league: string) {
 
 function scorePick(p: any) {
   const marketPenalty =
-    p.market?.includes("Über 2.5") ? 12 :
-    p.market?.includes("Unter 2.5") ? 6 :
-    p.market?.includes("Beide") ? 3 :
-    0;
+    p.market === "Über 1,5 Tore"
+      ? 12
+      : p.market === "Unter 3,5 Tore"
+      ? 6
+      : 0;
 
-  const leagueBoost = priorityLeagues.some((l) =>
+  const leagueBonus = leagueBoost(
     String(p.match?.league?.name || p.league || "")
-      .toLowerCase()
-      .includes(l)
-  )
-    ? 12
-    : 0;
+  );
 
-  return Number(p.probability || 0)
+  return (
+    Number(p.probability || 0)
     + Number(p.valueScore || 0)
     + Number(p.oddsRows || 0)
-    + leagueBoost(String(p.match?.league?.name || p.league || ""))
-    - marketPenalty;
+    + Number(leagueBonus || 0)
+    - Number(marketPenalty || 0)
+  );
 }
 
 export default async function VerifiedPicksPage() {
