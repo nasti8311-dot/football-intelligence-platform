@@ -51,7 +51,7 @@ export default function PremiumPickCard({
   btts,
 }: Props) {
   return (
-    <article className="rounded-[2rem] border border-white/10 bg-gradient-to-b from-[#111827] to-[#0b1220] p-6 shadow-2xl">
+    <article className="rounded-[2rem] border border-white/10 bg-gradient-to-b from-[#111827] to-[#0b1220] p-6 shadow-2xl transition-all duration-300 hover:-translate-y-1 hover:border-cyan-400/40 hover:shadow-cyan-500/10">
       <div className="flex items-center justify-between gap-3">
         <div>
           <div className="text-xs uppercase tracking-[0.25em] text-cyan-300">
