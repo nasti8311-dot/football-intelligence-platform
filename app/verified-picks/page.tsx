@@ -220,6 +220,18 @@ export default async function VerifiedPicksPage() {
             </p>
           </section>
         )}
+
+        <section className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6">
+          <h2 className="text-2xl font-black">
+            Wie wird der beste Tipp gewählt?
+          </h2>
+          <p className="mt-3 max-w-3xl text-sm leading-7 text-neutral-400">
+            Für jedes Spiel berechnet Football IQ mehrere Märkte: Heimsieg,
+            Auswärtssieg, Über 1,5, Über 2,5, Unter 3,5 und Beide Teams treffen.
+            Angezeigt wird der Tipp mit der besten Kombination aus Wahrscheinlichkeit,
+            Marktwert und Modellbewertung.
+          </p>
+        </section>
       </div>
     </main>
   );
