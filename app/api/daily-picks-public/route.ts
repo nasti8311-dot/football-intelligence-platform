@@ -106,7 +106,7 @@ export async function GET() {
         market: bestTip.market,
         pick: bestTip.pick,
         probability: bestTip.probability,
-        confidence: oddsRows > 0 ? "Geprüft" : "Modell-Pick",
+        confidence: oddsRows > 0 ? "Verifizierter Pick" : "KI-Prognose",
         valueScore: Math.round(bestTip.score || p.valueScore || 0),
         oddsRows,
         over15,

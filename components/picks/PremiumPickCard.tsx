@@ -86,7 +86,7 @@ export default function PremiumPickCard({
       </div>
 
       <div className="mt-4 grid grid-cols-3 gap-3">
-        <Metric label="Qualität" value={confidence || "Geprüft"} />
+        <Metric label="Qualität" value={confidence || "Verifizierter Pick"} />
         <Metric label="Modellwert" value={valueScore ?? score ?? "—"} />
         <Metric label="Status" value={oddsRows > 0 ? "Quoten geprüft" : "Modell-Prognose"} />
       </div>
