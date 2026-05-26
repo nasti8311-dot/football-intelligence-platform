@@ -70,6 +70,12 @@ export default function PremiumPickCard({
         </div>
 
         <div className="flex flex-col items-end gap-2">
+
+          {valueScore && valueScore >= 92 ? (
+            <span className="rounded-full bg-yellow-400 px-3 py-1 text-[10px] font-black uppercase tracking-[0.25em] text-black">
+              TOP PICK
+            </span>
+          ) : null}
           {probability >= 78 ? (
             <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.25em] text-emerald-300">
               Elite Pick
