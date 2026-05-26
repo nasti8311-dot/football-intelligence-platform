@@ -1,0 +1,371 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum MatchStatus {
+  SCHEDULED
+  LIVE
+  FINISHED
+  POSTPONED
+  CANCELLED
+}
+
+enum PredictionStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  users     User[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id             String        @id @default(cuid())
+  email          String        @unique
+  name           String?
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  accounts       Account[]
+  sessions       Session[]
+}
+
+model League {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  name      String
+  country   String?
+  teams     Team[]
+  matches   Match[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Team {
+  id          String             @id
+  name        String
+  shortName   String
+  leagueId    String?
+  league      League?            @relation(fields: [leagueId], references: [id])
+  attack      Float
+  defense     Float
+  elo         Int
+  form        Float
+  xgFor       Float
+  xgAgainst   Float
+  possession  Float?
+  pressing    Float?
+  tempo       Float?
+  snapshots   TeamStatSnapshot[]
+  homeMatches Match[]            @relation("HomeTeam")
+  awayMatches Match[]            @relation("AwayTeam")
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  @@index([leagueId])
+  @@index([elo])
+}
+
+model TeamStatSnapshot {
+  id         String   @id @default(cuid())
+  teamId     String
+  team       Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  season     String
+  matchday   Int?
+  attack     Float
+  defense    Float
+  elo        Int
+  form       Float
+  xgFor      Float
+  xgAgainst  Float
+  possession Float?
+  pressing   Float?
+  tempo      Float?
+  source     String   @default("internal")
+  capturedAt DateTime @default(now())
+
+  @@unique([teamId, season, matchday])
+  @@index([teamId, season])
+}
+
+model Match {
+  id                  String               @id @default(cuid())
+  leagueId            String?
+  league              League?              @relation(fields: [leagueId], references: [id])
+  season              String
+  matchday            Int?
+  kickoff             DateTime?
+  status              MatchStatus          @default(SCHEDULED)
+  homeTeamId          String
+  awayTeamId          String
+  homeTeam            Team                 @relation("HomeTeam", fields: [homeTeamId], references: [id])
+  awayTeam            Team                 @relation("AwayTeam", fields: [awayTeamId], references: [id])
+  homeGoals           Int?
+  awayGoals           Int?
+  venue               String?
+  source              String               @default("internal")
+  sourceId            String?
+  predictions         Prediction[]
+  stats               MatchStat?
+  odds                MatchOdds[]
+  bookmakerOdds       BookmakerOdds[]
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  predictionSnapshots PredictionSnapshot[]
+
+  @@unique([source, sourceId])
+  @@index([kickoff])
+  @@index([homeTeamId, awayTeamId])
+}
+
+model MatchStat {
+  id                String   @id @default(cuid())
+  matchId           String   @unique
+  match             Match    @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  homeShots         Int?
+  awayShots         Int?
+  homeShotsOnTarget Int?
+  awayShotsOnTarget Int?
+  homeCorners       Int?
+  awayCorners       Int?
+  homeFouls         Int?
+  awayFouls         Int?
+  homeYellowCards   Int?
+  awayYellowCards   Int?
+  homeRedCards      Int?
+  awayRedCards      Int?
+  halfTimeHomeGoals Int?
+  halfTimeAwayGoals Int?
+  fullTimeResult    String?
+  halfTimeResult    String?
+  homeXgProxy       Float?
+  awayXgProxy       Float?
+  payload           Json?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model MatchOdds {
+  id        String   @id @default(cuid())
+  matchId   String
+  match     Match    @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  bookmaker String
+  homeOdds  Float?
+  drawOdds  Float?
+  awayOdds  Float?
+  payload   Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([matchId, bookmaker])
+  @@index([bookmaker])
+}
+
+model ModelVersion {
+  id          String       @id @default(cuid())
+  name        String
+  version     String
+  description String?
+  config      Json
+  predictions Prediction[]
+  createdAt   DateTime     @default(now())
+
+  @@unique([name, version])
+}
+
+model Prediction {
+  id                String             @id @default(cuid())
+  matchId           String?
+  match             Match?             @relation(fields: [matchId], references: [id], onDelete: SetNull)
+  modelVersionId    String?
+  modelVersion      ModelVersion?      @relation(fields: [modelVersionId], references: [id])
+  homeTeamId        String
+  awayTeamId        String
+  expectedHomeGoals Float
+  expectedAwayGoals Float
+  homeWinProb       Float
+  drawProb          Float
+  awayWinProb       Float
+  coveredMass       Float
+  config            Json
+  breakdown         Json
+  status            PredictionStatus   @default(ACTIVE)
+  scorelines        ScoreProbability[]
+  markets           PredictionMarket[]
+  createdAt         DateTime           @default(now())
+
+  @@index([matchId])
+  @@index([homeTeamId, awayTeamId])
+  @@index([createdAt])
+}
+
+model ScoreProbability {
+  id           String     @id @default(cuid())
+  predictionId String
+  prediction   Prediction @relation(fields: [predictionId], references: [id], onDelete: Cascade)
+  homeGoals    Int
+  awayGoals    Int
+  probability  Float
+
+  @@unique([predictionId, homeGoals, awayGoals])
+}
+
+model PredictionMarket {
+  id           String     @id @default(cuid())
+  predictionId String
+  prediction   Prediction @relation(fields: [predictionId], references: [id], onDelete: Cascade)
+  label        String
+  probability  Float
+  fairOdds     Float
+  explanation  String
+
+  @@index([predictionId])
+}
+
+model FixtureSource {
+  id         String   @id @default(cuid())
+  provider   String
+  externalId String
+  payload    Json
+  importedAt DateTime @default(now())
+
+  @@unique([provider, externalId])
+}
+
+model ApiSyncLog {
+  id         String    @id @default(cuid())
+  provider   String
+  endpoint   String
+  status     String
+  records    Int       @default(0)
+  message    String?
+  startedAt  DateTime  @default(now())
+  finishedAt DateTime?
+
+  @@index([provider, startedAt])
+}
+
+model Event {
+  id        String   @id @default(cuid())
+  matchId   String
+  team      String
+  player    String?
+  eventType String
+  minute    Int
+  x         Float?
+  y         Float?
+  endX      Float?
+  endY      Float?
+  xg        Float?
+  outcome   String?
+  createdAt DateTime @default(now())
+
+  @@index([matchId])
+  @@index([team])
+  @@index([eventType])
+}
+
+model BookmakerOdds {
+  id          String   @id @default(cuid())
+  matchId     String
+  match       Match    @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  bookmaker   String
+  market      String
+  outcome     String
+  price       Float
+  impliedProb Float
+  source      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([matchId, bookmaker, market, outcome])
+  @@index([matchId])
+  @@index([market])
+}
+
+model PredictionSnapshot {
+  id          String   @id @default(cuid())
+  matchId     String
+  match       Match    @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  market      String
+  pick        String
+  probability Float
+  homeWin     Float
+  draw        Float
+  awayWin     Float
+  over25      Float
+  under25     Float
+  bttsYes     Float
+  bttsNo      Float
+  homeXg      Float
+  awayXg      Float
+  confidence  String
+  valueScore  Int
+  oddsPrice   Float?
+  impliedProb Float?
+  edge        Float?
+  result      String?
+  isCorrect   Boolean?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([matchId, market, pick, createdAt])
+  @@index([matchId])
+  @@index([market])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model PredictionSnapshot {
+  over15 Float?
+}
+
+model PredictionSnapshot {
+  over15 Float?
+}

@@ -46,25 +46,20 @@ export async function GET() {
 
       const markets = calculatePoissonMarkets(homeXg, awayXg);
 
-      const bestTip = selectBestTip({
-        
-homeWin: probabilities.homeWin,
-draw: probabilities.draw,
-awayWin: probabilities.awayWin,
-over15: probabilities.over15,
-over25: probabilities.over25,
-under35: probabilities.under35,
-bttsYes: probabilities.btts,
-bttsNo: 100 - probabilities.btts,
+      const probabilities = calculateMatchProbabilities(
+  homeXg,
+  awayXg
+);
 
-homeWin: markets.homeWin,
-        draw: markets.draw,
-        awayWin: markets.awayWin,
-        over25: markets.over25,
-        bttsYes: markets.bttsYes,
-        over15: markets.over15,
-        under35: markets.under35,
-      });
+const bestTip = selectBestTip({
+  homeWin: probabilities.homeWin,
+  draw: probabilities.draw,
+  awayWin: probabilities.awayWin,
+  over15: probabilities.over15,
+  over25: probabilities.over25,
+  under35: probabilities.under35,
+  btts: probabilities.btts,
+});
 
       await prisma.predictionSnapshot.create({
         data: {
