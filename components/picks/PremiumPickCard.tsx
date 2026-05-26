@@ -92,6 +92,22 @@ export default function PremiumPickCard({
         </div>
       </div>
 
+      <div className="mt-5">
+        <div className="mb-2 flex items-center justify-between text-xs uppercase tracking-[0.25em] text-neutral-500">
+          <span>Edge Meter</span>
+          <span>{valueScore ?? score ?? 0}/100</span>
+        </div>
+
+        <div className="h-3 overflow-hidden rounded-full bg-white/10">
+          <div
+            className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-emerald-400"
+            style={{
+              width: `${Math.min(Number(valueScore ?? score ?? 0), 100)}%`,
+            }}
+          />
+        </div>
+      </div>
+
       <div className="mt-6 grid grid-cols-2 gap-3">
         <Metric label="Markt" value={market} />
         <Metric label="Tipp" value={pick} />
