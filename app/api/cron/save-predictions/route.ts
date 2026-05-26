@@ -1,5 +1,6 @@
 import { getLeagueFactor } from "@/lib/model/leagueFactors";
 import { realisticProbability } from "@/lib/model/probability";
+import { calculateRecentForm } from "@/lib/model/form";
 
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
